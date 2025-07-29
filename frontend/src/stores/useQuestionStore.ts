@@ -102,9 +102,10 @@ export const useQuestionStore = create<QuestionState>()(
       
       // Actions
       setCurrentQuestion: (question) => {
+        const shuffledAnswers = [...question.choices].sort(() => Math.random() - 0.5)
         set({ 
           currentQuestion: question,
-          currentAnswers: [...question.choices].sort(() => Math.random() - 0.5), // Shuffle choices
+          currentAnswers: shuffledAnswers, // Shuffle choices
           selectedChoiceId: null,
           userAnswer: null,
           showResult: false,

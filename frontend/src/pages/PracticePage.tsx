@@ -41,6 +41,7 @@ const PracticePage = () => {
     resetSession,
   } = useQuestionStore()
 
+
   const { 
     loading, 
     error, 
@@ -62,24 +63,52 @@ const PracticePage = () => {
 
   // Initialize practice session
   useEffect(() => {
+    let isMounted = true
+    
     const initializePractice = async () => {
+      if (!isMounted) return
+      
       startSession()
       
       // Load categories
       const categoriesData = await fetchCategories()
-      if (categoriesData) {
+      if (categoriesData && isMounted) {
         setCategories(categoriesData)
       }
 
       // Load first question
-      if (mode === 'quick' || practiceMode === 'random') {
-        await loadRandomQuestion()
-      } else {
-        await loadQuestionList()
+      if (isMounted) {
+        if (mode === 'quick' || practiceMode === 'random') {
+          const question = await fetchRandomQuestion({
+            categoryId: categoryId || undefined,
+            difficulty: difficulty || undefined,
+            excludeAnswered: true,
+          })
+          if (question && isMounted) {
+            setCurrentQuestion(question)
+          }
+        } else {
+          const response = await fetchQuestions(1, 10, {
+            categoryId: categoryId || undefined,
+            difficulty: difficulty || undefined,
+            onlyUnanswered: true,
+          })
+          if (response?.questions.length && isMounted) {
+            setQuestions(response.questions)
+            const firstQuestion = await fetchQuestionById(response.questions[0].id)
+            if (firstQuestion && isMounted) {
+              setCurrentQuestion(firstQuestion)
+            }
+          }
+        }
       }
     }
 
     initializePractice()
+    
+    return () => {
+      isMounted = false
+    }
   }, [mode, categoryId, difficulty])
 
   const loadRandomQuestion = async () => {
