@@ -1,0 +1,18 @@
+{
+  "name": "exam-prep-database",
+  "version": "1.0.0",
+  "description": "Database layer for Exam Preparation System",
+  "scripts": {
+    "generate": "npx prisma generate",
+    "push": "npx prisma db push",
+    "seed": "tsx seed.ts",
+    "studio": "npx prisma studio",
+    "reset": "npx prisma db push --force-reset && npm run seed"
+  },
+  "devDependencies": {
+    "@prisma/client": "^5.7.1",
+    "prisma": "^5.7.1",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.3"
+  }
+}
