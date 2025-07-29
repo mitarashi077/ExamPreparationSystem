@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./exam_prep.db"
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  parentId    String?
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  questions   Question[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  content     String
+  explanation String?
+  difficulty  Int      @default(1) // 1-5 scale
+  year        Int?
+  session     String?  // 春期、秋期など
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  choices     Choice[]
+  answers     Answer[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Choice {
+  id         String   @id @default(cuid())
+  content    String
+  isCorrect  Boolean  @default(false)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  isCorrect  Boolean
+  timeSpent  Int?     // seconds
+  deviceType String?  // "pc", "mobile", "tablet"
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+}
+
+model StudySession {
+  id         String   @id @default(cuid())
+  deviceType String?
+  duration   Int?     // seconds
+  score      Float?   // percentage
+  categoryId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
