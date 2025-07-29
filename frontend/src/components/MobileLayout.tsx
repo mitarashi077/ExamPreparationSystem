@@ -15,6 +15,8 @@ import {
   Paper,
   Badge,
   Chip,
+  Fab,
+  Collapse,
 } from '@mui/material'
 import {
   Menu as MenuIcon,
@@ -24,9 +26,13 @@ import {
   Settings as SettingsIcon,
   WifiOff as OfflineIcon,
   Close as CloseIcon,
+  SwipeLeft as SwipeLeftIcon,
+  SwipeRight as SwipeRightIcon,
+  Info as InfoIcon,
 } from '@mui/icons-material'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppStore } from '../stores/useAppStore'
+import { useSwipeNavigation } from '../hooks/useSwipeNavigation'
 
 interface MobileLayoutProps {
   children: React.ReactNode
@@ -40,6 +46,29 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
     isOnline, 
     setMobileMenuOpen 
   } = useAppStore()
+  
+  const { 
+    swipeHandlers, 
+    canSwipeLeft, 
+    canSwipeRight,
+    currentIndex,
+    navigationItems 
+  } = useSwipeNavigation()
+  
+  const [showSwipeHint, setShowSwipeHint] = useState(false)
+
+  // Show swipe hint on first visit
+  useEffect(() => {
+    const hasSeenHint = localStorage.getItem('swipe-hint-seen')
+    if (!hasSeenHint) {
+      setShowSwipeHint(true)
+      const timer = setTimeout(() => {
+        setShowSwipeHint(false)
+        localStorage.setItem('swipe-hint-seen', 'true')
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   const menuItems = [
     { text: 'ホーム', icon: <HomeIcon />, path: '/', badge: 0 },
@@ -198,8 +227,9 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
         {drawer}
       </Drawer>
 
-      {/* Main Content */}
+      {/* Main Content with Swipe Support */}
       <Box
+        {...swipeHandlers}
         component="main"
         sx={{
           flexGrow: 1,
@@ -208,8 +238,108 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
           px: 2,
           py: 1,
           minHeight: 'calc(100vh - 128px)', // Full height minus top and bottom bars
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Swipe Hint */}
+        <Collapse in={showSwipeHint}>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 16,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 1000,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              px: 2,
+              py: 1,
+              borderRadius: 2,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              boxShadow: 3,
+            }}
+          >
+            <InfoIcon fontSize="small" />
+            <Typography variant="caption">
+              左右にスワイプしてページを切り替え
+            </Typography>
+          </Box>
+        </Collapse>
+
+        {/* Swipe Indicators */}
+        {canSwipeLeft && (
+          <Fab
+            size="small"
+            sx={{
+              position: 'fixed',
+              left: 16,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 1,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              opacity: 0.7,
+              '&:hover': {
+                opacity: 1,
+              },
+            }}
+            disabled
+          >
+            <SwipeRightIcon fontSize="small" />
+          </Fab>
+        )}
+
+        {canSwipeRight && (
+          <Fab
+            size="small"
+            sx={{
+              position: 'fixed',
+              right: 16,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 1,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              opacity: 0.7,
+              '&:hover': {
+                opacity: 1,
+              },
+            }}
+            disabled
+          >
+            <SwipeLeftIcon fontSize="small" />
+          </Fab>
+        )}
+
+        {/* Page Indicator */}
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 80, // Above bottom navigation
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            gap: 0.5,
+            zIndex: 1,
+          }}
+        >
+          {navigationItems.slice(0, 3).map((_, index) => (
+            <Box
+              key={index}
+              sx={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                bgcolor: index === currentIndex ? 'primary.main' : 'action.disabled',
+                transition: 'background-color 0.3s ease',
+              }}
+            />
+          ))}
+        </Box>
+
         {children}
       </Box>
 

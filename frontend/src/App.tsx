@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { Container, Box } from '@mui/material'
 import Layout from './components/Layout'
+import SwipeablePages from './components/SwipeablePages'
 import HomePage from './pages/HomePage'
 import PracticePage from './pages/PracticePage'
 import ProgressPage from './pages/ProgressPage'
@@ -16,13 +17,15 @@ function App() {
         maxWidth={isMobile || isTablet ? false : "lg"}
         disableGutters={isMobile || isTablet}
       >
-        <Box sx={{ py: isMobile || isTablet ? 0 : 2 }}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/practice" element={<PracticePage />} />
-            <Route path="/progress" element={<ProgressPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </Routes>
+        <Box sx={{ py: isMobile || isTablet ? 0 : 2, height: isMobile || isTablet ? '100%' : 'auto' }}>
+          <SwipeablePages>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/practice" element={<PracticePage />} />
+              <Route path="/progress" element={<ProgressPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Routes>
+          </SwipeablePages>
         </Box>
       </Container>
     </Layout>
