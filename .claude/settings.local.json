@@ -9,7 +9,8 @@
       "Bash(npm install)",
       "Bash(npx prisma generate:*)",
       "Bash(npx prisma:*)",
-      "Bash(npm run seed:*)"
+      "Bash(npm run seed:*)",
+      "Bash(npm install:*)"
     ],
     "deny": []
   }

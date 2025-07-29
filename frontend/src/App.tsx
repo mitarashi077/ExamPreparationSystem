@@ -4,16 +4,24 @@ import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import PracticePage from './pages/PracticePage'
 import ProgressPage from './pages/ProgressPage'
+import SettingsPage from './pages/SettingsPage'
+import { useDeviceDetection } from './hooks/useDeviceDetection'
 
 function App() {
+  const { isMobile, isTablet } = useDeviceDetection()
+  
   return (
     <Layout>
-      <Container maxWidth="lg">
-        <Box sx={{ py: 2 }}>
+      <Container 
+        maxWidth={isMobile || isTablet ? false : "lg"}
+        disableGutters={isMobile || isTablet}
+      >
+        <Box sx={{ py: isMobile || isTablet ? 0 : 2 }}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/practice" element={<PracticePage />} />
             <Route path="/progress" element={<ProgressPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </Box>
       </Container>
