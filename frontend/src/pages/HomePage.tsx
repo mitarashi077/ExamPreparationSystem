@@ -40,25 +40,25 @@ const HomePage = () => {
 
   const studyModeItems = [
     {
-      id: 'quick-5',
-      title: '5分クイック',
-      description: '通勤時間に最適な短時間集中モード',
+      id: 'timed-5',
+      title: '5分タイマー学習',
+      description: '通勤時間に最適な短時間集中モード。中断・再開機能付き',
       category: '短時間',
-      onClick: () => navigate('/practice?mode=quick&time=5'),
+      onClick: () => navigate('/practice?mode=timed&time=5'),
     },
     {
-      id: 'quick-10',
-      title: '10分チャレンジ',
-      description: 'じっくり考える中時間モード',
+      id: 'timed-10',
+      title: '10分タイマー学習',
+      description: 'じっくり考える中時間モード。進捗確認可能',
       category: '標準',
-      onClick: () => navigate('/practice?mode=quick&time=10'),
+      onClick: () => navigate('/practice?mode=timed&time=10'),
     },
     {
-      id: 'quick-15',
-      title: '15分集中',
-      description: '難しい問題にしっかり取り組む',
+      id: 'timed-15',
+      title: '15分タイマー学習',
+      description: '難しい問題にしっかり取り組む。詳細統計表示',
       category: '本格',
-      onClick: () => navigate('/practice?mode=quick&time=15'),
+      onClick: () => navigate('/practice?mode=timed&time=15'),
     },
   ]
 

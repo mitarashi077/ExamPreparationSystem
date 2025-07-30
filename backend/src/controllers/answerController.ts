@@ -56,6 +56,77 @@ export const submitAnswer = async (req: Request, res: Response): Promise<void> =
   }
 }
 
+// ヒートマップデータ取得
+export const getHeatmapData = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const days = parseInt(req.query.days as string) || 30
+
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - days)
+
+    // すべての回答データを取得
+    const answers = await prisma.answer.findMany({
+      where: {
+        createdAt: {
+          gte: startDate
+        }
+      },
+      include: {
+        question: {
+          include: {
+            category: true
+          }
+        }
+      }
+    })
+
+    // 分野別にデータを集約
+    const categoryMap = new Map<string, { 
+      categoryId: string; 
+      categoryName: string; 
+      totalAttempts: number; 
+      correctAttempts: number; 
+    }>()
+
+    answers.forEach(answer => {
+      if (!answer.question?.category) return
+
+      const categoryId = answer.question.categoryId
+      const existing = categoryMap.get(categoryId) || {
+        categoryId,
+        categoryName: answer.question.category.name,
+        totalAttempts: 0,
+        correctAttempts: 0
+      }
+
+      existing.totalAttempts += 1
+      if (answer.isCorrect) {
+        existing.correctAttempts += 1
+      }
+
+      categoryMap.set(categoryId, existing)
+    })
+
+    // ヒートマップ用のデータ形式に変換
+    const heatmapData = Array.from(categoryMap.values()).map(category => ({
+      categoryId: category.categoryId,
+      categoryName: category.categoryName,
+      attempts: category.totalAttempts,
+      accuracy: category.totalAttempts > 0 ? (category.correctAttempts / category.totalAttempts) * 100 : 0,
+      colorIntensity: category.totalAttempts > 0 ? (category.correctAttempts / category.totalAttempts) : 0
+    }))
+
+    res.json({
+      heatmapData,
+      period: `${days}日間`,
+      updatedAt: new Date().toISOString()
+    })
+  } catch (error) {
+    console.error('Error fetching heatmap data:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+}
+
 // 学習統計取得
 export const getStudyStats = async (req: Request, res: Response): Promise<void> => {
   try {
