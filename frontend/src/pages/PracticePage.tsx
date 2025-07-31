@@ -19,9 +19,12 @@ import {
 } from '@mui/icons-material'
 import QuestionSwiper from '../components/QuestionSwiper'
 import TouchButton from '../components/TouchButton'
+import StudySessionTimer from '../components/StudySessionTimer'
+import OfflineIndicator from '../components/OfflineIndicator'
 import { useQuestionStore } from '../stores/useQuestionStore'
 import { useQuestionApi } from '../hooks/useQuestionApi'
 import { useAppStore } from '../stores/useAppStore'
+import { useOfflineSync } from '../hooks/useOfflineSync'
 
 const PracticePage = () => {
   const [searchParams] = useSearchParams()
@@ -54,12 +57,19 @@ const PracticePage = () => {
 
   const [categories, setCategories] = useState<any[]>([])
   const [practiceMode, setPracticeMode] = useState<'random' | 'list'>('random')
+  const [sessionComplete, setSessionComplete] = useState(false)
+  
+  // オフライン同期機能
+  const { syncStatus, addToOfflineQueue } = useOfflineSync()
   
   // Get URL parameters
   const mode = searchParams.get('mode') // 'quick' or 'practice'
   const timeLimit = searchParams.get('time') ? parseInt(searchParams.get('time')!) : undefined
   const categoryId = searchParams.get('category')
   const difficulty = searchParams.get('difficulty') ? parseInt(searchParams.get('difficulty')!) : undefined
+  
+  // 短時間学習モードの判定
+  const isTimedSession = mode === 'timed' || (timeLimit && [5, 10, 15].includes(timeLimit))
 
   // Initialize practice session
   useEffect(() => {
@@ -142,23 +152,54 @@ const PracticePage = () => {
   const handleAnswerSubmit = async (choiceId: string, timeSpent: number) => {
     if (!currentQuestion) return
 
-    // Submit answer to API
-    const result = await submitAnswer(
-      currentQuestion.id,
+    const answerData = {
+      questionId: currentQuestion.id,
       choiceId,
-      timeSpent * 1000, // Convert to milliseconds
+      timeSpent: timeSpent * 1000, // Convert to milliseconds
       deviceType
-    )
+    }
 
-    if (result) {
-      // Update local state
-      endQuestion(result.isCorrect)
-      setUserAnswer({
-        id: result.answerId,
-        isCorrect: result.isCorrect,
-        timeSpent: timeSpent * 1000,
-        createdAt: new Date().toISOString(),
-      })
+    try {
+      if (syncStatus.isOnline) {
+        // オンライン時: 通常のAPI送信
+        const result = await submitAnswer(
+          currentQuestion.id,
+          choiceId,
+          timeSpent * 1000,
+          deviceType
+        )
+
+        if (result) {
+          // Update local state
+          endQuestion(result.isCorrect)
+          setUserAnswer({
+            id: result.answerId,
+            isCorrect: result.isCorrect,
+            timeSpent: timeSpent * 1000,
+            createdAt: new Date().toISOString(),
+          })
+        }
+      } else {
+        // オフライン時: ローカルキューに追加
+        addToOfflineQueue('answer', answerData)
+        
+        // ローカルで正解判定を行う（簡易的）
+        const correctChoice = currentQuestion.choices?.find(c => c.isCorrect)
+        const isCorrect = choiceId === correctChoice?.id
+        
+        // Update local state
+        endQuestion(isCorrect)
+        setUserAnswer({
+          id: `offline_${Date.now()}`, // 一時的なID
+          isCorrect,
+          timeSpent: timeSpent * 1000,
+          createdAt: new Date().toISOString(),
+        })
+      }
+    } catch (error) {
+      console.error('Answer submission failed:', error)
+      // オンライン送信に失敗した場合もオフラインキューに追加
+      addToOfflineQueue('answer', answerData)
     }
   }
 
@@ -177,6 +218,22 @@ const PracticePage = () => {
   const getCategoryName = (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId)
     return category?.name || '全分野'
+  }
+
+  const handleSessionComplete = (duration: number, questionsAnswered: number) => {
+    setSessionComplete(true)
+    // セッション完了の統計をサーバーに送信する場合はここで実装
+    console.log(`セッション完了: ${duration}秒, ${questionsAnswered}問回答`)
+  }
+
+  const handleSessionPause = (elapsedTime: number) => {
+    // 一時停止時の処理
+    console.log(`セッション一時停止: ${elapsedTime}秒経過`)
+  }
+
+  const handleSessionResume = () => {
+    // 再開時の処理
+    console.log('セッション再開')
   }
 
   if (error) {
@@ -224,10 +281,12 @@ const PracticePage = () => {
   return (
     <Box>
       {/* Header */}
-      <Box display="flex" alignItems="center" justifyContent="between" mb={3}>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
         <Typography variant="h4" component="h1">
           {mode === 'quick' ? `${timeLimit}分クイック` : '問題演習'}
         </Typography>
+        
+        <OfflineIndicator compact />
         
         <Fab
           size="small"
@@ -286,6 +345,23 @@ const PracticePage = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Study Session Timer */}
+      {isTimedSession && !sessionComplete && (
+        <StudySessionTimer
+          onSessionComplete={handleSessionComplete}
+          onSessionPause={handleSessionPause}
+          onSessionResume={handleSessionResume}
+          questionsAnswered={sessionStats.totalQuestions}
+        />
+      )}
+
+      {/* Session Complete Message */}
+      {sessionComplete && (
+        <Alert severity="success" sx={{ mb: 3 }}>
+          学習セッションが完了しました！ 回答数: {sessionStats.totalQuestions}問、正答率: {Math.round((sessionStats.correctAnswers / sessionStats.totalQuestions) * 100)}%
+        </Alert>
+      )}
 
       {/* Question Display */}
       <Box sx={{ mb: 4 }}>
