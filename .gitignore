@@ -56,7 +56,6 @@ sw.js
 workbox-*.js
 
 # Temporary files
-.tmp/
 temp/
 
 # Prisma
