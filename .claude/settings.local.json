@@ -38,7 +38,8 @@
       "Bash(rm:*)",
       "Bash(cp:*)",
       "Bash(ls:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(gh pr view:*)"
     ],
     "deny": []
   }
