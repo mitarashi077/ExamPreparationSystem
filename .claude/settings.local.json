@@ -39,7 +39,8 @@
       "Bash(cp:*)",
       "Bash(ls:*)",
       "Bash(grep:*)",
-      "Bash(gh pr view:*)"
+      "Bash(gh pr view:*)",
+      "Bash(gh pr close:*)"
     ],
     "deny": []
   }
