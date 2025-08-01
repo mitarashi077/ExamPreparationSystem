@@ -20,18 +20,19 @@ model Category {
 }
 
 model Question {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   content     String
   explanation String?
-  difficulty  Int      @default(1) // 1-5 scale
+  difficulty  Int          @default(1) // 1-5 scale
   year        Int?
-  session     String?  // 春期、秋期など
+  session     String?      // 春期、秋期など
   categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id])
+  category    Category     @relation(fields: [categoryId], references: [id])
   choices     Choice[]
   answers     Answer[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  reviewItems ReviewItem[] // 復習管理との関連
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model Choice {
@@ -62,4 +63,33 @@ model StudySession {
   categoryId String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+// 復習管理テーブル - 間違い問題の蓄積と復習スケジュール管理
+model ReviewItem {
+  id            String   @id @default(cuid())
+  questionId    String
+  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  masteryLevel  Int      @default(0) // 習熟度レベル 0-5 (0=未習得, 5=完全習得)
+  reviewCount   Int      @default(0) // 復習回数
+  lastReviewed  DateTime? // 最後に復習した日時
+  nextReview    DateTime // 次回復習予定日時
+  wrongCount    Int      @default(1) // 間違えた回数
+  correctStreak Int      @default(0) // 連続正解回数
+  priority      Int      @default(1) // 復習優先度 1-5 (5=最高優先度)
+  isActive      Boolean  @default(true) // アクティブ状態
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([questionId]) // 1つの問題につき1つの復習アイテム
+}
+
+// 復習セッション記録
+model ReviewSession {
+  id         String   @id @default(cuid())
+  duration   Int?     // seconds
+  totalItems Int      @default(0) // 復習した問題数
+  correctItems Int    @default(0) // 正解した問題数
+  deviceType String?
+  createdAt  DateTime @default(now())
 }

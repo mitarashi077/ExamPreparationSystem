@@ -155,10 +155,10 @@ export const getQuestionById = async (req: Request, res: Response): Promise<void
       question: {
         id: question.id,
         content: question.content,
-        explanation: question.explanation,
+        explanation: question.explanation || undefined,
         difficulty: question.difficulty,
-        year: question.year,
-        session: question.session,
+        year: question.year || undefined,
+        session: question.session || undefined,
         categoryId: question.categoryId,
         choices: question.choices.map(choice => ({
           id: choice.id,
@@ -169,7 +169,7 @@ export const getQuestionById = async (req: Request, res: Response): Promise<void
       userAnswer: question.answers.length > 0 ? {
         id: question.answers[0].id,
         isCorrect: question.answers[0].isCorrect,
-        timeSpent: question.answers[0].timeSpent,
+        timeSpent: question.answers[0].timeSpent || undefined,
         createdAt: question.answers[0].createdAt.toISOString()
       } : undefined
     }
@@ -245,10 +245,10 @@ export const getRandomQuestion = async (req: Request, res: Response): Promise<vo
       question: {
         id: selectedQuestion.id,
         content: selectedQuestion.content,
-        explanation: selectedQuestion.explanation,
+        explanation: selectedQuestion.explanation || undefined,
         difficulty: selectedQuestion.difficulty,
-        year: selectedQuestion.year,
-        session: selectedQuestion.session,
+        year: selectedQuestion.year || undefined,
+        session: selectedQuestion.session || undefined,
         categoryId: selectedQuestion.categoryId,
         choices: selectedQuestion.choices.map(choice => ({
           id: choice.id,
@@ -259,7 +259,7 @@ export const getRandomQuestion = async (req: Request, res: Response): Promise<vo
       userAnswer: selectedQuestion.answers.length > 0 ? {
         id: selectedQuestion.answers[0].id,
         isCorrect: selectedQuestion.answers[0].isCorrect,
-        timeSpent: selectedQuestion.answers[0].timeSpent,
+        timeSpent: selectedQuestion.answers[0].timeSpent || undefined,
         createdAt: selectedQuestion.answers[0].createdAt.toISOString()
       } : undefined
     }

@@ -5,9 +5,10 @@ import morgan from 'morgan'
 import questionRoutes from './routes/questionRoutes'
 import answerRoutes from './routes/answerRoutes'
 import categoryRoutes from './routes/categoryRoutes'
+import reviewRoutes from './routes/reviewRoutes'
 
 const app = express()
-const PORT = process.env.PORT || 3003
+const PORT = process.env.PORT || 3001
 
 app.use(helmet())
 app.use(cors())
@@ -24,6 +25,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/questions', questionRoutes)
 app.use('/api/answers', answerRoutes)
 app.use('/api/categories', categoryRoutes)
+app.use('/api/review', reviewRoutes)
 
 // 404 handler
 app.use('/api/*', (_req, res) => {
