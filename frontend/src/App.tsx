@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
-import { Container, Box, Typography } from '@mui/material'
+import { Container, Box } from '@mui/material'
 import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import PracticePage from './pages/PracticePage'

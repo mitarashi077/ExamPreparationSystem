@@ -26,6 +26,12 @@ import { useQuestionApi } from '../hooks/useQuestionApi'
 import { useAppStore } from '../stores/useAppStore'
 import { useOfflineSync } from '../hooks/useOfflineSync'
 
+interface Category {
+  id: string
+  name: string
+  description?: string
+}
+
 const PracticePage = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -34,11 +40,11 @@ const PracticePage = () => {
   const {
     currentQuestion,
     sessionStats,
-    filters,
+    // filters, // 未使用
     setCurrentQuestion,
     setQuestions,
     startSession,
-    startQuestion,
+    // startQuestion, // 未使用
     endQuestion,
     setUserAnswer,
     resetSession,
@@ -55,8 +61,8 @@ const PracticePage = () => {
     fetchCategories 
   } = useQuestionApi()
 
-  const [categories, setCategories] = useState<any[]>([])
-  const [practiceMode, setPracticeMode] = useState<'random' | 'list'>('random')
+  const [categories, setCategories] = useState<Category[]>([])
+  const [practiceMode] = useState<'random' | 'list'>('random')
   const [sessionComplete, setSessionComplete] = useState(false)
   
   // オフライン同期機能
@@ -121,33 +127,35 @@ const PracticePage = () => {
     }
   }, [mode, categoryId, difficulty])
 
-  const loadRandomQuestion = async () => {
-    const question = await fetchRandomQuestion({
-      categoryId: categoryId || undefined,
-      difficulty: difficulty || undefined,
-      excludeAnswered: true,
-    })
+  // 将来の機能拡張用に残していますが、現在は使用されていません
+  // const loadRandomQuestion = async () => {
+  //   const question = await fetchRandomQuestion({
+  //     categoryId: categoryId || undefined,
+  //     difficulty: difficulty || undefined,
+  //     excludeAnswered: true,
+  //   })
 
-    if (question) {
-      setCurrentQuestion(question)
-    }
-  }
+  //   if (question) {
+  //     setCurrentQuestion(question)
+  //   }
+  // }
 
-  const loadQuestionList = async () => {
-    const response = await fetchQuestions(1, 10, {
-      categoryId: categoryId || undefined,
-      difficulty: difficulty || undefined,
-      onlyUnanswered: true,
-    })
+  // 将来の機能拡張用に残していますが、現在は使用されていません
+  // const _loadQuestionList = async () => {
+  //   const response = await fetchQuestions(1, 10, {
+  //     categoryId: categoryId || undefined,
+  //     difficulty: difficulty || undefined,
+  //     onlyUnanswered: true,
+  //   })
 
-    if (response?.questions.length) {
-      setQuestions(response.questions)
-      const firstQuestion = await fetchQuestionById(response.questions[0].id)
-      if (firstQuestion) {
-        setCurrentQuestion(firstQuestion)
-      }
-    }
-  }
+  //   if (response?.questions.length) {
+  //     setQuestions(response.questions)
+  //     const firstQuestion = await fetchQuestionById(response.questions[0].id)
+  //     if (firstQuestion) {
+  //       setCurrentQuestion(firstQuestion)
+  //     }
+  //   }
+  // }
 
   const handleAnswerSubmit = async (choiceId: string, timeSpent: number) => {
     if (!currentQuestion) return
@@ -203,12 +211,13 @@ const PracticePage = () => {
     }
   }
 
-  const handleNextQuestion = async () => {
-    if (mode === 'quick' || practiceMode === 'random') {
-      await loadRandomQuestion()
-    }
-    // For list mode, QuestionSwiper handles navigation
-  }
+  // 将来の機能拡張用に残していますが、現在は使用されていません
+  // const _handleNextQuestion = async () => {
+  //   if (mode === 'quick' || practiceMode === 'random') {
+  //     await loadRandomQuestion()
+  //   }
+  //   // For list mode, QuestionSwiper handles navigation
+  // }
 
   const handleRefresh = () => {
     resetSession()

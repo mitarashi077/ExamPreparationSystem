@@ -1,31 +1,24 @@
 {
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server",
+        "stdio"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  },
   "permissions": {
     "allow": [
-      "Bash(claude --version)",
-      "WebFetch(domain:docs.anthropic.com)",
-      "Bash(mkdir:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(npm install)",
-      "Bash(npx prisma generate:*)",
-      "Bash(npx prisma:*)",
-      "Bash(npm run seed:*)",
-      "Bash(npm install:*)",
-      "Bash(git flow init:*)",
-      "Bash(npm run dev:*)",
-      "Bash(taskkill:*)",
-      "Bash(curl:*)",
-      "Bash(powershell:*)",
-      "Bash(cmd /c taskkill:*)",
-      "Bash(cmd /c:*)",
-      "Bash(PORT=3003 npm run dev)",
-      "Bash(PORT=3001 npm run dev)",
-      "Bash(rm:*)",
-      "Bash(git push:*)",
-      "Bash(gh pr create:*)",
-      "Bash(git checkout:*)",
-      "Bash(git pull:*)",
-      "Bash(git merge:*)"
+      "Bash(gh pr merge:*)"
     ],
     "deny": []
   }

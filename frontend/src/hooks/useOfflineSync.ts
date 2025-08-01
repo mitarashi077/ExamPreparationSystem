@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 interface OfflineData {
   timestamp: number
   type: 'answer' | 'progress' | 'session'
-  data: any
+  data: unknown
 }
 
 interface SyncStatus {
@@ -46,7 +46,7 @@ export const useOfflineSync = () => {
   }, [])
 
   // データをオフラインキューに追加
-  const addToOfflineQueue = useCallback((type: OfflineData['type'], data: any) => {
+  const addToOfflineQueue = useCallback((type: OfflineData['type'], data: unknown) => {
     const offlineData = getOfflineData()
     const newEntry: OfflineData = {
       timestamp: Date.now(),

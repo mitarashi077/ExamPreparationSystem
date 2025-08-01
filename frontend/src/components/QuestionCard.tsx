@@ -84,7 +84,7 @@ const QuestionCard = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  const getDifficultyColor = (difficulty: number) => {
+  const getDifficultyColor = (difficulty: number): 'success' | 'info' | 'warning' | 'error' | 'default' => {
     switch (difficulty) {
       case 1: return 'success'
       case 2: return 'info'
@@ -140,7 +140,7 @@ const QuestionCard = ({
               icon={<DifficultyIcon fontSize="small" />}
               label={getDifficultyLabel(currentQuestion.difficulty)}
               size="small"
-              color={getDifficultyColor(currentQuestion.difficulty) as any}
+              color={getDifficultyColor(currentQuestion.difficulty)}
               variant="outlined"
             />
             {currentQuestion.year && currentQuestion.session && (
@@ -293,7 +293,7 @@ const QuestionCard = ({
               fullWidth
               variant="contained"
               touchSize="large"
-              disabled={!selectedChoiceId || isTimeUp}
+              disabled={!selectedChoiceId || !!isTimeUp}
               onClick={handleSubmitAnswer}
               color={isTimeUp ? 'error' : 'primary'}
             >

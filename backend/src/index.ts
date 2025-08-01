@@ -7,7 +7,7 @@ import answerRoutes from './routes/answerRoutes'
 import categoryRoutes from './routes/categoryRoutes'
 
 const app = express()
-const PORT = process.env.PORT || 3003
+const PORT = process.env.PORT || 3001
 
 app.use(helmet())
 app.use(cors())

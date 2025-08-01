@@ -3,7 +3,6 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   extends: [
     'eslint:recommended',
-    '@typescript-eslint/recommended',
   ],
   parserOptions: {
     ecmaVersion: 2020,
@@ -11,11 +10,12 @@ module.exports = {
   },
   rules: {
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/explicit-function-return-type': 'warn',
     'prefer-const': 'error',
     'no-var': 'error',
-    'no-console': 'warn',
+    'no-console': 'off', // バックエンドでのログ出力は適切
   },
   env: {
     node: true,

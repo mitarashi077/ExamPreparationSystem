@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Card, CardProps, Box, IconButton, Fade } from '@mui/material'
+import { Card, CardProps, Box, Fade } from '@mui/material'
 import { useSwipeable } from 'react-swipeable'
 import { 
   ArrowBackIos as ArrowBackIcon,

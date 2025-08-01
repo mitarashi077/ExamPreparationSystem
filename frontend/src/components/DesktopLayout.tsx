@@ -119,7 +119,6 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
               color="warning"
               variant="outlined"
               size="small"
-              fullWidth
             />
           </Box>
         )}

@@ -39,9 +39,9 @@ const HeatmapCell = styled(Paper)<{ intensity: number; isMobile?: boolean }>(
 
 const HeatmapChart: React.FC<HeatmapChartProps> = ({ data, onCellClick }) => {
   const theme = useTheme()
-  const isMobile = theme.breakpoints.down('md')
+  // const isMobile = theme.breakpoints.down('md') // 未使用のため一時的にコメントアウト
 
-  const getAccuracyColor = (accuracy: number): string => {
+  const getAccuracyColor = (accuracy: number): 'success' | 'warning' | 'error' => {
     if (accuracy >= 80) return 'success'
     if (accuracy >= 60) return 'warning'
     return 'error'
@@ -99,7 +99,6 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data, onCellClick }) => {
           <Grid item xs={12} sm={6} md={4} lg={3} key={category.categoryId}>
             <HeatmapCell
               intensity={category.colorIntensity}
-              isMobile={theme.breakpoints.down('sm')}
               onClick={() => onCellClick?.(category)}
             >
               <Typography 

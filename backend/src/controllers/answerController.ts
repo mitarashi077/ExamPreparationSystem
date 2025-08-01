@@ -137,7 +137,7 @@ export const getStudyStats = async (req: Request, res: Response): Promise<void> 
     const startDate = new Date()
     startDate.setDate(startDate.getDate() - days)
 
-    const where: any = {
+    const where: Record<string, unknown> = {
       createdAt: {
         gte: startDate
       }
@@ -159,18 +159,6 @@ export const getStudyStats = async (req: Request, res: Response): Promise<void> 
       where: {
         ...where,
         isCorrect: true
-      }
-    })
-
-    // 分野別統計
-    const categoryStats = await prisma.answer.groupBy({
-      by: ['questionId'],
-      where,
-      _count: {
-        _all: true
-      },
-      _avg: {
-        timeSpent: true
       }
     })
 
