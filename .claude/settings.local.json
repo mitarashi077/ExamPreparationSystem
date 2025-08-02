@@ -82,28 +82,73 @@
             "technical-designer"
           ]
         },
-        "anti_delegation": {
-          "rule": "🚫 NEVER DELEGATE TASKS TO OTHER AGENTS UNNECESSARILY",
-          "principle": "Each agent should complete their assigned task directly, not pass it to another agent",
-          "prohibited_patterns": [
-            "Asking agent A to do task X, then agent A asks agent B to do task X",
-            "Creating task chains longer than 2 agents for simple tasks", 
-            "Using Task tool when direct tool usage is possible",
-            "Agent says 'I'll delegate this to [other agent]' instead of doing the work"
+        "single_responsibility": {
+          "rule": "🎯 ONE AGENT = ONE RESPONSIBILITY (単一責任の原則)",
+          "principle": "Each agent has ONE clear job. If you can't do it alone, COLLABORATE don't delegate",
+          "agent_responsibilities": {
+            "git-manager": "Git operations ONLY (commit, push, merge, branch)",
+            "quality-fixer": "TypeScript/code quality fixes ONLY (if unfixable → escalate to technical-designer)", 
+            "document-reviewer": "Document content review ONLY (no editing)",
+            "document-fixer": "Document fixes ONLY (non-technical docs, formatting)",
+            "frontend-executor": "React/UI implementation (3+ files OR complex UI logic)",
+            "backend-executor": "Node.js/API implementation (3+ files OR complex business logic)",
+            "task-executor": "Simple implementation (1-2 files, straightforward logic)",
+            "technical-designer": "System design creation ONLY (no implementation)",
+            "requirement-analyzer": "Requirements analysis ONLY (no design)",
+            "work-planner": "Implementation planning ONLY (after technical design)",
+            "task-decomposer": "Task breakdown ONLY (convert plans to actionable items)",
+            "prd-creator": "PRD creation ONLY (business requirements)"
+          },
+          "task_assignment_rules": {
+            "implementation_size_criteria": {
+              "task-executor": "1-2 files, straightforward logic, no complex dependencies",
+              "frontend-executor": "3+ files OR complex UI logic OR state management OR component architecture",
+              "backend-executor": "3+ files OR complex business logic OR database operations OR API design"
+            },
+            "document_editing_rights": {
+              "technical-designer": "ADR, Design Doc, technical specifications only",
+              "document-fixer": "README, non-technical docs, formatting fixes only",
+              "work-planner": "Implementation plans, task lists only",
+              "prd-creator": "PRD, business requirements only",
+              "others": "No document editing rights"
+            },
+            "error_escalation": {
+              "quality-fixer_cannot_fix": "escalate to technical-designer",
+              "implementation_too_complex": "task-executor → specialized executor",
+              "design_requires_change": "any agent → technical-designer",
+              "git_operations_fail": "git-manager handles all retries and conflict resolution"
+            }
+          },
+          "collaboration_not_delegation": {
+            "bad": "Agent A asks Agent B to do Agent A's job",
+            "good": "Agent A does their part, Agent B does their part, results combined",
+            "example": "PR Review = document-reviewer reviews docs + quality-fixer checks code + results combined for approval"
+          },
+          "prohibited": [
+            "git-manager doing code review",
+            "quality-fixer doing git operations", 
+            "document-reviewer doing code fixes",
+            "Any agent doing another agent's core job"
           ],
-          "exceptions": [
-            "Git operations MUST go to git-manager (security requirement)",
-            "Multi-step workflows requiring different specialized tools",
-            "Quality-fixer for actual TypeScript/code fixes (not reviews)"
-          ],
-          "enforcement": "If you catch yourself about to delegate, ask: Can I do this directly with available tools?"
+          "enforcement": "Ask: Is this MY responsibility? If no, don't do it. If yes, do it directly."
         }
       }
     },
     "pr_review_process": {
       "mandatory_review": true,
-      "review_agent": "document-reviewer",
-      "approval_agent": "pr-approver",
+      "multi_stage_review": {
+        "stage_1_code_quality": "quality-fixer",
+        "stage_2_design_alignment": "technical-designer", 
+        "stage_3_documentation": "document-reviewer",
+        "stage_4_requirements": "requirement-analyzer"
+      },
+      "approval_criteria": {
+        "code_quality": "quality-fixer reports PASS or fixes applied",
+        "design_alignment": "technical-designer confirms architecture compliance",
+        "documentation": "document-reviewer approves or no doc changes",
+        "requirements": "requirement-analyzer confirms requirements met"
+      },
+      "final_approval": "All 4 stages must pass for merge approval",
       "merge_agent": "git-manager",
       "discussion_required": false,
       "auto_merge_disabled": true,
