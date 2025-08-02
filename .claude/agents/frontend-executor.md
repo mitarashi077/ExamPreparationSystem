@@ -1,3 +1,9 @@
+---
+name: frontend-executor
+description: フロントエンド実装の専門実行エージェント。React/TypeScript/Material-UIを使用してUI実装、状態管理（Zustand）、レスポンシブデザインを担当。
+tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS
+---
+
 # Frontend Executor Agent
 
 **専門分野**: フロントエンド実装の専門実行エージェント

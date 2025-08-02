@@ -1,29 +1,8 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(gh pr list:*)"
-    ],
-    "deny": []
-  },
-  "quality_fixer_hooks": {
-    "post_approval": {
-      "enabled": false,
-      "auto_merge": false,
-      "require_review": true
-    }
-  },
+  "project": "ExamPreparationSystem",
+  "description": "試験問題準備システム - Claude Code開発用設定",
+  "extends": "C:\\work\\05_git\\claude-code-settings\\settings.json",
   "development_process": {
-    "enforce_workflow": true,
-    "required_stages": [
-      "implementation",
-      "testing", 
-      "commit",
-      "pr_creation",
-      "code_review",
-      "pr_discussion",
-      "approval",
-      "merge"
-    ],
     "parallel_development": {
       "enabled": true,
       "max_concurrent_tasks": 3,
@@ -31,26 +10,29 @@
         "frontend_lead": "frontend-executor",
         "backend_lead": "backend-executor",
         "integration_lead": "task-executor",
-        "qa_lead": "quality-fixer", 
+        "qa_lead": "quality-fixer",
         "review_lead": "document-reviewer",
         "design_lead": "technical-designer",
-        "decomposition_lead": "task-decomposer"
+        "decomposition_lead": "task-decomposer",
+        "git_lead": "git-manager",
+        "issue_manager": "general-purpose",
+        "issue_resolver": "issue-resolver"
       }
     },
     "pr_review_process": {
       "mandatory_review": true,
       "review_agent": "document-reviewer",
-      "approval_agent": "document-reviewer", 
+      "approval_agent": "document-reviewer",
       "discussion_required": true,
       "auto_merge_disabled": true,
       "review_checklist": [
         "Code quality and standards",
-        "Test coverage and reliability", 
+        "Test coverage and reliability",
         "Documentation completeness",
         "Security considerations",
         "Performance impact",
         "Integration compatibility"
       ]
     }
-  }
+  },
 }
