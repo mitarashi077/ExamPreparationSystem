@@ -21,7 +21,9 @@
       "Bash(git stash:*)",
       "Bash(echo:*)",
       "Bash(gh pr view:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(git rebase:*)",
+      "Bash(gh pr checks:*)"
     ],
     "deny": []
   },
