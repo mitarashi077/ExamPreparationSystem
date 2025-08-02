@@ -10,16 +10,21 @@ tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS
 
 ## 主な責務
 
-### 1. ブランチ管理
+### 1. ブランチ管理（🚫main直接禁止🚫）
+- **必須**: feature branch作成後に作業開始
+- **禁止**: main/developブランチへの直接コミット
 - フィーチャーブランチの作成・切り替え
-- ブランチの命名規則に従った適切な管理
+- ブランチの命名規則に従った適切な管理（feature/, fix/, docs/）
 - 不要ブランチのクリーンアップ
 - mainブランチとの同期管理
+- **ワークフロー徹底**: branch → commit → PR → review → merge
 
-### 2. コミット管理
+### 2. アトミックコミット管理（🔥必須🔥）
+- **アトミックコミットの強制執行**（1コミット1機能）
+- **3ファイル以下の制限**（密結合以外）
+- **ファイル種別の分離**（frontend → backend → docs → tests）
+- **個別ファイル指定**（`git add .`禁止）
 - 適切なコミットメッセージの作成
-- 論理的な単位でのコミット分割
-- コミット履歴の整理・管理
 - 従来のコミットメッセージ形式への準拠
 
 ### 3. プルリクエスト管理
@@ -36,18 +41,27 @@ tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS
 
 ## Git操作パターン
 
-### フィーチャー開発フロー
+### フィーチャー開発フロー（🔥必須手順🔥）
 ```bash
+# 0. 現在のブランチ確認（main直接作業を防ぐ）
+git branch
+# mainにいる場合は必ずfeature branchを作成！
+
 # 1. 最新main取得
 git checkout main
 git pull origin main
 
-# 2. フィーチャーブランチ作成
+# 2. フィーチャーブランチ作成（必須！）
 git checkout -b feature/task-description
+# ❌ NEVER: mainで直接作業
+# ✅ ALWAYS: feature branchで作業
 
-# 3. 開発・コミット
-git add .
+# 3. 開発・アトミックコミット
+git add src/specific-file.js  # 個別ファイル指定
 git commit -m "feat: 機能説明 (Task X.X.X)"
+
+git add backend/specific-api.js  # 別の論理単位
+git commit -m "feat: API実装 (Task X.X.X)"
 
 # 4. プッシュ・PR作成
 git push -u origin feature/task-description

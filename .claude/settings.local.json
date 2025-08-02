@@ -1,4 +1,29 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git config:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(rm:*)",
+      "Bash(powershell:*)",
+      "Bash(git -C C:/work/05_git/claude-code-settings status)",
+      "Bash(git -C C:/work/05_git/claude-code-settings add commands/spec.md commands/requirements.md commands/design.md commands/tasks.md)",
+      "Bash(git -C C:/work/05_git/claude-code-settings commit -m \"fix: Remove .tmp directory usage from spec-driven development commands\n\n- spec.md: Use existing docs/ structure instead of .tmp\n- requirements.md: Create requirements in docs/requirements/\n- design.md: Create design docs in docs/design/\n- tasks.md: Create task lists in docs/plans/\n\nThis prevents creation of temporary files and follows established \ndocumentation structure conventions.\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\nCo-Authored-By: Claude <noreply@anthropic.com>\")",
+      "Bash(git -C C:/work/05_git/claude-code-settings add settings.json)",
+      "Bash(git -C C:/work/05_git/claude-code-settings commit -m \"fix: Simplify session-end hook to avoid PowerShell escaping issues\n\n- Replace complex PowerShell script with simple git add && commit\n- Ensures session-end auto-commit works reliably\n- Maintains atomic commit enforcement via pre-commit hook\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\nCo-Authored-By: Claude <noreply@anthropic.com>\")",
+      "Bash(git reset:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(gh pr checkout:*)",
+      "Bash(git fetch:*)"
+    ],
+    "deny": []
+  },
   "project": "ExamPreparationSystem",
   "description": "試験問題準備システム - Claude Code開発用設定",
   "extends": "C:\\work\\05_git\\claude-code-settings\\settings.json",
@@ -53,21 +78,5 @@
         "milestone": "auto-detect"
       }
     }
-  },
-  "hooks": {
-    "after-commit": {
-      "command": "powershell -Command \"$ErrorActionPreference = 'Stop'; try { $branch = git rev-parse --abbrev-ref HEAD; if ($branch -ne 'main' -and $branch -ne 'develop') { Write-Host '[Auto-PR Hook] Creating PR from feature branch...'; $lastCommit = git log --oneline -1; $title = ($lastCommit -split ' ', 2)[1]; $body = 'Auto-generated PR from commit:\\n\\n' + $lastCommit + '\\n\\n## Changes\\n- Automated commit detection\\n- Ready for review\\n\\n## Testing\\n- [ ] Manual testing required\\n\\n---\\n*This PR was automatically created by the development system.*'; $prUrl = gh pr create --title $title --body $body --base develop --head $branch --label 'auto-generated' --reviewer quality-fixer,technical-designer 2>$null; Write-Host '✅ PR created: ' + $prUrl; Write-Host '🔄 Triggering automated review process...'; } else { Write-Host '[Auto-PR Hook] On protected branch, skipping PR creation'; } } catch { Write-Host '⚠️ Failed to create PR: ' + $_.Exception.Message; }\"",
-      "description": "Automatically create PR after commit on feature branches"
-    },
-    "after-pr-creation": {
-      "command": "powershell -Command \"$ErrorActionPreference = 'SilentlyContinue'; try { $prNumber = $env:PR_NUMBER; if ($prNumber) { Write-Host '🔍 Starting automated review for PR #' + $prNumber; Write-Host '⚙️ Assigning quality-fixer for initial review...'; gh pr edit $prNumber --add-reviewer quality-fixer 2>$null; Write-Host '🏗️ Assigning technical-designer for approval...'; gh pr edit $prNumber --add-reviewer technical-designer 2>$null; Write-Host '🏷️ Adding labels based on changes...'; Write-Host '✅ PR review process initiated'; } else { Write-Host '🔍 Checking for recent PRs to process...'; $recentPR = gh pr list --state open --limit 1 --json number 2>$null | ConvertFrom-Json; if ($recentPR) { $prNum = $recentPR[0].number; Write-Host '📝 Processing PR #' + $prNum; } } } catch { Write-Host '⚠️ PR review setup failed'; }\"",
-      "description": "Automatically assign reviewers and initiate review process after PR creation"
-    }
-  },
-  "permissions": {
-    "allow": [
-      "Bash(gh pr view:*)"
-    ],
-    "deny": []
   }
 }

@@ -1,0 +1,99 @@
+#!/bin/sh
+# Pre-commit hook to enforce atomic commits and branch protection
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# First check: Protected branch
+echo "${YELLOW}🔍 Checking branch protection...${NC}"
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "develop" ]; then
+    echo "${RED}❌ PROTECTED BRANCH VIOLATION${NC}"
+    echo "${RED}   You are trying to commit directly to '$BRANCH'${NC}"
+    echo ""
+    echo "${YELLOW}💡 Solution: Create a feature branch${NC}"
+    echo "   git checkout -b feature/your-feature-name"
+    echo "   git add <files>"
+    echo "   git commit -m \"your message\""
+    echo ""
+    echo "📖 Workflow: feature branch → commit → PR → review → merge"
+    exit 1
+fi
+
+echo "${GREEN}✅ Branch check passed: $BRANCH${NC}"
+echo ""
+
+# Second check: Atomic commits
+echo "${YELLOW}🔍 Checking atomic commit compliance...${NC}"
+
+# Count staged files
+staged_files=$(git diff --cached --name-only)
+file_count=$(echo "$staged_files" | grep -c .)
+
+# Skip check if no files staged
+if [ $file_count -eq 0 ]; then
+    echo "${GREEN}✅ No files staged${NC}"
+    exit 0
+fi
+
+# Check file count limit
+MAX_FILES=3
+if [ $file_count -gt $MAX_FILES ]; then
+    echo "${RED}❌ ATOMIC COMMIT VIOLATION${NC}"
+    echo "${RED}   Files staged: $file_count (max: $MAX_FILES)${NC}"
+    echo ""
+    echo "📋 Staged files:"
+    echo "$staged_files" | sed 's/^/   - /'
+    echo ""
+    echo "${YELLOW}💡 Solution: Split into atomic commits${NC}"
+    echo "   git reset HEAD"
+    echo "   git add <specific-files>"
+    echo "   git commit -m \"atomic message\""
+    echo ""
+    echo "📖 Guide: docs/development/atomic-commit-guide.md"
+    exit 1
+fi
+
+# Check for mixed file types
+frontend_files=$(echo "$staged_files" | grep -E '\.(tsx?|jsx?|css|scss|vue)$' | wc -l)
+backend_files=$(echo "$staged_files" | grep -E '\.(py|java|go|rb|php|js|ts)$' | grep -v -E '\.(tsx|jsx)$' | wc -l)
+doc_files=$(echo "$staged_files" | grep -E '\.(md|txt|rst)$' | wc -l)
+config_files=$(echo "$staged_files" | grep -E '\.(json|yaml|yml|toml|ini|conf)$' | wc -l)
+
+mixed_types=0
+[ $frontend_files -gt 0 ] && mixed_types=$((mixed_types + 1))
+[ $backend_files -gt 0 ] && mixed_types=$((mixed_types + 1))
+[ $doc_files -gt 0 ] && mixed_types=$((mixed_types + 1))
+[ $config_files -gt 0 ] && mixed_types=$((mixed_types + 1))
+
+if [ $mixed_types -gt 1 ]; then
+    echo "${RED}❌ MIXED FILE TYPES VIOLATION${NC}"
+    echo "${RED}   Frontend: $frontend_files, Backend: $backend_files, Docs: $doc_files, Config: $config_files${NC}"
+    echo ""
+    echo "${YELLOW}💡 Solution: Separate commits by type${NC}"
+    echo "   1. Frontend changes → separate commit"
+    echo "   2. Backend changes → separate commit" 
+    echo "   3. Documentation → separate commit"
+    echo "   4. Configuration → separate commit"
+    echo ""
+    echo "📖 Guide: docs/development/atomic-commit-guide.md"
+    exit 1
+fi
+
+# Check commit message format (basic check)
+if [ -f .git/COMMIT_EDITMSG ]; then
+    commit_msg=$(cat .git/COMMIT_EDITMSG)
+    if ! echo "$commit_msg" | grep -qE '^(feat|fix|docs|style|refactor|test|chore):'
+    then
+        echo "${YELLOW}⚠️  Warning: Commit message should start with type (feat:, fix:, docs:, etc.)${NC}"
+    fi
+fi
+
+echo "${GREEN}✅ Atomic commit compliance verified${NC}"
+echo "   Files: $file_count (≤ $MAX_FILES)"
+echo "   Type: Single file type detected"
+exit 0
