@@ -25,6 +25,7 @@
       "Bash(cp:*)",
       "Bash(diff:*)",
       "Bash(npm run:*)",
+      "Bash(git rebase:*)",
       "Bash(tasklist:*)",
       "Bash(wmic:*)",
       "Bash(taskkill:*)",
