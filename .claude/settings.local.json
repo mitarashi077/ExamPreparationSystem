@@ -21,8 +21,8 @@
     },
     "pr_review_process": {
       "mandatory_review": true,
-      "review_agent": "document-reviewer",
-      "approval_agent": "document-reviewer",
+      "review_agent": "quality-fixer",
+      "approval_agent": "technical-designer",
       "discussion_required": true,
       "auto_merge_disabled": true,
       "review_checklist": [
@@ -32,7 +32,19 @@
         "Security considerations",
         "Performance impact",
         "Integration compatibility"
-      ]
+      ],
+      "auto_assign": {
+        "reviewers": ["quality-fixer", "technical-designer"],
+        "assignees": ["auto-assign-author"],
+        "labels": {
+          "frontend_changes": "frontend",
+          "backend_changes": "backend",
+          "docs_changes": "documentation",
+          "database_changes": "database"
+        },
+        "projects": ["ExamPreparationSystem"],
+        "milestone": "auto-detect"
+      }
     }
   },
 }

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussion Forum
+    url: https://github.com/mitarashi077/ExamPreparationSystem/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 📚 Documentation
+    url: https://github.com/mitarashi077/ExamPreparationSystem/blob/main/README.md
+    about: Check out the project documentation
+  - name: 🚀 Quick Start Guide
+    url: https://github.com/mitarashi077/ExamPreparationSystem/blob/main/README.md#-quick-start
+    about: Get started with the project quickly
