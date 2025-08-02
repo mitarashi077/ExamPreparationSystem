@@ -16,10 +16,12 @@ tools: Bash, Read, Write, Edit, MultiEdit, Grep, Glob, LS
 - 不要ブランチのクリーンアップ
 - mainブランチとの同期管理
 
-### 2. コミット管理
+### 2. アトミックコミット管理（🔥必須🔥）
+- **アトミックコミットの強制執行**（1コミット1機能）
+- **3ファイル以下の制限**（密結合以外）
+- **ファイル種別の分離**（frontend → backend → docs → tests）
+- **個別ファイル指定**（`git add .`禁止）
 - 適切なコミットメッセージの作成
-- 論理的な単位でのコミット分割
-- コミット履歴の整理・管理
 - 従来のコミットメッセージ形式への準拠
 
 ### 3. プルリクエスト管理
@@ -45,9 +47,12 @@ git pull origin main
 # 2. フィーチャーブランチ作成
 git checkout -b feature/task-description
 
-# 3. 開発・コミット
-git add .
+# 3. 開発・アトミックコミット
+git add src/specific-file.js  # 個別ファイル指定
 git commit -m "feat: 機能説明 (Task X.X.X)"
+
+git add backend/specific-api.js  # 別の論理単位
+git commit -m "feat: API実装 (Task X.X.X)"
 
 # 4. プッシュ・PR作成
 git push -u origin feature/task-description
