@@ -21,7 +21,10 @@
       "Bash(git stash:*)",
       "Bash(echo:*)",
       "Bash(gh pr view:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(cp:*)",
+      "Bash(diff:*)",
+      "Bash(npm run:*)"
     ],
     "deny": []
   },
@@ -40,16 +43,53 @@
         "review_lead": "document-reviewer",
         "design_lead": "technical-designer",
         "decomposition_lead": "task-decomposer",
-        "git_lead": "git-manager",
+        "git_operations_only": "git-manager",
         "issue_manager": "general-purpose",
         "issue_resolver": "issue-resolver"
+      },
+      "workflow_stages": {
+        "1_implementation": [
+          "task-executor",
+          "frontend-executor",
+          "backend-executor"
+        ],
+        "2_quality_check": "quality-fixer",
+        "3_git_operations": "git-manager",
+        "4_review": "document-reviewer",
+        "5_approval": "technical-designer"
+      },
+      "restrictions": {
+        "git_operations": {
+          "exclusive_agent": "git-manager",
+          "prohibited_agents": [
+            "task-executor",
+            "quality-fixer",
+            "frontend-executor",
+            "backend-executor"
+          ]
+        },
+        "implementation": {
+          "no_git_access": [
+            "task-executor",
+            "quality-fixer",
+            "frontend-executor",
+            "backend-executor"
+          ]
+        },
+        "review": {
+          "read_only": [
+            "document-reviewer",
+            "technical-designer"
+          ]
+        }
       }
     },
     "pr_review_process": {
       "mandatory_review": true,
-      "review_agent": "quality-fixer",
-      "approval_agent": "technical-designer",
-      "discussion_required": true,
+      "review_agent": "document-reviewer",
+      "approval_agent": "pr-approver",
+      "merge_agent": "git-manager",
+      "discussion_required": false,
       "auto_merge_disabled": true,
       "review_checklist": [
         "Code quality and standards",
