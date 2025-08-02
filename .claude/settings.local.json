@@ -24,7 +24,10 @@
       "Bash(git branch:*)",
       "Bash(cp:*)",
       "Bash(diff:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(tasklist:*)",
+      "Bash(wmic:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": []
   },
@@ -87,7 +90,7 @@
           "principle": "Each agent has ONE clear job. If you can't do it alone, COLLABORATE don't delegate",
           "agent_responsibilities": {
             "git-manager": "Git operations ONLY (commit, push, merge, branch)",
-            "quality-fixer": "TypeScript/code quality fixes ONLY (if unfixable → escalate to technical-designer)", 
+            "quality-fixer": "TypeScript/code quality fixes ONLY (if unfixable → escalate to technical-designer)",
             "document-reviewer": "Document content review ONLY (no editing)",
             "document-fixer": "Document fixes ONLY (non-technical docs, formatting)",
             "frontend-executor": "React/UI implementation (3+ files OR complex UI logic)",
@@ -126,7 +129,7 @@
           },
           "prohibited": [
             "git-manager doing code review",
-            "quality-fixer doing git operations", 
+            "quality-fixer doing git operations",
             "document-reviewer doing code fixes",
             "Any agent doing another agent's core job"
           ],
@@ -138,7 +141,7 @@
       "mandatory_review": true,
       "multi_stage_review": {
         "stage_1_code_quality": "quality-fixer",
-        "stage_2_design_alignment": "technical-designer", 
+        "stage_2_design_alignment": "technical-designer",
         "stage_3_documentation": "document-reviewer",
         "stage_4_requirements": "requirement-analyzer"
       },
