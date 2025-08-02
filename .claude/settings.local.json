@@ -1,81 +1,54 @@
 {
   "permissions": {
     "allow": [
-      "Bash(claude --version)",
-      "WebFetch(domain:docs.anthropic.com)",
-      "Bash(mkdir:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(npm install)",
-      "Bash(npx prisma generate:*)",
-      "Bash(npx prisma:*)",
-      "Bash(npm run seed:*)",
-      "Bash(npm install:*)",
-      "Bash(git flow init:*)",
-      "Bash(npm run dev:*)",
-      "Bash(taskkill:*)",
-      "Bash(curl:*)",
-      "Bash(powershell:*)",
-      "Bash(cmd /c taskkill:*)",
-      "Bash(cmd /c:*)",
-      "Bash(PORT=3003 npm run dev)",
-      "Bash(PORT=3001 npm run dev)",
-      "Bash(rm:*)",
-      "Bash(git push:*)",
-      "Bash(gh pr create:*)",
-      "Bash(git checkout:*)",
-      "Bash(git pull:*)",
-      "Bash(git merge:*)",
-      "Bash(git pull:*)",
-      "Bash(npx prisma migrate dev:*)",
-      "Bash(npx prisma:*)",
-      "Bash(npm run dev:*)",
-      "Bash(npm install:*)",
-      "Bash(timeout 5s npm run dev)",
-      "Bash(curl:*)",
-      "Bash(npm run lint)",
-      "Bash(npm run build:*)",
-      "Bash(rm:*)",
-      "Bash(cp:*)",
-      "Bash(ls:*)",
-      "Bash(grep:*)",
-      "Bash(gh pr view:*)",
-      "Bash(gh pr close:*)",
-      "Bash(git branch:*)",
-      "Bash(PORT=3001 npm run dev)",
-      "Bash(PORT=3002 npm run dev)",
-      "Bash(node:*)",
-      "Bash(git restore:*)",
-      "Bash(sqlite3:*)",
-      "Bash(timeout 5s npx prisma studio)",
-      "Bash(npm run seed:*)",
-      "Bash(npm run lint:*)",
-      "Bash(npm run install:all:*)",
-      "Bash(pkill -f \"npm run dev\")",
-      "Bash(true)",
-      "Bash(npx eslint:*)",
-      "Bash(copy:*)",
-      "Bash(mkdir:*)",
-      "Bash(find:*)",
-      "Bash(ln:*)",
-      "Bash(npm test)",
-      "Bash(timeout 10s npm run dev)",
-      "Bash(gh pr merge:*)"
+      "Bash(gh pr list:*)"
     ],
     "deny": []
   },
   "quality_fixer_hooks": {
     "post_approval": {
+      "enabled": false,
+      "auto_merge": false,
+      "require_review": true
+    }
+  },
+  "development_process": {
+    "enforce_workflow": true,
+    "required_stages": [
+      "implementation",
+      "testing", 
+      "commit",
+      "pr_creation",
+      "code_review",
+      "pr_discussion",
+      "approval",
+      "merge"
+    ],
+    "parallel_development": {
       "enabled": true,
-      "actions": [
-        "update_tasks_md",
-        "atomic_commit",
-        "create_pr",
-        "auto_merge_if_approved"
-      ],
-      "commit_message_format": "fix: Complete quality fixes for {task_name}\n\n- All lint errors resolved\n- TypeScript build successful\n- All tests passing\n- Full integration verified\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
-      "pr_title_format": "fix: Quality fixes for {task_name}",
-      "pr_body_format": "## Summary\n- Complete quality fix for {task_name}\n- All lint and TypeScript errors resolved\n- Full integration testing completed\n- Ready for production deployment\n\n## Test plan\n- [x] Lint checks passed\n- [x] TypeScript build successful\n- [x] All functionality tested\n- [x] Integration verified\n\n🤖 Generated with [Claude Code](https://claude.ai/code)"
+      "max_concurrent_tasks": 3,
+      "agent_roles": {
+        "implementation_lead": "task-executor",
+        "qa_lead": "quality-fixer", 
+        "review_lead": "document-reviewer",
+        "design_lead": "technical-designer",
+        "decomposition_lead": "task-decomposer"
+      }
+    },
+    "pr_review_process": {
+      "mandatory_review": true,
+      "review_agent": "document-reviewer",
+      "approval_agent": "document-reviewer", 
+      "discussion_required": true,
+      "auto_merge_disabled": true,
+      "review_checklist": [
+        "Code quality and standards",
+        "Test coverage and reliability", 
+        "Documentation completeness",
+        "Security considerations",
+        "Performance impact",
+        "Integration compatibility"
+      ]
     }
   }
 }
