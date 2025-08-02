@@ -1,10 +1,10 @@
 # Commit Guidelines
 
-## コミットメッセージ規約
+## Commit Message Convention
 
-このプロジェクトでは、**WHY（なぜ）** を重視したコミットメッセージを採用しています。
+This project adopts commit messages that emphasize **WHY** (reasoning) over what was changed.
 
-### 基本形式
+### Basic Format
 
 ```
 <type>: <subject>
@@ -14,20 +14,20 @@
 <footer>
 ```
 
-### Type（変更の種類）
+### Type (Change Category)
 
-| Type | 説明 | 例 |
+| Type | Description | Example |
 |------|------|-----|
-| `feat` | 新機能の追加 | ブックマーク機能、認証機能 |
-| `fix` | バグ修正 | APIエラー修正、UI表示不具合 |
-| `docs` | ドキュメントのみの変更 | README更新、API仕様書 |
-| `style` | コードの意味に影響しない変更 | フォーマット、空白 |
-| `refactor` | バグ修正でも機能追加でもないコード変更 | 構造改善、最適化 |
-| `test` | テストの追加や既存テストの修正 | 単体テスト、統合テスト |
-| `chore` | ビルドプロセスやツール変更 | 依存関係更新、設定変更 |
-| `perf` | パフォーマンス改善 | クエリ最適化、レンダリング改善 |
-| `ci` | CI設定ファイルやスクリプトの変更 | GitHub Actions、ビルド設定 |
-| `revert` | 以前のコミットの取り消し | 不具合のあるコミットの取り消し |
+| `feat` | New feature | Bookmark feature, authentication |
+| `fix` | Bug fix | API error fix, UI display issue |
+| `docs` | Documentation only changes | README update, API specification |
+| `style` | Changes that don't affect code meaning | Formatting, whitespace |
+| `refactor` | Code change that neither fixes bug nor adds feature | Structure improvement, optimization |
+| `test` | Adding missing tests or correcting existing tests | Unit tests, integration tests |
+| `chore` | Changes to build process or tools | Dependency updates, configuration changes |
+| `perf` | Performance improvement | Query optimization, rendering improvement |
+| `ci` | Changes to CI configuration files and scripts | GitHub Actions, build configuration |
+| `revert` | Revert previous commit | Reverting buggy commit |
 
 ### Subject（件名）
 
