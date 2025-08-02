@@ -27,7 +27,10 @@
       "Bash(npm run:*)",
       "Bash(tasklist:*)",
       "Bash(wmic:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(claude-code doctor)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr comment:*)"
     ],
     "deny": []
   },
