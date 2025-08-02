@@ -11,7 +11,11 @@
       "Bash(git -C C:/work/05_git/claude-code-settings commit -m \"fix: Remove .tmp directory usage from spec-driven development commands\n\n- spec.md: Use existing docs/ structure instead of .tmp\n- requirements.md: Create requirements in docs/requirements/\n- design.md: Create design docs in docs/design/\n- tasks.md: Create task lists in docs/plans/\n\nThis prevents creation of temporary files and follows established \ndocumentation structure conventions.\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\nCo-Authored-By: Claude <noreply@anthropic.com>\")",
       "Bash(git -C C:/work/05_git/claude-code-settings add settings.json)",
       "Bash(git -C C:/work/05_git/claude-code-settings commit -m \"fix: Simplify session-end hook to avoid PowerShell escaping issues\n\n- Replace complex PowerShell script with simple git add && commit\n- Ensures session-end auto-commit works reliably\n- Maintains atomic commit enforcement via pre-commit hook\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\nCo-Authored-By: Claude <noreply@anthropic.com>\")",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   },
