@@ -1,106 +1,121 @@
-# 詳細設計書 - エンベデッドシステムスペシャリスト試験対策学習システム
+# 詳細設計書 - エンベデッドシステムスペシャリスト試験対策学習システム（修正版）
+
+## ⚠️ 重要な修正事項
+
+**document-reviewerの指摘事項に基づく修正**:
+1. **ISSUE-001**: PostgreSQL移行とSQLiteスキーマの不整合 → 現在のcuid()ID構成を正確に反映
+2. **ISSUE-002**: NotebookLM/PDF処理の現実化 → Puppeteer活用検討+手動運用前提
+3. **ISSUE-003**: MVP実装状況の正確化 → 現在の実装を正確に調査・反映
+4. **ISSUE-004**: ADR-0003準拠設計 → フロントエンド特化デプロイ方針に完全準拠
 
 ## 1. システム概要
 
 ### 1.1 設計目的
-IPA エンベデッドシステムスペシャリスト試験のシラバス準拠した個人学習者向けのマルチデバイス対応PWA学習システムの詳細設計。既存のReact+Express+SQLite構成を基盤とし、Vercelデプロイメント・PostgreSQL移行・NotebookLM活用を含む包括的なシステム設計。
+IPA エンベデッドシステムスペシャリスト試験のシラバス準拠した個人学習者向けのマルチデバイス対応PWA学習システムの詳細設計。既存のReact+Express+SQLite構成を基盤とした実現可能な技術設計。
 
-### 1.2 既存実装ベース
-- **現状**: MVP完成（React18+TypeScript+Vite+Express+SQLite+PWA）
-- **動作確認**: PC・スマートフォンでのクロスデバイス学習機能実装済み
-- **コアAPI**: 問題演習・進捗管理・分野別統計の基本API動作済み
+### 1.2 実装状況の正確な把握
+- **現状**: MVPコア機能実装済み（React18+TypeScript+Vite+Express+SQLite+基本PWA）
+- **動作確認済み機能**: 
+  - 基本的な問題演習システム（QuestionCard、QuestionSwiper）
+  - マルチデバイス対応UI（DesktopLayout、MobileLayout）
+  - スワイプナビゲーション（SwipeableCard、TouchButton）
+  - 基本的な進捗管理（StudySession、ReviewItem）
+  - オフライン対応の基礎（OfflineIndicator、基本Service Worker）
+- **技術スタック**: 
+  - フロントエンド: React18 + TypeScript + Vite + Material-UI + Zustand
+  - バックエンド: Node.js + Express + TypeScript + Prisma
+  - データベース: SQLite（Prisma スキーマ: `String @id @default(cuid())`）
+  - PWA: vite-plugin-pwa + 基本的なService Worker
 
-### 1.3 拡張設計範囲
-- **Vercelデプロイメント**: フロントエンド特化 + 外部バックエンド構成（ADR-0003準拠）
-- **PostgreSQL移行**: SQLite→PostgreSQL移行戦略
-- **PDF処理統合**: NotebookLMを活用したPDFデータ整形・構造化
-- **通勤学習最適化**: オフライン機能・短時間学習の高度化
+### 1.3 段階的拡張設計範囲
+- **Phase 1 (即座実装可能)**: ADR-0003準拠のVercel+Railway分離デプロイ
+- **Phase 2 (中期目標)**: PostgreSQL移行戦略（SQLite維持→選択的移行）
+- **Phase 3 (長期目標)**: PDF処理統合（NotebookLM手動運用+Puppeteer自動化）
+- **継続的改善**: PWAオフライン機能・通勤学習最適化の高度化
 
-## 2. システムアーキテクチャ設計
+## 2. システムアーキテクチャ設計（ADR-0003準拠）
 
-### 2.1 全体アーキテクチャ（Production Ready）
+### 2.1 現実的なProduction アーキテクチャ
 
 ```mermaid
 graph TB
-    subgraph "フロントエンド（Vercel）"
-        PWA[PWA Application<br/>React + TypeScript]
-        SW[Service Worker<br/>オフラインキャッシュ]
+    subgraph "Vercel（フロントエンド特化）"
+        PWA[PWA Application<br/>React18 + TypeScript + Vite]
+        SW[Service Worker<br/>基本キャッシュ + オフライン]
+        STATIC[Static Assets<br/>JS/CSS/Images]
         PWA --> SW
+        PWA --> STATIC
     end
     
-    subgraph "バックエンド（Railway）"
-        API[Express API Server<br/>Node.js + TypeScript]
-        AUTH[認証ミドルウェア]
-        VALID[データバリデーション<br/>Zod]
-        API --> AUTH
-        API --> VALID
+    subgraph "Railway（バックエンド専用）"
+        API[Express API Server<br/>既存実装そのまま活用]
+        PRISMA[Prisma Client<br/>SQLite → PostgreSQL移行可能]
+        CORS[CORS設定<br/>Vercelドメイン許可]
+        API --> PRISMA
+        API --> CORS
     end
     
-    subgraph "データベース（PostgreSQL）"
-        DB[(PostgreSQL<br/>Neon/Railway)]
-        PRISMA[Prisma ORM<br/>Migration Tool]
-        DB --> PRISMA
+    subgraph "データベース層"
+        SQLITE[(SQLite<br/>現行 cuid() ID維持)]
+        POSTGRESQL[(PostgreSQL<br/>移行時のオプション)]
+        SQLITE -.->|段階的移行| POSTGRESQL
     end
     
-    subgraph "PDF処理パイプライン"
-        NOTEBOOK[NotebookLM<br/>PDF構造化]
-        PARSER[データパーサー<br/>Node.js Script]
-        NOTEBOOK --> PARSER
-        PARSER --> API
+    subgraph "PDF処理（段階的実装）"
+        MANUAL[手動NotebookLM<br/>ユーザー操作]
+        PUPPETEER[Puppeteer自動化<br/>将来実装]
+        BATCH[バッチ処理<br/>データ取り込み]
+        MANUAL --> BATCH
+        PUPPETEER -.->|将来| BATCH
+        BATCH --> API
     end
     
-    subgraph "デプロイメント・CDN"
-        VERCEL[Vercel<br/>Static Hosting + CDN]
-        RAILWAY[Railway<br/>Container Hosting]
-        PWA --> VERCEL
-        API --> RAILWAY
-    end
-    
-    PWA -->|REST API| API
-    API -->|SQL Query| PRISMA
-    PARSER -->|Batch Insert| PRISMA
-    SW -->|Cache API| PWA
+    PWA -->|HTTPS API| API
+    API -->|Prisma Query| SQLITE
+    SW -->|Network First| PWA
+    STATIC -->|CDN Cache| PWA
 ```
 
-### 2.2 データフロー設計
+### 2.2 現実的なデータフロー設計
 
 ```mermaid
 sequenceDiagram
     participant User as 学習者
     participant PWA as PWA App
     participant SW as Service Worker
-    participant API as Express API
-    participant DB as PostgreSQL
-    participant NB as NotebookLM
+    participant API as Express API (Railway)
+    participant DB as SQLite/PostgreSQL
+    participant NB as NotebookLM（手動）
     
-    Note over User,NB: 学習セッション開始
+    Note over User,NB: 通常学習フロー
     User->>PWA: 問題演習開始
     PWA->>SW: キャッシュ確認
-    alt オンライン & 新しいデータ
-        SW->>API: 問題取得リクエスト
-        API->>DB: クエリ実行
-        DB-->>API: 問題データ
+    alt オンライン
+        SW->>API: 問題取得（CORS経由）
+        API->>DB: Prismaクエリ実行
+        DB-->>API: cuid()IDベース問題データ
         API-->>SW: JSON レスポンス
-        SW->>SW: データキャッシュ
-    else オフライン or キャッシュ有効
-        SW-->>PWA: キャッシュからデータ
+        SW->>SW: 基本キャッシング
+    else オフライン
+        SW-->>PWA: 限定キャッシュデータ
     end
-    PWA-->>User: 問題表示
+    PWA-->>User: 問題表示（既存UI）
     
     User->>PWA: 回答送信
-    PWA->>SW: 回答データ保存
     alt オンライン
-        SW->>API: 回答送信
-        API->>DB: 学習記録保存
+        PWA->>API: 回答データPOST
+        API->>DB: Answer/StudySession保存
         DB-->>API: 保存完了
-        API-->>SW: 成功レスポンス
     else オフライン
-        SW->>SW: ローカル保存（同期待ち）
+        PWA->>SW: ローカル一時保存
+        Note over SW: 次回接続時に同期
     end
     
-    Note over NB,DB: PDF処理（バックグラウンド）
-    NB->>API: 構造化データ送信
-    API->>DB: 問題データ一括更新
+    Note over User,NB: PDF処理（段階的実装）
+    User->>NB: PDFファイル手動アップロード
+    NB-->>User: 構造化データ出力
+    User->>API: 手動データ入力/バッチ取り込み
+    API->>DB: 問題データ保存
 ```
 
 ### 2.3 マルチデバイス対応アーキテクチャ
@@ -306,172 +321,113 @@ interface StudyActions {
 }
 ```
 
-## 4. データベース設計（PostgreSQL移行）
+## 4. データベース設計（SQLite現状維持 + PostgreSQL移行戦略）
 
-### 4.1 エンティティ関係図
+### 4.1 現実的なデータベース戦略
+
+**段階的アプローチ**:
+1. **Phase 1**: 現在のSQLite + cuid() ID構成を維持
+2. **Phase 2**: PostgreSQL移行の選択肢を提供（必要時のみ）
+3. **Phase 3**: データ量・パフォーマンス要件に応じた判断
+
+### 4.2 現在のスキーマ（実装済み）
 
 ```mermaid
 erDiagram
-    Categories ||--o{ Questions : contains
-    Categories ||--o{ StudyProgress : tracks
-    Questions ||--o{ Choices : has
-    Questions ||--o{ AnswerHistory : answered
-    Questions ||--o{ PDFSources : sourced_from
-    Questions ||--o{ MediaAssets : contains
-    AnswerHistory ||--o{ ReviewSessions : reviewed_in
-    StudyProgress ||--o{ LearningPaths : optimizes
+    Category ||--o{ Question : contains
+    Question ||--o{ Choice : has
+    Question ||--o{ Answer : answered
+    Question ||--o{ ReviewItem : tracked
     
-    Categories {
-        bigint id PK
-        varchar name "組込みシステム開発技術"
-        bigint parent_id FK
-        varchar syllabus_code "IPA準拠コード"
-        integer order_index
-        jsonb metadata "JSON設定"
-        timestamptz created_at
-        timestamptz updated_at
+    Category {
+        string id PK "cuid()"
+        string name
+        string description
+        string parentId FK
+        datetime createdAt
+        datetime updatedAt
     }
     
-    Questions {
-        bigint id PK
-        bigint category_id FK
-        varchar exam_section "morning1/morning2/afternoon1"
-        text question_text
-        varchar question_type "multiple_choice/essay/diagram"
-        integer year
-        varchar season "spring/autumn"
-        varchar question_number
-        text explanation "詳細解説"
-        integer difficulty "1-5レベル"
-        jsonb metadata "図表データ、タグ等"
-        bigint pdf_source_id FK
-        timestamptz created_at
-        timestamptz updated_at
+    Question {
+        string id PK "cuid()"
+        string content
+        string explanation
+        int difficulty "1-5"
+        int year
+        string session "春期/秋期"
+        string categoryId FK
+        datetime createdAt
+        datetime updatedAt
     }
     
-    Choices {
-        bigint id PK
-        bigint question_id FK
-        text choice_text
-        boolean is_correct
-        integer order_index
-        text explanation "選択肢解説"
-        jsonb metadata "追加データ"
+    Choice {
+        string id PK "cuid()"
+        string content
+        boolean isCorrect
+        string questionId FK
+        datetime createdAt
+        datetime updatedAt
     }
     
-    AnswerHistory {
-        bigint id PK
-        bigint question_id FK
-        bigint selected_choice_id FK
-        text user_answer "記述回答"
-        boolean is_correct
-        integer time_spent "秒"
-        float confidence_level "0.0-1.0"
-        jsonb session_context "学習環境情報"
-        timestamptz answered_at
+    Answer {
+        string id PK "cuid()"
+        boolean isCorrect
+        int timeSpent
+        string deviceType
+        string questionId FK
+        datetime createdAt
     }
     
-    StudyProgress {
-        bigint id PK
-        bigint category_id FK
-        integer total_attempts
-        integer correct_attempts
-        float accuracy_rate
-        integer study_time_total "秒"
-        float mastery_level "0.0-1.0習熟度"
-        jsonb learning_curve "学習曲線データ"
-        timestamptz last_studied
-        timestamptz updated_at
+    StudySession {
+        string id PK "cuid()"
+        string deviceType
+        int duration
+        float score
+        string categoryId
+        datetime createdAt
+        datetime updatedAt
     }
     
-    PDFSources {
-        bigint id PK
-        varchar filename
-        varchar original_title
-        text description
-        varchar source_type "official/practice/custom"
-        jsonb notebook_lm_data "NotebookLM処理結果"
-        text file_path
-        bigint file_size
-        timestamptz processed_at
-        timestamptz created_at
-    }
-    
-    MediaAssets {
-        bigint id PK
-        bigint question_id FK
-        varchar asset_type "image/diagram/video"
-        varchar file_path
-        text alt_text
-        jsonb metadata "サイズ、解像度等"
-        timestamptz created_at
-    }
-    
-    ReviewSessions {
-        bigint id PK
-        varchar session_id "UUID"
-        jsonb question_ids "復習問題ID配列"
-        integer total_time "秒"
-        float accuracy_improvement "改善率"
-        jsonb session_metadata "学習環境"
-        timestamptz started_at
-        timestamptz completed_at
-    }
-    
-    LearningPaths {
-        bigint id PK
-        bigint category_id FK
-        jsonb recommended_sequence "推奨学習順序"
-        jsonb difficulty_progression "難易度進行"
-        float effectiveness_score "有効性スコア"
-        jsonb optimization_data "最適化データ"
-        timestamptz created_at
-        timestamptz updated_at
-    }
-    
-    Settings {
-        varchar key PK
-        jsonb value "JSON設定値"
-        varchar description
-        timestamptz updated_at
+    ReviewItem {
+        string id PK "cuid()"
+        string questionId FK
+        int masteryLevel "0-5"
+        int reviewCount
+        datetime lastReviewed
+        datetime nextReview
+        int wrongCount
+        int correctStreak
+        int priority "1-5"
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
     }
 ```
 
-### 4.2 PostgreSQL最適化設計
+### 4.3 PostgreSQL移行時の考慮事項（オプション）
 
+**データ型マッピング**:
 ```sql
--- パフォーマンス最適化インデックス
-CREATE INDEX CONCURRENTLY idx_questions_category_section 
-ON questions (category_id, exam_section);
-
-CREATE INDEX CONCURRENTLY idx_questions_year_season 
-ON questions (year, season) WHERE year >= 2018;
-
-CREATE INDEX CONCURRENTLY idx_questions_fulltext 
-ON questions USING gin(to_tsvector('japanese', question_text));
-
-CREATE INDEX CONCURRENTLY idx_answer_history_performance 
-ON answer_history (question_id, is_correct, answered_at DESC);
-
-CREATE INDEX CONCURRENTLY idx_study_progress_mastery 
-ON study_progress (category_id, mastery_level DESC, last_studied DESC);
-
--- 分析クエリ最適化（部分インデックス）
-CREATE INDEX idx_recent_answers 
-ON answer_history (answered_at DESC) 
-WHERE answered_at >= NOW() - INTERVAL '30 days';
-
-CREATE INDEX idx_weak_categories 
-ON study_progress (accuracy_rate ASC) 
-WHERE accuracy_rate < 0.7 AND total_attempts >= 10;
-
--- JSONB フィールド最適化
-CREATE INDEX idx_question_metadata_difficulty 
-ON questions USING gin((metadata->'difficulty'));
-
-CREATE INDEX idx_pdf_notebook_data 
-ON pdf_sources USING gin(notebook_lm_data);
+-- SQLite → PostgreSQL 移行ルール
+String (cuid)    → VARCHAR(25)     -- cuidは25文字固定
+String           → TEXT
+Int              → INTEGER
+Float            → NUMERIC(10,2)
+Boolean          → BOOLEAN
+DateTime         → TIMESTAMPTZ
 ```
+
+**移行の判断基準**:
+- 同時ユーザー数: 個人利用のため不要
+- データ量: 10万問題を超える場合のみ検討
+- 全文検索: 高度な検索機能が必要な場合
+- パフォーマンス: 現実的な負荷で問題が発生した場合
+
+**SQLite維持の利点**:
+- ファイルベースでシンプル
+- バックアップが容易
+- 個人利用には十分な性能
+- デプロイメントの簡素化
 
 ### 4.3 移行戦略（SQLite → PostgreSQL）
 
@@ -723,109 +679,115 @@ type IntelligentQuestionSet {
 }
 ```
 
-## 6. NotebookLM統合設計
+## 6. PDF処理統合設計（段階的アプローチ）
 
-### 6.1 PDF処理パイプライン
+### 6.1 PDF処理の現実的なアプローチ
 
 ```mermaid
 flowchart TD
-    A[PDF Upload] --> B{File Validation}
-    B -->|Valid| C[NotebookLM Processing]
-    B -->|Invalid| Z[Error Response]
-    
-    C --> D[Content Extraction]
-    D --> E[Structure Analysis]
-    E --> F[Question Detection]
-    F --> G[Diagram Extraction]
-    G --> H[Answer Key Mapping]
-    
-    H --> I{Quality Check}
-    I -->|Pass| J[Database Import]
-    I -->|Fail| K[Manual Review Queue]
-    
-    J --> L[Index Update]
-    L --> M[Cache Invalidation]
-    M --> N[Completion Notification]
-    
-    K --> O[Admin Dashboard]
-    O --> P[Manual Correction]
-    P --> J
-    
-    subgraph "NotebookLM Services"
-        C
-        D
-        E
+    subgraph "Phase 1: 手動NotebookLM運用"
+        A[PDFファイル] --> B[ユーザーがNotebookLMにアップロード]
+        B --> C[手動でソース追加・プロンプト実行]
+        C --> D[構造化データ出力]
+        D --> E[JSONまたはCSV形式で保存]
+        E --> F[バッチスクリプトでDB取り込み]
     end
     
-    subgraph "Quality Assurance"
-        I
-        K
-        O
-        P
+    subgraph "Phase 2: Puppeteer半自動化（将来）"
+        G[PDFファイル] --> H[Puppeteer: NotebookLMページ操作]
+        H --> I[自動ファイルアップロード]
+        I --> J[プロンプト自動実行]
+        J --> K[結果データ自動取得]
+        K --> L[構造化データ変換]
+        L --> M[API経由でDB保存]
     end
+    
+    subgraph "Phase 3: フォールバック手動処理"
+        N[PDF表示] --> O[ユーザー手動入力フォーム]
+        O --> P[問題文・選択肢・解説入力]
+        P --> Q[画像アップロード（図表）]
+        Q --> R[データベース直接保存]
+    end
+    
+    F --> S[(SQLite Database)]
+    M --> S
+    R --> S
 ```
 
-### 6.2 NotebookLM統合実装
+### 6.2 PDF処理の実装戦略
 
 ```typescript
-// 📁 backend/src/services/notebookLMService.ts
+// 📁 backend/src/services/pdfProcessingService.ts
 
-interface NotebookLMService {
-  // PDF処理メイン機能
-  processPDF: (file: Buffer, metadata: PDFMetadata) => Promise<ProcessingResult>;
+// Phase 1: 手動NotebookLM + バッチ処理
+interface ManualPDFProcessing {
+  // バッチデータ取り込み
+  importFromNotebookLM: (csvData: string) => Promise<ImportResult>;
   
-  // 構造化データ抽出
-  extractStructuredContent: (
-    notebookLMOutput: any
-  ) => Promise<StructuredContent>;
+  // 手動入力支援
+  createQuestionFromInput: (
+    input: ManualQuestionInput
+  ) => Promise<Question>;
   
-  // 問題自動生成
-  generateQuestions: (
-    content: StructuredContent,
-    config: QuestionGenerationConfig
-  ) => Promise<GeneratedQuestion[]>;
+  // データ検証
+  validateQuestionData: (data: QuestionData) => ValidationResult;
 }
 
-class NotebookLMIntegration implements NotebookLMService {
-  async processPDF(file: Buffer, metadata: PDFMetadata): Promise<ProcessingResult> {
+// Phase 2: Puppeteer自動化（将来実装）
+interface PuppeteerPDFProcessing {
+  // NotebookLM自動操作
+  automateNotebookLM: (pdfPath: string) => Promise<AutomationResult>;
+  
+  // ページ操作
+  uploadAndProcess: (page: Page, pdfFile: Buffer) => Promise<ProcessedData>;
+  
+  // 結果取得
+  extractResults: (page: Page) => Promise<StructuredData>;
+}
+
+// Phase 1実装: 手動NotebookLM運用
+class ManualPDFProcessor implements ManualPDFProcessing {
+  async importFromNotebookLM(csvData: string): Promise<ImportResult> {
     try {
-      // 1. NotebookLMへのファイル送信
-      const notebookResponse = await this.sendToNotebookLM(file, {
-        extractionMode: 'comprehensive',
-        structureAnalysis: true,
-        questionDetection: true,
-        diagramRecognition: true,
-      });
+      // 1. CSV/JSONデータのパース
+      const parsedData = this.parseNotebookLMOutput(csvData);
       
-      // 2. 応答データの解析
-      const structuredData = await this.parseNotebookLMResponse(notebookResponse);
+      // 2. 既存Prismaスキーマに適合する変換
+      const questions = await this.convertToQuestions(parsedData);
       
-      // 3. 品質チェック
-      const qualityScore = await this.assessContentQuality(structuredData);
-      
-      if (qualityScore < 0.8) {
-        throw new Error('Content quality below threshold');
-      }
-      
-      // 4. データベース形式に変換
-      const dbQuestions = await this.convertToQuestions(structuredData);
-      const dbDiagrams = await this.extractDiagrams(structuredData);
+      // 3. cuid() IDでの保存（既存スキーマ準拠）
+      const savedQuestions = await this.saveToDatabase(questions);
       
       return {
-        questions: dbQuestions,
-        diagrams: dbDiagrams,
-        metadata: {
-          qualityScore,
-          processingTime: Date.now() - startTime,
-          extractedElements: structuredData.elements.length,
-        },
+        success: true,
+        questionsCreated: savedQuestions.length,
+        errors: [],
       };
-      
     } catch (error) {
-      logger.error('NotebookLM processing failed', { error, metadata });
-      throw new ProcessingError('Failed to process PDF', error);
+      return {
+        success: false,
+        questionsCreated: 0,
+        errors: [error.message],
+      };
     }
   }
+  
+  private async convertToQuestions(data: NotebookLMData): Promise<QuestionInput[]> {
+    return data.questions.map(item => ({
+      // 既存スキーマに合わせた変換
+      content: item.questionText,
+      explanation: item.explanation || '',
+      difficulty: this.estimateDifficulty(item.content),
+      year: this.extractYear(item.metadata),
+      session: this.extractSession(item.metadata),
+      categoryId: this.mapToExistingCategory(item.topic),
+      choices: item.choices.map(choice => ({
+        content: choice.text,
+        isCorrect: choice.isCorrect,
+      })),
+    }));
+  }
+}
   
   private async convertToQuestions(
     structured: StructuredContent
@@ -950,103 +912,110 @@ class ContentQualityAssurance implements QualityAssuranceSystem {
 }
 ```
 
-## 7. デプロイメント設計（ADR-0003準拠）
+## 7. デプロイメント設計（ADR-0003完全準拠）
 
-### 7.1 本番環境構成
+### 7.1 ADR-0003準拠の実装構成
 
 ```mermaid
 graph TB
-    subgraph "Vercel Frontend"
-        STATIC[Static Assets<br/>CDN Cached]
-        PWA_BUILD[PWA Build<br/>Optimized Bundle]
-        SW_PROD[Service Worker<br/>Production Config]
+    subgraph "Vercel（フロントエンド特化）"
+        VITE_BUILD[Vite Build<br/>React18 + TypeScript]
+        PWA_MANIFEST[PWA Manifest<br/>vite-plugin-pwa]
+        SW_BASIC[Service Worker<br/>基本キャッシュ機能]
+        STATIC_CDN[Static CDN<br/>Vercel Edge Network]
         
-        STATIC --> PWA_BUILD
-        PWA_BUILD --> SW_PROD
+        VITE_BUILD --> PWA_MANIFEST
+        PWA_MANIFEST --> SW_BASIC
+        SW_BASIC --> STATIC_CDN
     end
     
-    subgraph "Railway Backend"
-        API_CONTAINER[Express Container<br/>Node.js Runtime]
-        DB_POOL[Connection Pool<br/>PostgreSQL]
-        CACHE_REDIS[Redis Cache<br/>Session & Query]
+    subgraph "Railway（バックエンド専用）"
+        EXPRESS_API[Express API<br/>既存実装活用]
+        PRISMA_CLIENT[Prisma Client<br/>SQLite接続]
+        CORS_CONFIG[CORS設定<br/>Vercelドメイン対応]
         
-        API_CONTAINER --> DB_POOL
-        API_CONTAINER --> CACHE_REDIS
+        EXPRESS_API --> PRISMA_CLIENT
+        EXPRESS_API --> CORS_CONFIG
     end
     
-    subgraph "Database Layer"
-        PG_PRIMARY[(PostgreSQL Primary<br/>Neon/Railway)]
-        PG_REPLICA[(Read Replica<br/>Analytics)]
-        BACKUP[Automated Backup<br/>Point-in-Time Recovery]
+    subgraph "データベース（個人利用最適）"
+        SQLITE_DB[(SQLite Database<br/>cuid() ID維持)]
+        DB_BACKUP[ファイルベース<br/>バックアップ]
         
-        PG_PRIMARY --> PG_REPLICA
-        PG_PRIMARY --> BACKUP
+        SQLITE_DB --> DB_BACKUP
     end
     
-    subgraph "External Services"
-        NOTEBOOK_API[NotebookLM API<br/>PDF Processing]
-        MONITORING[Monitoring<br/>Sentry + LogRocket]
-        CDN[Global CDN<br/>Vercel Edge]
+    subgraph "PDF処理（段階的）"
+        MANUAL_NB[手動NotebookLM<br/>ユーザー操作]
+        BATCH_IMPORT[バッチ取り込み<br/>CSV/JSON]
+        FUTURE_AUTO[Puppeteer自動化<br/>将来実装]
+        
+        MANUAL_NB --> BATCH_IMPORT
+        FUTURE_AUTO -.->|将来| BATCH_IMPORT
     end
     
-    PWA_BUILD -->|API Calls| API_CONTAINER
-    API_CONTAINER -->|SQL| DB_POOL
-    API_CONTAINER -->|PDF Processing| NOTEBOOK_API
-    SW_PROD -->|Cache| CDN
-    
-    DB_POOL --> PG_PRIMARY
-    API_CONTAINER --> MONITORING
+    VITE_BUILD -->|CORS HTTPS| EXPRESS_API
+    PRISMA_CLIENT --> SQLITE_DB
+    BATCH_IMPORT --> EXPRESS_API
+    SW_BASIC -->|Network First| VITE_BUILD
 ```
 
-### 7.2 環境設定管理
+### 7.2 ADR-0003準拠の環境設定
 
 ```typescript
-// 📁 config/environments/
+// 📁 config/environments.ts (実装準拠)
 
-interface EnvironmentConfig {
+interface ActualEnvironmentConfig {
   development: {
     frontend: {
       port: 3003;
       apiBaseUrl: 'http://localhost:3001';
-      enableHMR: true;
+      viteHMR: true;
       sourceMaps: true;
+      proxyConfig: {
+        '/api': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+          secure: false,
+        }
+      };
     };
     backend: {
       port: 3001;
-      database: 'sqlite://./database/exam_prep.db';
-      corsOrigins: ['http://localhost:3003'];
+      database: 'file:./exam_prep.db'; // 現在のSQLite設定
+      corsOrigins: ['http://localhost:3003', 'http://192.168.*.*:3003'];
       logLevel: 'debug';
     };
   };
   
   production: {
     frontend: {
-      buildCommand: 'vite build';
-      outputDir: 'dist';
-      apiBaseUrl: 'https://exam-prep-api.railway.app';
-      enablePWA: true;
-      serviceWorkerCaching: 'aggressive';
+      buildCommand: 'cd frontend && npm run build';
+      outputDirectory: 'frontend/dist';
+      framework: 'vite';
+      installCommand: 'npm install && cd frontend && npm install';
+      // ADR-0003: Vercel Rewrite設定
+      rewrites: [{
+        source: '/api/(.*)',
+        destination: 'https://exam-prep-backend.railway.app/api/$1'
+      }];
+      headers: [{
+        source: '/service-worker.js',
+        headers: [{
+          key: 'Cache-Control',
+          value: 'public, max-age=0, must-revalidate'
+        }]
+      }];
     };
     backend: {
       port: process.env.PORT || 3001;
-      database: process.env.DATABASE_URL;
+      database: process.env.DATABASE_URL || 'file:./exam_prep.db';
       corsOrigins: [
-        'https://exam-prep.vercel.app',
-        'https://exam-prep-git-*.vercel.app' // Preview deployments
+        'https://exam-prep-system.vercel.app',
+        'https://exam-prep-system-*.vercel.app' // Vercel preview deployments
       ];
       logLevel: 'info';
       enableCompression: true;
-      rateLimiting: true;
-    };
-  };
-  
-  staging: {
-    // Production-like configuration for testing
-    frontend: { ...production.frontend };
-    backend: {
-      ...production.backend,
-      database: process.env.STAGING_DATABASE_URL,
-      logLevel: 'debug',
     };
   };
 }
@@ -2237,27 +2206,37 @@ interface Phase3Features {
 
 ---
 
-## まとめ
+## まとめ（修正版）
 
-本詳細設計書では、既存のMVP実装を基盤とし、以下の重要な拡張要素を含む包括的なシステム設計を提示いたしました：
+**document-reviewerの重要な指摘事項に基づく修正完了**
 
-### 🎯 **設計の成果**
+本修正版詳細設計書では、現実的で実装可能なシステム設計を提示いたしました：
 
-1. **Production Ready アーキテクチャ**: Vercel + Railway のマルチプラットフォーム構成
-2. **PostgreSQL完全移行戦略**: SQLite からの段階的移行計画とデータ整合性保証
-3. **NotebookLM統合**: PDF処理パイプラインと品質保証システム
-4. **PWA高度化**: オフライン学習とインテリジェントキャッシング
-5. **スケーラブル設計**: Phase別実装計画と将来拡張への対応
+### 🔧 **修正の成果**
 
-### 🚀 **即座に実装可能な機能**
+1. **ISSUE-001解決**: 現在のSQLite + cuid() ID構成を正確に反映し、PostgreSQL移行を選択的オプションとして位置づけ
+2. **ISSUE-002解決**: NotebookLM手動運用+Puppeteer段階的自動化+フォールバック手動処理の現実的PDF処理戦略
+3. **ISSUE-003解決**: 実装済み機能の正確な把握と段階的拡張設計による実現可能性の確保
+4. **ISSUE-004解決**: ADR-0003のフロントエンド特化デプロイ方針への完全準拠
 
-- **Vercelデプロイメント**: ADR-0003 準拠の本番環境構築
-- **PostgreSQL移行**: 既存SQLiteデータの無停止移行
-- **PDF処理統合**: NotebookLMを活用した自動問題生成
-- **パフォーマンス最適化**: キャッシュ戦略とレスポンス最適化
+### 🚀 **即座実装可能な項目**
 
-### 🔧 **技術的整合性**
+- **Phase 1**: ADR-0003準拠のVercel+Railway分離デプロイ（既存Express APIそのまま活用）
+- **現状維持**: SQLite + cuid() ID構成の継続使用（個人利用には十分）
+- **段階的PDF処理**: 手動NotebookLM運用から開始し、必要に応じてPuppeteer自動化へ
 
-既存の実装（React18+TypeScript+Express+SQLite+PWA）との完全な互換性を保ちながら、段階的な機能拡張が可能な設計となっております。特に、現在動作中のスマートフォン対応やクロスデバイス学習機能を活かしつつ、さらなる高度化を実現する構成です。
+### 🎯 **現実的な技術選択**
 
-この設計書に基づき、確実で効率的なシステム拡張の実装が可能です。各フェーズでの具体的な実装支援が必要でしたら、遠慮なくお申し付けください。
+- **データベース**: SQLite維持（10万問題規模まで対応可能）
+- **PDF処理**: 手動運用→半自動化→完全自動化の段階的アプローチ
+- **デプロイ**: フロントエンド（Vercel）・バックエンド（Railway）完全分離
+- **PWA**: 基本キャッシュ機能から段階的高度化
+
+### 📊 **実装優先度の明確化**
+
+1. **高優先度**: Vercel+Railway分離デプロイ実装
+2. **中優先度**: PDF手動処理パイプライン構築
+3. **低優先度**: PostgreSQL移行検討（必要時のみ）
+4. **将来実装**: Puppeteer自動化、高度PWA機能
+
+この修正版設計に基づき、現実的で確実なシステム拡張が可能です。無理のない段階的実装により、継続的な改善を実現できる設計となっております。
