@@ -191,6 +191,261 @@ This project uses specialized sub-agents for efficient development workflow with
 - **Manual Merge Control**: Auto-merge disabled for conflict prevention
 - **Branch Protection**: Direct commits to `main` blocked, requires PR workflow
 
+## 🔄 Development Workflow Examples
+
+### Basic Feature Development Workflow
+
+#### Step 1: Feature Branch Creation (via `git-manager`)
+```bash
+# Check current branch (avoid working on main)
+git branch
+
+# If on main, create feature branch immediately
+git checkout -b feature/add-bookmark-system
+
+# Pull latest changes
+git pull origin main
+```
+
+#### Step 2: Implementation (via specialized agents)
+```bash
+# Backend API implementation (backend-executor)
+# Files: backend/src/controllers/bookmarkController.ts
+git add backend/src/controllers/bookmarkController.ts
+git commit -m "feat: add bookmark API controller"
+
+# Database schema update (backend-executor)
+# Files: database/schema.prisma
+git add database/schema.prisma
+git commit -m "feat: add bookmark table schema"
+
+# Frontend component implementation (frontend-executor)
+# Files: frontend/src/components/BookmarkButton.tsx
+git add frontend/src/components/BookmarkButton.tsx
+git commit -m "feat: add bookmark button component"
+
+# Frontend integration (frontend-executor)
+# Files: frontend/src/pages/PracticePage.tsx
+git add frontend/src/pages/PracticePage.tsx
+git commit -m "feat: integrate bookmark functionality"
+```
+
+#### Step 3: Quality Assurance (via `quality-fixer`)
+```bash
+# Lint and type checking
+npm run lint
+npm run type-check
+
+# Fix any issues found
+git add .
+git commit -m "fix: resolve lint and type errors"
+```
+
+#### Step 4: Documentation (via `document-reviewer`)
+```bash
+# Update API documentation
+git add docs/api/bookmarks.md
+git commit -m "docs: add bookmark API documentation"
+
+# Update README if needed
+git add README.md
+git commit -m "docs: update README with bookmark feature"
+```
+
+#### Step 5: PR Creation & Review (via `git-manager`)
+```bash
+# Push feature branch
+git push -u origin feature/add-bookmark-system
+
+# Create PR using GitHub CLI
+gh pr create --title "feat: add bookmark system" --body "$(cat <<'EOF'
+## Summary
+- Add bookmark functionality for practice questions
+- Backend API implementation with Prisma
+- Frontend component integration with Material-UI
+
+## Test plan
+- [ ] Test bookmark creation/deletion
+- [ ] Test persistence across sessions
+- [ ] Test mobile responsiveness
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+EOF
+)"
+```
+
+### Agent-Based Development Process
+
+#### When to Use Each Agent
+
+**🎯 task-executor**
+- General task coordination
+- Cross-cutting concerns implementation
+- Integration testing
+
+Example:
+```bash
+# Use for general features affecting multiple layers
+@task-executor "Implement user authentication system"
+```
+
+**⚛️ frontend-executor**  
+- React component development
+- TypeScript frontend logic
+- Material-UI integration
+- PWA features
+
+Example:
+```bash
+# Use for frontend-specific tasks
+@frontend-executor "Create responsive navigation menu with Material-UI"
+```
+
+**🚀 backend-executor**
+- Node.js/Express API development
+- Prisma database operations
+- Backend TypeScript logic
+
+Example:
+```bash
+# Use for backend-specific tasks
+@backend-executor "Implement RESTful API for user management"
+```
+
+**🔧 quality-fixer**
+- ESLint/Prettier fixes
+- TypeScript type errors
+- Code quality improvements
+
+Example:
+```bash
+# Use after implementation for quality assurance
+@quality-fixer "Fix all linting and type errors in the codebase"
+```
+
+**📋 document-reviewer**
+- Documentation review and improvement
+- README updates  
+- API documentation
+
+Example:
+```bash
+# Use for documentation tasks
+@document-reviewer "Review and improve API documentation"
+```
+
+**📦 git-manager** (🔥 Exclusive Git Operations 🔥)
+- All commit operations
+- Branch management
+- PR creation and management
+- Merge conflict resolution
+
+Example:
+```bash
+# Use for ALL git operations
+@git-manager "Create atomic commits for the bookmark feature and open PR"
+```
+
+#### Agent Switching Best Practices
+
+**✅ DO:**
+```bash
+# Correct agent usage for each specialization
+@backend-executor "Implement user API"     # Backend work
+@git-manager "Commit and push changes"    # Git operations
+@frontend-executor "Create login form"    # Frontend work
+@quality-fixer "Fix lint errors"          # Quality assurance
+```
+
+**❌ DON'T:**
+```bash
+# Wrong agent usage - mixing responsibilities
+@backend-executor "Implement API and commit changes"  # ❌ No Git access
+@frontend-executor "Create component and push"        # ❌ No Git access
+@quality-fixer "Fix errors, commit and deploy"        # ❌ No Git access
+```
+
+### Troubleshooting Common Issues
+
+#### Issue 1: Agent Permission Errors
+```bash
+# Problem: backend-executor trying to use git commands
+Error: Agent backend-executor is not allowed to perform git operations
+
+# Solution: Switch to git-manager
+@git-manager "Commit the backend changes made by backend-executor"
+```
+
+#### Issue 2: Atomic Commit Violations
+```bash
+# Problem: Too many files in one commit
+git status
+# Shows: 15 files changed
+
+# Solution: Split into logical commits
+git add backend/src/controllers/userController.ts
+git commit -m "feat: add user controller"
+
+git add frontend/src/components/UserProfile.tsx
+git commit -m "feat: add user profile component"
+
+git add docs/api/users.md
+git commit -m "docs: add user API documentation"
+```
+
+#### Issue 3: Branch Protection Violations
+```bash
+# Problem: Trying to commit directly to main
+git branch
+# Shows: * main
+
+# Solution: Create feature branch first
+git checkout -b feature/your-feature-name
+# Now implement and commit
+```
+
+#### Issue 4: Agent Specialization Confusion
+```bash
+# Problem: Using wrong agent for the task
+
+# Frontend tasks → Use frontend-executor
+@frontend-executor "Create Material-UI dashboard component"
+
+# Backend tasks → Use backend-executor  
+@backend-executor "Implement Prisma database queries"
+
+# Git operations → Use git-manager (ONLY)
+@git-manager "Create PR with atomic commits"
+
+# Quality issues → Use quality-fixer
+@quality-fixer "Resolve ESLint warnings and TypeScript errors"
+
+# Documentation → Use document-reviewer
+@document-reviewer "Review and improve technical documentation"
+```
+
+#### Issue 5: Development Workflow Optimization
+
+**For Small Changes (< 1 hour):**
+```bash
+@task-executor "Quick bug fix for login validation"
+@git-manager "Commit and push the fix"
+```
+
+**For Medium Features (1-3 hours):**
+```bash
+@frontend-executor "Implement responsive header component"
+@backend-executor "Create corresponding API endpoints"  
+@quality-fixer "Ensure code quality compliance"
+@git-manager "Create atomic commits and PR"
+```
+
+**For Large Features (> 3 hours):**
+```bash
+@workflow-orchestrator "Implement complete user management system with frontend, backend, and documentation"
+# This will automatically coordinate multiple agents
+```
+
 ## 🛠️ Development Commands
 
 ```bash
