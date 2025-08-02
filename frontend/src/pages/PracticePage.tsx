@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { 
   Typography, 
   Box, 
@@ -34,11 +34,9 @@ const PracticePage = () => {
   const {
     currentQuestion,
     sessionStats,
-    filters,
     setCurrentQuestion,
     setQuestions,
     startSession,
-    startQuestion,
     endQuestion,
     setUserAnswer,
     resetSession,
@@ -56,7 +54,7 @@ const PracticePage = () => {
   } = useQuestionApi()
 
   const [categories, setCategories] = useState<any[]>([])
-  const [practiceMode, setPracticeMode] = useState<'random' | 'list'>('random')
+  const [practiceMode] = useState<'random' | 'list'>('random')
   const [sessionComplete, setSessionComplete] = useState(false)
   
   // オフライン同期機能
@@ -121,33 +119,33 @@ const PracticePage = () => {
     }
   }, [mode, categoryId, difficulty])
 
-  const loadRandomQuestion = async () => {
-    const question = await fetchRandomQuestion({
-      categoryId: categoryId || undefined,
-      difficulty: difficulty || undefined,
-      excludeAnswered: true,
-    })
+  // const loadRandomQuestion = async () => {
+  //   const question = await fetchRandomQuestion({
+  //     categoryId: categoryId || undefined,
+  //     difficulty: difficulty || undefined,
+  //     excludeAnswered: true,
+  //   })
 
-    if (question) {
-      setCurrentQuestion(question)
-    }
-  }
+  //   if (question) {
+  //     setCurrentQuestion(question)
+  //   }
+  // }
 
-  const loadQuestionList = async () => {
-    const response = await fetchQuestions(1, 10, {
-      categoryId: categoryId || undefined,
-      difficulty: difficulty || undefined,
-      onlyUnanswered: true,
-    })
+  // const loadQuestionList = async () => {
+  //   const response = await fetchQuestions(1, 10, {
+  //     categoryId: categoryId || undefined,
+  //     difficulty: difficulty || undefined,
+  //     onlyUnanswered: true,
+  //   })
 
-    if (response?.questions.length) {
-      setQuestions(response.questions)
-      const firstQuestion = await fetchQuestionById(response.questions[0].id)
-      if (firstQuestion) {
-        setCurrentQuestion(firstQuestion)
-      }
-    }
-  }
+  //   if (response?.questions.length) {
+  //     setQuestions(response.questions)
+  //     const firstQuestion = await fetchQuestionById(response.questions[0].id)
+  //     if (firstQuestion) {
+  //       setCurrentQuestion(firstQuestion)
+  //     }
+  //   }
+  // }
 
   const handleAnswerSubmit = async (choiceId: string, timeSpent: number) => {
     if (!currentQuestion) return
@@ -203,12 +201,12 @@ const PracticePage = () => {
     }
   }
 
-  const handleNextQuestion = async () => {
-    if (mode === 'quick' || practiceMode === 'random') {
-      await loadRandomQuestion()
-    }
-    // For list mode, QuestionSwiper handles navigation
-  }
+  // const handleNextQuestion = async () => {
+  //   if (mode === 'quick' || practiceMode === 'random') {
+  //     await loadRandomQuestion()
+  //   }
+  //   // For list mode, QuestionSwiper handles navigation
+  // }
 
   const handleRefresh = () => {
     resetSession()

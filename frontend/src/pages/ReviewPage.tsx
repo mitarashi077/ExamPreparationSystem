@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -18,7 +18,6 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Divider,
   useTheme,
   useMediaQuery,
   Fab,
@@ -31,7 +30,6 @@ import {
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
   PlayArrow as PlayArrowIcon,
-  Refresh as RefreshIcon,
   Assessment as AssessmentIcon
 } from '@mui/icons-material';
 import { useReviewApi } from '../hooks/useReviewApi';
@@ -87,7 +85,7 @@ const ReviewPage: React.FC = () => {
     startReviewSession,
     endReviewSession,
     submitReviewAnswer,
-    getReviewStats,
+    // getReviewStats,
     clearError
   } = useReviewApi();
 
@@ -165,7 +163,7 @@ const ReviewPage: React.FC = () => {
 
     try {
       const duration = Math.floor((Date.now() - sessionStats.startTime) / 1000);
-      const result = await endReviewSession(
+      await endReviewSession(
         sessionId,
         duration,
         sessionStats.totalItems,

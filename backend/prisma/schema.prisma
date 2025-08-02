@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./exam_prep.db"
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  parentId    String?
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  questions   Question[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Question {
+  id          String       @id @default(cuid())
+  content     String
+  explanation String?
+  difficulty  Int          @default(1) // 1-5 scale
+  year        Int?
+  session     String?      // 春期、秋期など
+  categoryId  String
+  category    Category     @relation(fields: [categoryId], references: [id])
+  choices     Choice[]
+  answers     Answer[]
+  reviewItems ReviewItem[] // 復習管理との関連
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Choice {
+  id         String   @id @default(cuid())
+  content    String
+  isCorrect  Boolean  @default(false)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  isCorrect  Boolean
+  timeSpent  Int?     // seconds
+  deviceType String?  // "pc", "mobile", "tablet"
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+}
+
+model StudySession {
+  id         String   @id @default(cuid())
+  deviceType String?
+  duration   Int?     // seconds
+  score      Float?   // percentage
+  categoryId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// 復習管理テーブル - 間違い問題の蓄積と復習スケジュール管理
+model ReviewItem {
+  id            String   @id @default(cuid())
+  questionId    String
+  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  masteryLevel  Int      @default(0) // 習熟度レベル 0-5 (0=未習得, 5=完全習得)
+  reviewCount   Int      @default(0) // 復習回数
+  lastReviewed  DateTime? // 最後に復習した日時
+  nextReview    DateTime // 次回復習予定日時
+  wrongCount    Int      @default(1) // 間違えた回数
+  correctStreak Int      @default(0) // 連続正解回数
+  priority      Int      @default(1) // 復習優先度 1-5 (5=最高優先度)
+  isActive      Boolean  @default(true) // アクティブ状態
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([questionId]) // 1つの問題につき1つの復習アイテム
+}
+
+// 復習セッション記録
+model ReviewSession {
+  id         String   @id @default(cuid())
+  duration   Int?     // seconds
+  totalItems Int      @default(0) // 復習した問題数
+  correctItems Int    @default(0) // 正解した問題数
+  deviceType String?
+  createdAt  DateTime @default(now())
+}

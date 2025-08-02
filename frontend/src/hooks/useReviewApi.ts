@@ -1,31 +1,31 @@
 import { useState, useCallback } from 'react';
 import axios from 'axios';
 
-interface _ReviewItem {
-  id: string;
-  questionId: string;
-  question: {
-    id: string;
-    content: string;
-    explanation?: string;
-    difficulty: number;
-    category: {
-      name: string;
-    };
-    choices: Array<{
-      id: string;
-      content: string;
-      isCorrect: boolean;
-    }>;
-  };
-  masteryLevel: number;
-  reviewCount: number;
-  nextReview: string;
-  wrongCount: number;
-  correctStreak: number;
-  priority: number;
-  isActive: boolean;
-}
+// interface ReviewItem {
+//   id: string;
+//   questionId: string;
+//   question: {
+//     id: string;
+//     content: string;
+//     explanation?: string;
+//     difficulty: number;
+//     category: {
+//       name: string;
+//     };
+//     choices: Array<{
+//       id: string;
+//       content: string;
+//       isCorrect: boolean;
+//     }>;
+//   };
+//   masteryLevel: number;
+//   reviewCount: number;
+//   nextReview: string;
+//   wrongCount: number;
+//   correctStreak: number;
+//   priority: number;
+//   isActive: boolean;
+// }
 
 interface ReviewSchedule {
   schedule: {

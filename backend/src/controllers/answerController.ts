@@ -1,13 +1,19 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient() as any
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: 'file:C:/work/05_git/ExamPreparationSystem/database/exam_prep.db'
+    }
+  }
+})
 
 // 間隔反復学習アルゴリズム - Spaced Repetition
 class SpacedRepetitionAlgorithm {
   static getNextReviewInterval(masteryLevel: number, isCorrect: boolean): number {
     const baseIntervals = [1, 5, 30, 180, 1440, 4320];
-    let newLevel = isCorrect 
+    const newLevel = isCorrect 
       ? Math.min(5, masteryLevel + 1)
       : Math.max(0, masteryLevel - 1);
     return baseIntervals[newLevel] || baseIntervals[0];

@@ -2,7 +2,13 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 
-const prisma = new PrismaClient() as any;
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: 'file:C:/work/05_git/ExamPreparationSystem/database/exam_prep.db'
+    }
+  }
+});
 
 // バリデーションスキーマ
 const reviewAnswerSchema = z.object({
@@ -210,7 +216,10 @@ export const getReviewQuestions = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('復習問題取得エラー:', error);
-    res.status(500).json({ error: '復習問題の取得に失敗しました' });
+    res.status(500).json({ 
+      error: '復習問題の取得に失敗しました',
+      details: error instanceof Error ? error.message : String(error)
+    });
   }
 };
 
@@ -289,7 +298,10 @@ export const getReviewSchedule = async (_req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('復習スケジュール取得エラー:', error);
-    res.status(500).json({ error: '復習スケジュールの取得に失敗しました' });
+    res.status(500).json({ 
+      error: '復習スケジュールの取得に失敗しました',
+      details: error instanceof Error ? error.message : String(error)
+    });
   }
 };
 

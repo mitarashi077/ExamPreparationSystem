@@ -2,7 +2,13 @@ import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { QuestionListResponse, QuestionDetailResponse } from '../types/Question'
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: 'file:C:/work/05_git/ExamPreparationSystem/database/exam_prep.db'
+    }
+  }
+})
 
 // 問題一覧取得（軽量レスポンス・ページネーション対応）
 export const getQuestions = async (req: Request, res: Response): Promise<void> => {
