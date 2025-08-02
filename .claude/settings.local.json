@@ -28,7 +28,9 @@
       "enabled": true,
       "max_concurrent_tasks": 3,
       "agent_roles": {
-        "implementation_lead": "task-executor",
+        "frontend_lead": "frontend-executor",
+        "backend_lead": "backend-executor",
+        "integration_lead": "task-executor",
         "qa_lead": "quality-fixer", 
         "review_lead": "document-reviewer",
         "design_lead": "technical-designer",

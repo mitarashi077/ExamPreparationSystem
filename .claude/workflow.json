@@ -21,9 +21,10 @@
         "reviewer": "document-reviewer"
       },
       "implementation_phase": {
-        "frontend": "task-executor",
-        "backend": "task-executor", 
-        "database": "task-executor",
+        "frontend": "frontend-executor",
+        "backend": "backend-executor", 
+        "database": "backend-executor",
+        "integration": "task-executor",
         "concurrent_execution": true
       },
       "quality_phase": {
