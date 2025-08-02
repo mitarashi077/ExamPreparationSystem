@@ -155,6 +155,42 @@ ExamPreparationSystem/
 - Device-specific learning pattern analysis
 - Automatic accumulation of incorrect questions
 
+## 🤖 Sub-Agent Architecture
+
+This project uses specialized sub-agents for efficient development workflow with clear responsibility separation:
+
+### Agent Workflow Stages
+1. **Implementation Stage**: `task-executor`, `frontend-executor`, `backend-executor`
+2. **Quality Check Stage**: `quality-fixer`
+3. **Git Operations Stage**: `git-manager` (exclusive)
+4. **Review Stage**: `document-reviewer`
+5. **Approval Stage**: `technical-designer`
+
+### Agent Responsibilities
+
+#### Implementation Agents
+- **`task-executor`**: General task execution and coordination
+- **`frontend-executor`**: React/TypeScript frontend implementation
+- **`backend-executor`**: Node.js/Express/Prisma backend implementation
+
+#### Quality & Review Agents
+- **`quality-fixer`**: Code quality, linting, type error fixes
+- **`document-reviewer`**: Documentation review and improvement
+- **`technical-designer`**: Technical design and architecture approval
+
+#### Git Operations Agent
+- **`git-manager`**: **Exclusive Git operations** (commits, branches, PRs, merges)
+  - All other agents are **prohibited** from Git operations
+  - Ensures atomic commits and proper workflow management
+  - Handles branch protection and merge conflict resolution
+
+### Workflow Protection Rules
+- **Atomic Commits**: Maximum 3 files per commit (unless tightly coupled)
+- **Responsibility Separation**: Each agent focuses on their specialization
+- **Git Operation Restriction**: Only `git-manager` can perform Git operations
+- **Manual Merge Control**: Auto-merge disabled for conflict prevention
+- **Branch Protection**: Direct commits to `main` blocked, requires PR workflow
+
 ## 🛠️ Development Commands
 
 ```bash
