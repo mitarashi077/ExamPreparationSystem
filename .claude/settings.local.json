@@ -19,6 +19,11 @@
       "Bash(gh pr merge:*)",
       "Bash(git pull:*)",
       "Bash(git stash:*)",
+      "Bash(echo:*)",
+      "Bash(gh pr view:*)",
+      "Bash(git branch:*)",
+      "Bash(git rebase:*)",
+      "Bash(gh pr checks:*)",
       "Bash(gh pr checkout:*)",
       "Bash(git fetch:*)"
     ],
@@ -46,10 +51,12 @@
     },
     "pr_review_process": {
       "mandatory_review": true,
-      "review_agent": "quality-fixer",
+      "review_agent": "document-reviewer",
       "approval_agent": "technical-designer",
-      "discussion_required": true,
-      "auto_merge_disabled": true,
+      "discussion_required": false,
+      "auto_merge_enabled": true,
+      "auto_merge_strategy": "squash",
+      "auto_merge_after_approval": true,
       "review_checklist": [
         "Code quality and standards",
         "Test coverage and reliability",
