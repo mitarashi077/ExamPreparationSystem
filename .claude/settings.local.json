@@ -18,7 +18,9 @@
       "Bash(git push:*)",
       "Bash(gh pr merge:*)",
       "Bash(git pull:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(gh pr checkout:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": []
   },
