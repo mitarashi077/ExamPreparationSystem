@@ -34,23 +34,43 @@
       "max_concurrent_tasks": 3,
       "agent_roles": {
         "frontend_lead": "frontend-executor",
-        "backend_lead": "backend-executor",
+        "backend_lead": "backend-executor", 
         "integration_lead": "task-executor",
         "qa_lead": "quality-fixer",
         "review_lead": "document-reviewer",
         "design_lead": "technical-designer",
         "decomposition_lead": "task-decomposer",
-        "git_lead": "git-manager",
+        "git_operations_only": "git-manager",
         "issue_manager": "general-purpose",
         "issue_resolver": "issue-resolver"
+      },
+      "workflow_stages": {
+        "1_implementation": ["task-executor", "frontend-executor", "backend-executor"],
+        "2_quality_check": "quality-fixer",
+        "3_git_operations": "git-manager",
+        "4_review": "document-reviewer", 
+        "5_approval": "technical-designer"
+      },
+      "restrictions": {
+        "git_operations": {
+          "exclusive_agent": "git-manager",
+          "prohibited_agents": ["task-executor", "quality-fixer", "frontend-executor", "backend-executor"]
+        },
+        "implementation": {
+          "no_git_access": ["task-executor", "quality-fixer", "frontend-executor", "backend-executor"]
+        },
+        "review": {
+          "read_only": ["document-reviewer", "technical-designer"]
+        }
       }
     },
     "pr_review_process": {
       "mandatory_review": true,
-      "review_agent": "quality-fixer",
+      "review_agent": "document-reviewer",
       "approval_agent": "technical-designer",
       "discussion_required": true,
       "auto_merge_disabled": true,
+      "git_operations_agent": "git-manager",
       "review_checklist": [
         "Code quality and standards",
         "Test coverage and reliability",
