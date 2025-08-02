@@ -39,7 +39,6 @@ const HeatmapCell = styled(Paper)<{ intensity: number; isMobile?: boolean }>(
 
 const HeatmapChart: React.FC<HeatmapChartProps> = ({ data, onCellClick }) => {
   const theme = useTheme()
-  const isMobile = theme.breakpoints.down('md')
 
   const getAccuracyColor = (accuracy: number): string => {
     if (accuracy >= 80) return 'success'
@@ -99,7 +98,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data, onCellClick }) => {
           <Grid item xs={12} sm={6} md={4} lg={3} key={category.categoryId}>
             <HeatmapCell
               intensity={category.colorIntensity}
-              isMobile={theme.breakpoints.down('sm')}
+              isMobile={false}
               onClick={() => onCellClick?.(category)}
             >
               <Typography 
@@ -118,7 +117,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data, onCellClick }) => {
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
                 <Chip
                   label={getAccuracyText(category.accuracy, category.attempts)}
-                  color={category.attempts === 0 ? 'default' : getAccuracyColor(category.accuracy)}
+                  color={category.attempts === 0 ? 'default' : getAccuracyColor(category.accuracy) as any}
                   size="small"
                   variant="filled"
                 />

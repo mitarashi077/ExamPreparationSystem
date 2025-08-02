@@ -61,7 +61,7 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
 
   // タイマーカウントダウン
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
+    let interval: ReturnType<typeof setInterval> | null = null
 
     if (session.isRunning && !session.isPaused && session.timeRemaining > 0) {
       interval = setInterval(() => {
@@ -137,7 +137,7 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
   }
 
   const performStopSession = () => {
-    const elapsedTime = session.duration * 60 - session.timeRemaining
+    // const elapsedTime = session.duration * 60 - session.timeRemaining
     setSession({
       duration: session.duration,
       timeRemaining: session.duration * 60,

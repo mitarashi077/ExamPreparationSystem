@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Paper, Typography, useTheme } from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
 import { LineChart } from '@mui/x-charts/LineChart'
 import { BarChart } from '@mui/x-charts/BarChart'
 
@@ -74,15 +74,15 @@ const DailyStatsChart: React.FC<DailyStatsChartProps> = ({ data, chartType = 'li
           width={undefined}
           height={undefined}
           margin={{ left: 70, right: 70, top: 50, bottom: 50 }}
-          grid={{ vertical: true, horizontal: true }}
+          // grid={{ vertical: true, horizontal: true }}
         />
       ) : (
         <BarChart
           xAxis={[{ 
             scaleType: 'band', 
             data: xAxisData,
-            categoryGapRatio: 0.3,
-            barGapRatio: 0.1
+            // categoryGapRatio: 0.3,
+            // barGapRatio: 0.1
           }]}
           series={[
             {

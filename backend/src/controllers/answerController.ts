@@ -1,7 +1,32 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: 'file:C:/work/05_git/ExamPreparationSystem/database/exam_prep.db'
+    }
+  }
+})
+
+// 間隔反復学習アルゴリズム - Spaced Repetition
+class SpacedRepetitionAlgorithm {
+  static getNextReviewInterval(masteryLevel: number, isCorrect: boolean): number {
+    const baseIntervals = [1, 5, 30, 180, 1440, 4320];
+    const newLevel = isCorrect 
+      ? Math.min(5, masteryLevel + 1)
+      : Math.max(0, masteryLevel - 1);
+    return baseIntervals[newLevel] || baseIntervals[0];
+  }
+
+  static calculatePriority(masteryLevel: number, wrongCount: number, daysSinceLastReview: number): number {
+    let priority = 1;
+    priority += (5 - masteryLevel);
+    priority += Math.min(wrongCount * 0.5, 3);
+    priority += Math.min(daysSinceLastReview * 0.1, 2);
+    return Math.min(Math.round(priority), 5);
+  }
+}
 
 // 回答提出
 export const submitAnswer = async (req: Request, res: Response): Promise<void> => {
@@ -40,15 +65,91 @@ export const submitAnswer = async (req: Request, res: Response): Promise<void> =
       }
     })
 
+    // 復習リストへの自動追加処理
+    let reviewItem = null;
+    try {
+      const existingReviewItem = await prisma.reviewItem.findUnique({
+        where: { questionId }
+      });
+
+      const now = new Date();
+
+      if (existingReviewItem) {
+        // 既存アイテムの更新
+        const newMasteryLevel = choice.isCorrect 
+          ? Math.min(5, existingReviewItem.masteryLevel + 1)
+          : Math.max(0, existingReviewItem.masteryLevel - 1);
+
+        const correctStreak = choice.isCorrect 
+          ? existingReviewItem.correctStreak + 1 
+          : 0;
+
+        const wrongCount = choice.isCorrect 
+          ? existingReviewItem.wrongCount 
+          : existingReviewItem.wrongCount + 1;
+
+        const intervalMinutes = SpacedRepetitionAlgorithm.getNextReviewInterval(newMasteryLevel, choice.isCorrect);
+        const nextReview = new Date(now.getTime() + intervalMinutes * 60 * 1000);
+
+        const daysSinceLastReview = existingReviewItem.lastReviewed 
+          ? Math.floor((now.getTime() - existingReviewItem.lastReviewed.getTime()) / (1000 * 60 * 60 * 24))
+          : 0;
+        const priority = SpacedRepetitionAlgorithm.calculatePriority(newMasteryLevel, wrongCount, daysSinceLastReview);
+
+        reviewItem = await prisma.reviewItem.update({
+          where: { questionId },
+          data: {
+            masteryLevel: newMasteryLevel,
+            reviewCount: existingReviewItem.reviewCount + 1,
+            lastReviewed: now,
+            nextReview,
+            wrongCount,
+            correctStreak,
+            priority,
+            isActive: newMasteryLevel < 5,
+            updatedAt: now
+          }
+        });
+      } else if (!choice.isCorrect) {
+        // 新規間違い問題の追加（正解の場合は追加しない）
+        const intervalMinutes = SpacedRepetitionAlgorithm.getNextReviewInterval(0, false);
+        const nextReview = new Date(now.getTime() + intervalMinutes * 60 * 1000);
+        const priority = SpacedRepetitionAlgorithm.calculatePriority(0, 1, 0);
+
+        reviewItem = await prisma.reviewItem.create({
+          data: {
+            questionId,
+            masteryLevel: 0,
+            reviewCount: 1,
+            lastReviewed: now,
+            nextReview,
+            wrongCount: 1,
+            correctStreak: 0,
+            priority,
+            isActive: true
+          }
+        });
+      }
+    } catch (reviewError) {
+      console.error('復習アイテム処理エラー:', reviewError);
+      // 復習機能のエラーは主機能に影響させない
+    }
+
     // 正解の選択肢IDを取得
-    const correctChoice = choice.question.choices.find(c => c.isCorrect)
+    const correctChoice = choice.question.choices.find((c: any) => c.isCorrect)
 
     res.json({
       answerId: answer.id,
       isCorrect: choice.isCorrect,
       correctChoiceId: correctChoice?.id,
       explanation: choice.question.explanation,
-      timeSpent: answer.timeSpent
+      timeSpent: answer.timeSpent,
+      reviewItem: reviewItem ? { 
+        id: reviewItem.id, 
+        masteryLevel: reviewItem.masteryLevel,
+        nextReview: reviewItem.nextReview,
+        priority: reviewItem.priority
+      } : null
     })
   } catch (error) {
     console.error('Error submitting answer:', error)
@@ -88,7 +189,7 @@ export const getHeatmapData = async (req: Request, res: Response): Promise<void>
       correctAttempts: number; 
     }>()
 
-    answers.forEach(answer => {
+    answers.forEach((answer: any) => {
       if (!answer.question?.category) return
 
       const categoryId = answer.question.categoryId
@@ -162,17 +263,17 @@ export const getStudyStats = async (req: Request, res: Response): Promise<void> 
       }
     })
 
-    // 分野別統計
-    const categoryStats = await prisma.answer.groupBy({
-      by: ['questionId'],
-      where,
-      _count: {
-        _all: true
-      },
-      _avg: {
-        timeSpent: true
-      }
-    })
+    // 分野別統計（現在は使用されていないがデータ構造を保持）
+    // const categoryStats = await prisma.answer.groupBy({
+    //   by: ['questionId'],
+    //   where,
+    //   _count: {
+    //     _all: true
+    //   },
+    //   _avg: {
+    //     timeSpent: true
+    //   }
+    // })
 
     // 日別統計
     const dailyStats = await prisma.answer.findMany({
@@ -190,7 +291,7 @@ export const getStudyStats = async (req: Request, res: Response): Promise<void> 
     // 日別データを集計
     const dailyMap = new Map<string, { correct: number; total: number; totalTime: number }>()
     
-    dailyStats.forEach(answer => {
+    dailyStats.forEach((answer: any) => {
       const date = answer.createdAt.toISOString().split('T')[0]
       const current = dailyMap.get(date) || { correct: 0, total: 0, totalTime: 0 }
       

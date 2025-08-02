@@ -1,15 +1,13 @@
+import React from 'react'
 import { 
   Typography, 
   Card, 
-  CardContent, 
   Box,
   LinearProgress,
   Chip,
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import {
-  Quiz as QuizIcon,
-  TrendingUp as ProgressIcon,
   Schedule as ScheduleIcon,
   Speed as SpeedIcon,
 } from '@mui/icons-material'

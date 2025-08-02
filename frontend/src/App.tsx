@@ -1,10 +1,11 @@
 import { Routes, Route } from 'react-router-dom'
-import { Container, Box, Typography } from '@mui/material'
+import { Container, Box } from '@mui/material'
 import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import PracticePage from './pages/PracticePage'
 import ProgressPage from './pages/ProgressPage'
 import SettingsPage from './pages/SettingsPage'
+import ReviewPage from './pages/ReviewPage'
 import { useDeviceDetection } from './hooks/useDeviceDetection'
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/practice" element={<PracticePage />} />
             <Route path="/progress" element={<ProgressPage />} />
+            <Route path="/review" element={<ReviewPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </Box>

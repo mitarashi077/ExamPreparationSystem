@@ -1,3 +1,4 @@
+import React from 'react'
 import { useDeviceDetection } from '../hooks/useDeviceDetection'
 import MobileLayout from './MobileLayout'
 import DesktopLayout from './DesktopLayout'
