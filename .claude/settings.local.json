@@ -23,7 +23,9 @@
       "Bash(gh pr view:*)",
       "Bash(git branch:*)",
       "Bash(git rebase:*)",
-      "Bash(gh pr checks:*)"
+      "Bash(gh pr checks:*)",
+      "Bash(gh pr checkout:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": []
   },
