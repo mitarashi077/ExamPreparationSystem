@@ -34,15 +34,22 @@
         "Integration compatibility"
       ],
       "auto_assign": {
-        "reviewers": ["quality-fixer", "technical-designer"],
-        "assignees": ["auto-assign-author"],
+        "reviewers": [
+          "quality-fixer",
+          "technical-designer"
+        ],
+        "assignees": [
+          "auto-assign-author"
+        ],
         "labels": {
           "frontend_changes": "frontend",
           "backend_changes": "backend",
           "docs_changes": "documentation",
           "database_changes": "database"
         },
-        "projects": ["ExamPreparationSystem"],
+        "projects": [
+          "ExamPreparationSystem"
+        ],
         "milestone": "auto-detect"
       }
     }
@@ -56,5 +63,11 @@
       "command": "powershell -Command \"$ErrorActionPreference = 'SilentlyContinue'; try { $prNumber = $env:PR_NUMBER; if ($prNumber) { Write-Host '🔍 Starting automated review for PR #' + $prNumber; Write-Host '⚙️ Assigning quality-fixer for initial review...'; gh pr edit $prNumber --add-reviewer quality-fixer 2>$null; Write-Host '🏗️ Assigning technical-designer for approval...'; gh pr edit $prNumber --add-reviewer technical-designer 2>$null; Write-Host '🏷️ Adding labels based on changes...'; Write-Host '✅ PR review process initiated'; } else { Write-Host '🔍 Checking for recent PRs to process...'; $recentPR = gh pr list --state open --limit 1 --json number 2>$null | ConvertFrom-Json; if ($recentPR) { $prNum = $recentPR[0].number; Write-Host '📝 Processing PR #' + $prNum; } } } catch { Write-Host '⚠️ PR review setup failed'; }\"",
       "description": "Automatically assign reviewers and initiate review process after PR creation"
     }
+  },
+  "permissions": {
+    "allow": [
+      "Bash(gh pr view:*)"
+    ],
+    "deny": []
   }
 }
