@@ -15,32 +15,42 @@ import {
   CheckCircle as CorrectIcon,
   Cancel as IncorrectIcon,
   Info as InfoIcon,
+  Bookmark as BookmarkIcon,
+  BookmarkBorder as BookmarkBorderIcon,
 } from '@mui/icons-material'
 import TouchButton from './TouchButton'
 import ZoomableImage from './ZoomableImage'
+import EssayQuestionCard from './EssayQuestionCard'
 import { useQuestionStore } from '../stores/useQuestionStore'
 import { useAppStore } from '../stores/useAppStore'
+import { useBookmarkStore } from '../stores/useBookmarkStore'
 
 interface QuestionCardProps {
   question?: any // 復習モード用の直接問題データ
   onAnswer?: (questionId: string, choiceId: string, timeSpent: number) => Promise<any> // 復習モード用
   onAnswerSubmit?: (choiceId: string, timeSpent: number) => void
+  onEssaySubmit?: (questionId: string, content: string, timeSpent: number) => Promise<any> // 記述式回答送信
   onNextQuestion?: () => void
   showTimer?: boolean
   timeLimit?: number // minutes
   reviewMode?: boolean // 復習モード
   showExplanation?: boolean // 解説表示
+  showBookmark?: boolean // ブックマークボタン表示
+  categoryName?: string // カテゴリ名（ブックマーク用）
 }
 
 const QuestionCard = ({ 
   question: propQuestion,
   onAnswer,
-  onAnswerSubmit, 
+  onAnswerSubmit,
+  onEssaySubmit,
   onNextQuestion, 
   showTimer = true,
   timeLimit,
   reviewMode = false,
-  showExplanation = false
+  showExplanation = false,
+  showBookmark = true,
+  categoryName
 }: QuestionCardProps) => {
   const { 
     currentQuestion, 
@@ -54,6 +64,11 @@ const QuestionCard = ({
   } = useQuestionStore()
   
   const { deviceType } = useAppStore()
+  const { 
+    isBookmarked, 
+    toggleBookmark, 
+    clearError 
+  } = useBookmarkStore()
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [showHint, setShowHint] = useState(false)
   
@@ -69,6 +84,21 @@ const QuestionCard = ({
   const activeSelectedChoice = reviewMode ? reviewSelectedChoice : selectedChoiceId
   const activeShowResult = reviewMode ? reviewShowResult : showResult
   const activeStartTime = reviewMode ? reviewStartTime : questionStartTime
+
+  // 記述式問題の場合はEssayQuestionCardを使用
+  if (activeQuestion?.questionType === 'essay') {
+    return (
+      <EssayQuestionCard
+        question={activeQuestion}
+        onSubmit={onEssaySubmit}
+        onNextQuestion={onNextQuestion}
+        showTimer={showTimer}
+        timeLimit={timeLimit}
+        showBookmark={showBookmark}
+        categoryName={categoryName}
+      />
+    )
+  }
 
   // Timer effect
   useEffect(() => {
@@ -173,6 +203,23 @@ const QuestionCard = ({
     }
   }
 
+  const handleBookmarkToggle = () => {
+    if (!activeQuestion) return
+    
+    clearError()
+    
+    const questionData = {
+      content: activeQuestion.content,
+      categoryId: activeQuestion.categoryId,
+      categoryName: categoryName || 'カテゴリ未設定',
+      difficulty: activeQuestion.difficulty,
+      year: activeQuestion.year,
+      session: activeQuestion.session,
+    }
+    
+    toggleBookmark(activeQuestion.id, questionData)
+  }
+
   if (!activeQuestion) {
     return (
       <Card sx={{ p: 3, textAlign: 'center' }}>
@@ -191,7 +238,7 @@ const QuestionCard = ({
     <Card sx={{ maxWidth: '100%', mx: 'auto' }}>
       {/* Progress and Info Bar */}
       <Box sx={{ p: 2, pb: 0 }}>
-        <Box display="flex" alignItems="center" justifyContent="between" mb={1}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
           <Box display="flex" alignItems="center" gap={1}>
             <Chip
               icon={<DifficultyIcon fontSize="small" />}
@@ -217,22 +264,47 @@ const QuestionCard = ({
             )}
           </Box>
           
-          {showTimer && (
-            <Box display="flex" alignItems="center" gap={1}>
-              <TimeIcon 
-                fontSize="small" 
-                color={isTimeWarning ? 'error' : 'action'} 
-              />
-              <Typography 
-                variant="body2" 
-                color={isTimeWarning ? 'error' : 'text.secondary'}
-                fontWeight={isTimeWarning ? 'bold' : 'normal'}
+          <Box display="flex" alignItems="center" gap={1}>
+            {showBookmark && (
+              <TouchButton
+                size="small"
+                variant="text"
+                touchSize="medium"
+                onClick={handleBookmarkToggle}
+                sx={{
+                  minWidth: 44,
+                  minHeight: 44,
+                  color: isBookmarked(activeQuestion.id) ? 'warning.main' : 'action.active',
+                  '&:hover': {
+                    bgcolor: 'action.hover',
+                  },
+                }}
+                aria-label={isBookmarked(activeQuestion.id) ? 'ブックマークを削除' : 'ブックマークに追加'}
               >
-                {formatTime(timeElapsed)}
-                {timeLimit && ` / ${timeLimit}分`}
-              </Typography>
-            </Box>
-          )}
+                {isBookmarked(activeQuestion.id) ? (
+                  <BookmarkIcon />
+                ) : (
+                  <BookmarkBorderIcon />
+                )}
+              </TouchButton>
+            )}
+            {showTimer && (
+              <>
+                <TimeIcon 
+                  fontSize="small" 
+                  color={isTimeWarning ? 'error' : 'action'} 
+                />
+                <Typography 
+                  variant="body2" 
+                  color={isTimeWarning ? 'error' : 'text.secondary'}
+                  fontWeight={isTimeWarning ? 'bold' : 'normal'}
+                >
+                  {formatTime(timeElapsed)}
+                  {timeLimit && ` / ${timeLimit}分`}
+                </Typography>
+              </>
+            )}
+          </Box>
         </Box>
 
         {/* Time Progress Bar */}
