@@ -81,6 +81,22 @@
             "document-reviewer",
             "technical-designer"
           ]
+        },
+        "anti_delegation": {
+          "rule": "🚫 NEVER DELEGATE TASKS TO OTHER AGENTS UNNECESSARILY",
+          "principle": "Each agent should complete their assigned task directly, not pass it to another agent",
+          "prohibited_patterns": [
+            "Asking agent A to do task X, then agent A asks agent B to do task X",
+            "Creating task chains longer than 2 agents for simple tasks", 
+            "Using Task tool when direct tool usage is possible",
+            "Agent says 'I'll delegate this to [other agent]' instead of doing the work"
+          ],
+          "exceptions": [
+            "Git operations MUST go to git-manager (security requirement)",
+            "Multi-step workflows requiring different specialized tools",
+            "Quality-fixer for actual TypeScript/code fixes (not reviews)"
+          ],
+          "enforcement": "If you catch yourself about to delegate, ask: Can I do this directly with available tools?"
         }
       }
     },
