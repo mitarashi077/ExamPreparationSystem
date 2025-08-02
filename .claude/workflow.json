@@ -1,0 +1,85 @@
+{
+  "development_workflow": {
+    "parallel_development": {
+      "enabled": true,
+      "max_concurrent_agents": 3,
+      "task_distribution": {
+        "requirement_analysis": "requirement-analyzer",
+        "technical_design": "technical-designer", 
+        "task_decomposition": "task-decomposer",
+        "implementation": "task-executor",
+        "quality_assurance": "quality-fixer",
+        "documentation": "document-reviewer",
+        "code_review": "document-reviewer",
+        "pr_management": "document-fixer"
+      }
+    },
+    "agent_collaboration": {
+      "design_phase": {
+        "primary": "technical-designer",
+        "secondary": "requirement-analyzer",
+        "reviewer": "document-reviewer"
+      },
+      "implementation_phase": {
+        "frontend": "frontend-executor",
+        "backend": "backend-executor", 
+        "database": "backend-executor",
+        "integration": "task-executor",
+        "concurrent_execution": true
+      },
+      "quality_phase": {
+        "testing": "quality-fixer",
+        "code_review": "document-reviewer",
+        "integration": "quality-fixer"
+      }
+    }
+  },
+  "pr_workflow": {
+    "enabled": true,
+    "stages": [
+      {
+        "stage": "implementation",
+        "agent": "task-executor",
+        "actions": ["implement", "unit_test", "commit"]
+      },
+      {
+        "stage": "quality_check", 
+        "agent": "quality-fixer",
+        "actions": ["lint", "typecheck", "integration_test"]
+      },
+      {
+        "stage": "pr_creation",
+        "agent": "task-executor", 
+        "actions": ["create_pr", "add_description"]
+      },
+      {
+        "stage": "code_review",
+        "agent": "document-reviewer",
+        "actions": ["review_code", "add_comments", "request_changes"]
+      },
+      {
+        "stage": "fix_review_issues",
+        "agent": "task-executor",
+        "actions": ["address_feedback", "update_pr"]
+      },
+      {
+        "stage": "final_approval",
+        "agent": "document-reviewer",
+        "actions": ["approve_pr", "merge_pr"]
+      }
+    ],
+    "review_criteria": {
+      "code_quality": true,
+      "test_coverage": true,
+      "documentation": true,
+      "security": true,
+      "performance": true
+    }
+  },
+  "task_management": {
+    "auto_decomposition": true,
+    "parallel_tasks": true,
+    "agent_assignment": "automatic",
+    "progress_tracking": true
+  }
+}

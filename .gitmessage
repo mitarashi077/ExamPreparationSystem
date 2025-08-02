@@ -1,0 +1,45 @@
+# <type>: <subject>
+#
+# <body>
+#
+# <footer>
+
+# --- COMMIT TEMPLATE ---
+# type: Choose change type from below
+#   feat:     New feature
+#   fix:      Bug fix
+#   docs:     Documentation only changes
+#   style:    Changes that do not affect the meaning of the code
+#   refactor: Code change that neither fixes a bug nor adds a feature
+#   test:     Adding missing tests or correcting existing tests
+#   chore:    Changes to build process or auxiliary tools and libraries
+#   perf:     Performance improvement
+#   ci:       Changes to CI configuration files and scripts
+#   revert:   Revert previous commit
+#
+# subject: Summarize changes in 50 characters or less
+#   - Use imperative mood ("add" not "added" or "adds")
+#   - Start with lowercase letter
+#   - No period at the end
+#
+# body: Focus on WHY detailed explanation (wrap at 72 characters)
+#   - Explain the reason, background, and impact of the change
+#   - Focus on "why" rather than "what"
+#   - Use bullet points for multiple changes
+#
+# footer: Related Issue or Task numbers
+#   - Closes #123
+#   - Refs #456
+#   - Task 6.1.2
+#
+# Example:
+# feat: add bookmark functionality to exam questions
+#
+# Enable users to revisit important questions later by adding bookmark feature.
+# Improve learning efficiency by providing review mechanism combined with incorrect questions.
+#
+# - Implement Bookmark model and API
+# - Add frontend bookmark state management
+# - Integrate bookmark button in existing question list screen
+#
+# Task 6.1.2
