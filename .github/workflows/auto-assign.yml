@@ -1,0 +1,144 @@
+name: Auto Assign PR & Issues
+
+on:
+  pull_request:
+    types: [opened]
+  issues:
+    types: [opened]
+
+jobs:
+  auto-assign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto assign PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            
+            let labels = [];
+            let reviewers = [];
+            let assignees = [pr.user.login];
+            
+            // Determine labels and reviewers based on changed files
+            const changedFiles = files.data.map(file => file.filename);
+            
+            if (changedFiles.some(file => file.startsWith('frontend/'))) {
+              labels.push('frontend');
+              reviewers.push('frontend-reviewer'); // Replace with actual reviewer
+            }
+            
+            if (changedFiles.some(file => file.startsWith('backend/'))) {
+              labels.push('backend');
+              reviewers.push('backend-reviewer'); // Replace with actual reviewer
+            }
+            
+            if (changedFiles.some(file => file.startsWith('docs/'))) {
+              labels.push('documentation');
+              reviewers.push('doc-reviewer'); // Replace with actual reviewer
+            }
+            
+            if (changedFiles.some(file => file.startsWith('database/'))) {
+              labels.push('database');
+              reviewers.push('db-reviewer'); // Replace with actual reviewer
+            }
+            
+            // Add default labels
+            if (pr.title.includes('feat')) labels.push('enhancement');
+            if (pr.title.includes('fix')) labels.push('bug');
+            if (pr.title.includes('docs')) labels.push('documentation');
+            if (pr.title.includes('chore')) labels.push('maintenance');
+            
+            // Apply labels
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: labels
+              });
+            }
+            
+            // Request reviewers (filter out PR author)
+            const uniqueReviewers = [...new Set(reviewers)].filter(reviewer => reviewer !== pr.user.login);
+            if (uniqueReviewers.length > 0) {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                reviewers: uniqueReviewers
+              });
+            }
+            
+            // Assign PR to author
+            if (assignees.length > 0) {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                assignees: assignees
+              });
+            }
+
+      - name: Auto assign Issue
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            
+            let labels = [];
+            let assignees = [];
+            
+            // Determine labels based on issue template
+            if (issue.title.includes('[Bug]')) {
+              labels.push('bug', 'needs-investigation');
+              assignees.push('bug-triager'); // Replace with actual assignee
+            }
+            
+            if (issue.title.includes('[Feature]')) {
+              labels.push('enhancement', 'needs-planning');
+              assignees.push('feature-planner'); // Replace with actual assignee
+            }
+            
+            if (issue.title.includes('[Question]')) {
+              labels.push('question', 'needs-response');
+              assignees.push('support-team'); // Replace with actual assignee
+            }
+            
+            // Priority labels based on content
+            if (issue.body && issue.body.includes('Critical')) {
+              labels.push('priority:critical');
+            } else if (issue.body && issue.body.includes('High')) {
+              labels.push('priority:high');
+            } else if (issue.body && issue.body.includes('Medium')) {
+              labels.push('priority:medium');
+            } else if (issue.body && issue.body.includes('Low')) {
+              labels.push('priority:low');
+            }
+            
+            // Apply labels
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: labels
+              });
+            }
+            
+            // Assign issue
+            if (assignees.length > 0) {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                assignees: assignees
+              });
+            }

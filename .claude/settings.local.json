@@ -21,8 +21,8 @@
     },
     "pr_review_process": {
       "mandatory_review": true,
-      "review_agent": "document-reviewer",
-      "approval_agent": "document-reviewer",
+      "review_agent": "quality-fixer",
+      "approval_agent": "technical-designer",
       "discussion_required": true,
       "auto_merge_disabled": true,
       "review_checklist": [
@@ -32,7 +32,29 @@
         "Security considerations",
         "Performance impact",
         "Integration compatibility"
-      ]
+      ],
+      "auto_assign": {
+        "reviewers": ["quality-fixer", "technical-designer"],
+        "assignees": ["auto-assign-author"],
+        "labels": {
+          "frontend_changes": "frontend",
+          "backend_changes": "backend",
+          "docs_changes": "documentation",
+          "database_changes": "database"
+        },
+        "projects": ["ExamPreparationSystem"],
+        "milestone": "auto-detect"
+      }
     }
   },
+  "hooks": {
+    "after-commit": {
+      "command": "powershell -Command \"$ErrorActionPreference = 'Stop'; try { $branch = git rev-parse --abbrev-ref HEAD; if ($branch -ne 'main' -and $branch -ne 'develop') { Write-Host '[Auto-PR Hook] Creating PR from feature branch...'; $lastCommit = git log --oneline -1; $title = ($lastCommit -split ' ', 2)[1]; $body = 'Auto-generated PR from commit:\\n\\n' + $lastCommit + '\\n\\n## Changes\\n- Automated commit detection\\n- Ready for review\\n\\n## Testing\\n- [ ] Manual testing required\\n\\n---\\n*This PR was automatically created by the development system.*'; $prUrl = gh pr create --title $title --body $body --base develop --head $branch --label 'auto-generated' --reviewer quality-fixer,technical-designer 2>$null; Write-Host '✅ PR created: ' + $prUrl; Write-Host '🔄 Triggering automated review process...'; } else { Write-Host '[Auto-PR Hook] On protected branch, skipping PR creation'; } } catch { Write-Host '⚠️ Failed to create PR: ' + $_.Exception.Message; }\"",
+      "description": "Automatically create PR after commit on feature branches"
+    },
+    "after-pr-creation": {
+      "command": "powershell -Command \"$ErrorActionPreference = 'SilentlyContinue'; try { $prNumber = $env:PR_NUMBER; if ($prNumber) { Write-Host '🔍 Starting automated review for PR #' + $prNumber; Write-Host '⚙️ Assigning quality-fixer for initial review...'; gh pr edit $prNumber --add-reviewer quality-fixer 2>$null; Write-Host '🏗️ Assigning technical-designer for approval...'; gh pr edit $prNumber --add-reviewer technical-designer 2>$null; Write-Host '🏷️ Adding labels based on changes...'; Write-Host '✅ PR review process initiated'; } else { Write-Host '🔍 Checking for recent PRs to process...'; $recentPR = gh pr list --state open --limit 1 --json number 2>$null | ConvertFrom-Json; if ($recentPR) { $prNum = $recentPR[0].number; Write-Host '📝 Processing PR #' + $prNum; } } } catch { Write-Host '⚠️ PR review setup failed'; }\"",
+      "description": "Automatically assign reviewers and initiate review process after PR creation"
+    }
+  }
 }
