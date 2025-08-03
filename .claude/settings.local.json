@@ -1,10 +1,13 @@
 {
-  "project": "ExamPreparationSystem",
-  "description": "試験問題準備システム - Claude Code開発用設定",
-  "extends": "C:\\work\\05_git\\claude-code-settings\\settings.json",
   "permissions": {
     "allow": [
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(chmod:*)",
+      "Bash(./claude-start.sh)",
+      "Bash(./claude-start-pro.sh:*)"
     ]
-  }
+  },
+  "project": "ExamPreparationSystem",
+  "description": "試験問題準備システム - Claude Code開発用設定",
+  "extends": "C:\\work\\05_git\\claude-code-settings\\settings.json"
 }
