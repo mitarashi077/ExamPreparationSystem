@@ -59,7 +59,10 @@
       "Bash(git rm:*)",
       "Bash(gh pr edit:*)",
       "Bash(gh label:*)",
-      "Bash(gh pr list:*)"
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr merge:*)"
     ],
     "deny": []
   },
