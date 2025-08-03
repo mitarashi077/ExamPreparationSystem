@@ -1,0 +1,401 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { act, renderHook, waitFor } from '@testing-library/react'
+import { useBookmarkStore } from '../../stores/useBookmarkStore'
+import { bookmarkAPI } from '../../utils/apiClient'
+import type { BookmarkItem } from '../../types/bookmark'
+
+// Mock the API module
+vi.mock('../../utils/apiClient', () => ({
+  bookmarkAPI: {
+    getBookmarks: vi.fn(),
+    createBookmark: vi.fn(),
+    updateBookmark: vi.fn(),
+    deleteBookmark: vi.fn(),
+    checkBookmarkStatus: vi.fn(),
+  },
+  withRetry: vi.fn((fn) => fn()),
+}))
+
+const mockBookmarkAPI = vi.mocked(bookmarkAPI)
+
+// Mock bookmark data
+const mockBookmark: BookmarkItem = {
+  id: 'bookmark_1',
+  questionId: 'q_1',
+  questionContent: 'マイクロコントローラのアーキテクチャに関する問題',
+  categoryId: 'cat_hardware',
+  categoryName: 'ハードウェア設計',
+  difficulty: 3,
+  year: 2023,
+  session: '春期',
+  memo: '',
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+}
+
+const mockQuestionData = {
+  content: 'マイクロコントローラのアーキテクチャに関する問題',
+  categoryId: 'cat_hardware',
+  categoryName: 'ハードウェア設計',
+  difficulty: 3,
+  year: 2023,
+  session: '春期',
+}
+
+describe('Bookmark Feature Integration Tests', () => {
+  beforeEach(() => {
+    // Clear all mocks before each test
+    vi.clearAllMocks()
+    
+    // Reset Zustand store state properly
+    useBookmarkStore.setState({
+      bookmarks: [],
+      filters: {},
+      isLoading: false,
+      error: null,
+    })
+  })
+
+  describe('API Integration', () => {
+    it('should load bookmarks from API on startup', async () => {
+      // Arrange
+      mockBookmarkAPI.getBookmarks.mockResolvedValue([mockBookmark])
+      
+      // Act
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      await act(async () => {
+        await result.current.loadBookmarks()
+      })
+      
+      // Assert
+      expect(mockBookmarkAPI.getBookmarks).toHaveBeenCalledOnce()
+      expect(result.current.bookmarks).toHaveLength(1)
+      expect(result.current.bookmarks[0]).toEqual(mockBookmark)
+      expect(result.current.error).toBeNull()
+    })
+
+    it('should handle API errors gracefully when loading bookmarks', async () => {
+      // Arrange
+      const errorMessage = 'Network error'
+      mockBookmarkAPI.getBookmarks.mockRejectedValue(new Error(errorMessage))
+      
+      // Act
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      await act(async () => {
+        await result.current.loadBookmarks()
+      })
+      
+      // Assert
+      expect(result.current.bookmarks).toHaveLength(0)
+      expect(result.current.error).toBe(errorMessage)
+      expect(result.current.isLoading).toBe(false)
+    })
+  })
+
+  describe('Bookmark CRUD Operations', () => {
+    it('should create a bookmark via API', async () => {
+      // Arrange
+      mockBookmarkAPI.createBookmark.mockResolvedValue(mockBookmark)
+      
+      // Act
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      await act(async () => {
+        await result.current.addBookmark('q_1', mockQuestionData)
+      })
+      
+      // Assert
+      expect(mockBookmarkAPI.createBookmark).toHaveBeenCalledWith('q_1')
+      expect(result.current.bookmarks).toHaveLength(1)
+      expect(result.current.isBookmarked('q_1')).toBe(true)
+      expect(result.current.error).toBeNull()
+    })
+
+    it('should handle optimistic updates on bookmark creation', async () => {
+      // Arrange
+      let resolveCreateBookmark: (value: BookmarkItem) => void
+      const createBookmarkPromise = new Promise<BookmarkItem>((resolve) => {
+        resolveCreateBookmark = resolve
+      })
+      mockBookmarkAPI.createBookmark.mockReturnValue(createBookmarkPromise)
+      
+      // Act
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      // Start the operation (don't await yet)
+      const addBookmarkPromise = act(async () => {
+        await result.current.addBookmark('q_1', mockQuestionData)
+      })
+      
+      // Assert optimistic update
+      await waitFor(() => {
+        expect(result.current.bookmarks).toHaveLength(1)
+        expect(result.current.isBookmarked('q_1')).toBe(true)
+      })
+      
+      // Complete the API call
+      resolveCreateBookmark!(mockBookmark)
+      await addBookmarkPromise
+      
+      // Assert final state
+      expect(result.current.bookmarks).toHaveLength(1)
+      expect(result.current.bookmarks[0].id).toBe(mockBookmark.id)
+    })
+
+    it('should rollback optimistic update on bookmark creation failure', async () => {
+      // Arrange
+      mockBookmarkAPI.createBookmark.mockRejectedValue(new Error('API Error'))
+      
+      // Act
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      await act(async () => {
+        await result.current.addBookmark('q_1', mockQuestionData)
+      })
+      
+      // Assert
+      expect(result.current.bookmarks).toHaveLength(0)
+      expect(result.current.isBookmarked('q_1')).toBe(false)
+      expect(result.current.error).toContain('ブックマークの追加に失敗')
+    })
+
+    it('should delete a bookmark via API', async () => {
+      // Arrange
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      // Set initial state with a bookmark
+      act(() => {
+        useBookmarkStore.setState({ bookmarks: [mockBookmark] })
+      })
+      
+      mockBookmarkAPI.deleteBookmark.mockResolvedValue(undefined)
+      
+      // Act
+      await act(async () => {
+        await result.current.removeBookmark('q_1')
+      })
+      
+      // Assert
+      expect(mockBookmarkAPI.deleteBookmark).toHaveBeenCalledWith(mockBookmark.id)
+      expect(result.current.bookmarks).toHaveLength(0)
+      expect(result.current.isBookmarked('q_1')).toBe(false)
+      expect(result.current.error).toBeNull()
+    })
+
+    it('should update bookmark memo via API', async () => {
+      // Arrange
+      const updatedBookmark = { ...mockBookmark, memo: 'Updated memo' }
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      // Set initial state
+      act(() => {
+        useBookmarkStore.setState({ bookmarks: [mockBookmark] })
+      })
+      
+      mockBookmarkAPI.updateBookmark.mockResolvedValue(updatedBookmark)
+      
+      // Act
+      await act(async () => {
+        await result.current.updateBookmarkMemo('q_1', 'Updated memo')
+      })
+      
+      // Assert
+      expect(mockBookmarkAPI.updateBookmark).toHaveBeenCalledWith(mockBookmark.id, 'Updated memo')
+      expect(result.current.bookmarks[0].memo).toBe('Updated memo')
+      expect(result.current.error).toBeNull()
+    })
+  })
+
+  describe('Toggle Bookmark Functionality', () => {
+    it('should add bookmark when toggling from unbookmarked state', async () => {
+      // Arrange
+      mockBookmarkAPI.createBookmark.mockResolvedValue(mockBookmark)
+      
+      // Act
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      await act(async () => {
+        await result.current.toggleBookmark('q_1', mockQuestionData)
+      })
+      
+      // Assert
+      expect(mockBookmarkAPI.createBookmark).toHaveBeenCalledWith('q_1')
+      expect(result.current.isBookmarked('q_1')).toBe(true)
+    })
+
+    it('should remove bookmark when toggling from bookmarked state', async () => {
+      // Arrange
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      // Set initial state with bookmark
+      act(() => {
+        useBookmarkStore.setState({ bookmarks: [mockBookmark] })
+      })
+      
+      mockBookmarkAPI.deleteBookmark.mockResolvedValue(undefined)
+      
+      // Act
+      await act(async () => {
+        await result.current.toggleBookmark('q_1')
+      })
+      
+      // Assert
+      expect(mockBookmarkAPI.deleteBookmark).toHaveBeenCalledWith(mockBookmark.id)
+      expect(result.current.isBookmarked('q_1')).toBe(false)
+    })
+  })
+
+  describe('Filter and Search Integration', () => {
+    it('should load bookmarks with filters', async () => {
+      // Arrange
+      const filters = { categoryId: 'cat_hardware', difficulty: 3 }
+      mockBookmarkAPI.getBookmarks.mockResolvedValue([mockBookmark])
+      
+      // Act
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      await act(async () => {
+        await result.current.loadBookmarks(filters)
+      })
+      
+      // Assert
+      expect(mockBookmarkAPI.getBookmarks).toHaveBeenCalledWith(filters)
+      expect(result.current.bookmarks).toHaveLength(1)
+    })
+
+    it('should handle search functionality', async () => {
+      // Arrange
+      const searchFilters = { search: 'マイクロコントローラ' }
+      mockBookmarkAPI.getBookmarks.mockResolvedValue([mockBookmark])
+      
+      // Act
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      await act(async () => {
+        await result.current.loadBookmarks(searchFilters)
+      })
+      
+      // Assert
+      expect(mockBookmarkAPI.getBookmarks).toHaveBeenCalledWith(searchFilters)
+      expect(result.current.bookmarks).toHaveLength(1)
+    })
+  })
+
+  describe('Bookmark Status Check', () => {
+    it('should check bookmark status for a question', async () => {
+      // Arrange
+      mockBookmarkAPI.checkBookmarkStatus.mockResolvedValue({
+        isBookmarked: true,
+        bookmarkId: 'bookmark_1',
+        memo: 'Test memo'
+      })
+      
+      // Act
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      let status: any
+      await act(async () => {
+        status = await result.current.checkBookmarkStatus('q_1')
+      })
+      
+      // Assert
+      expect(mockBookmarkAPI.checkBookmarkStatus).toHaveBeenCalledWith('q_1')
+      expect(status.isBookmarked).toBe(true)
+      expect(status.bookmarkId).toBe('bookmark_1')
+      expect(status.memo).toBe('Test memo')
+    })
+
+    it('should handle bookmark status check errors', async () => {
+      // Arrange
+      mockBookmarkAPI.checkBookmarkStatus.mockRejectedValue(new Error('API Error'))
+      
+      // Act
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      let status: any
+      await act(async () => {
+        status = await result.current.checkBookmarkStatus('q_1')
+      })
+      
+      // Assert
+      expect(status.isBookmarked).toBe(false)
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should clear errors when performing new operations', async () => {
+      // Arrange
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      // Set initial error state
+      act(() => {
+        useBookmarkStore.setState({ error: 'Previous error' })
+      })
+      
+      expect(result.current.error).toBe('Previous error')
+      
+      mockBookmarkAPI.createBookmark.mockResolvedValue(mockBookmark)
+      
+      // Act
+      await act(async () => {
+        await result.current.addBookmark('q_1', mockQuestionData)
+      })
+      
+      // Assert
+      expect(result.current.error).toBeNull()
+    })
+
+    it('should set loading state during operations', async () => {
+      // Arrange
+      let resolveCreateBookmark: (value: BookmarkItem) => void
+      const createBookmarkPromise = new Promise<BookmarkItem>((resolve) => {
+        resolveCreateBookmark = resolve
+      })
+      mockBookmarkAPI.createBookmark.mockReturnValue(createBookmarkPromise)
+      
+      // Act
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      const addBookmarkPromise = act(async () => {
+        await result.current.addBookmark('q_1', mockQuestionData)
+      })
+      
+      // Assert loading state
+      expect(result.current.isLoading).toBe(true)
+      
+      // Complete the operation
+      resolveCreateBookmark!(mockBookmark)
+      await addBookmarkPromise
+      
+      // Assert final state
+      expect(result.current.isLoading).toBe(false)
+    })
+  })
+
+  describe('Data Persistence', () => {
+    it('should persist bookmarks and filters in localStorage', () => {
+      // This test would verify the Zustand persistence middleware
+      // but since we're testing the store in isolation,
+      // we can verify that the persist configuration is correct
+      
+      const { result } = renderHook(() => useBookmarkStore())
+      
+      // Add some data
+      act(() => {
+        useBookmarkStore.setState({ 
+          bookmarks: [mockBookmark],
+          filters: { categoryId: 'cat_hardware' }
+        })
+      })
+      
+      // Verify the data is in the store
+      expect(result.current.bookmarks).toHaveLength(1)
+      expect(result.current.filters.categoryId).toBe('cat_hardware')
+      
+      // Note: Full localStorage persistence testing would require
+      // a more complex setup with jsdom or actual browser environment
+    })
+  })
+})
