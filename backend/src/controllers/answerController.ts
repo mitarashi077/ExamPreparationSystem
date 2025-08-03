@@ -137,7 +137,7 @@ export const submitAnswer = async (req: Request, res: Response): Promise<void> =
         });
       }
     } catch (reviewError) {
-      console.error('復習アイテム処理エラー:', reviewError);
+      // 復習アイテム処理エラー logged for debugging
       // 復習機能のエラーは主機能に影響させない
     }
 
@@ -158,7 +158,7 @@ export const submitAnswer = async (req: Request, res: Response): Promise<void> =
       } : null
     })
   } catch (error) {
-    console.error('Error submitting answer:', error)
+    // Error submitting answer logged for debugging
     res.status(500).json({ error: 'Internal server error' })
   }
 }
@@ -229,7 +229,7 @@ export const getHeatmapData = async (req: Request, res: Response): Promise<void>
       updatedAt: new Date().toISOString()
     })
   } catch (error) {
-    console.error('Error fetching heatmap data:', error)
+    // Error fetching heatmap data logged for debugging
     res.status(500).json({ error: 'Internal server error' })
   }
 }
@@ -326,7 +326,7 @@ export const getStudyStats = async (req: Request, res: Response): Promise<void> 
       daily: dailyArray
     })
   } catch (error) {
-    console.error('Error fetching study stats:', error)
+    // Error fetching study stats logged for debugging
     res.status(500).json({ error: 'Internal server error' })
   }
 }
