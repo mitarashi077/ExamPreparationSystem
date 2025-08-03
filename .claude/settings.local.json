@@ -59,7 +59,12 @@
       "Bash(git rm:*)",
       "Bash(gh pr edit:*)",
       "Bash(gh label:*)",
-      "Bash(gh pr list:*)"
+      "Bash(gh pr list:*)",
+      "Bash(curl:*)",
+      "Bash(npm run build:*)",
+      "Bash(DATABASE_URL=\"postgresql://dummy:dummy@localhost:5432/dummy\" npm run generate)",
+      "Bash(DATABASE_URL=\"postgresql://dummy:dummy@localhost:5432/dummy\" npx prisma generate --schema=../database/schema.prisma)",
+      "Bash(npx tsc:*)"
     ],
     "deny": []
   },

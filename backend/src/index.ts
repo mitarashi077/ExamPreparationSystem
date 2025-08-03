@@ -741,7 +741,33 @@ app.use('/api/questions', questionRoutes)
 app.use('/api/answers', answerRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/review', reviewRoutes)
-app.use('/api/bookmarks', bookmarkRoutes)
+console.log('📚 Registering bookmark routes at startup...')
+try {
+  app.use('/api/bookmarks', bookmarkRoutes)
+  console.log('✅ Bookmark routes registered successfully')
+} catch (error) {
+  console.error('❌ Failed to register bookmark routes:', error)
+}
+
+// Debug route to check bookmark import
+app.get('/api/debug-bookmarks', async (_req, res) => {
+  try {
+    const routes = bookmarkRoutes.stack || []
+    res.json({
+      message: 'Bookmark routes debug',
+      routeCount: routes.length,
+      routes: routes.map((r: any) => ({
+        path: r.route?.path,
+        methods: Object.keys(r.route?.methods || {})
+      }))
+    })
+  } catch (error) {
+    res.status(500).json({
+      error: 'Failed to debug bookmark routes',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+})
 
 // 404 handler
 app.use('*', (_req, res) => {
