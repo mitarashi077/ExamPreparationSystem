@@ -21,6 +21,63 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'OK', message: 'Server is running' })
 })
 
+// Database connection test
+app.get('/api/db-test', async (_req, res) => {
+  try {
+    const { PrismaClient } = await import('@prisma/client');
+    const prisma = new PrismaClient();
+    
+    // Check environment variables
+    const databaseUrl = process.env.DATABASE_URL;
+    const nodeEnv = process.env.NODE_ENV;
+    
+    console.log('Database connection test started...');
+    console.log('NODE_ENV:', nodeEnv);
+    console.log('DATABASE_URL exists:', !!databaseUrl);
+    
+    // Test basic connection
+    await prisma.$connect();
+    console.log('Prisma connection successful');
+    
+    // Test database query
+    const questionCount = await prisma.question.count();
+    console.log('Question count:', questionCount);
+    
+    res.json({ 
+      status: 'OK', 
+      message: 'Database connected successfully',
+      debug_info: {
+        database_url_set: !!databaseUrl,
+        database_url_prefix: databaseUrl ? databaseUrl.substring(0, 20) + '...' : 'Not set',
+        node_env: nodeEnv || 'Not set',
+        prisma_version: '5.x',
+        question_count: questionCount,
+        connection_test: 'PASSED',
+        timestamp: new Date().toISOString()
+      }
+    });
+    
+    await prisma.$disconnect();
+    console.log('Prisma disconnected successfully');
+  } catch (error) {
+    console.error('Database connection test failed:', error);
+    
+    res.status(500).json({ 
+      status: 'ERROR',
+      error: 'Database connection failed',
+      debug_info: {
+        database_url_set: !!process.env.DATABASE_URL,
+        database_url_prefix: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 20) + '...' : 'Not set',
+        node_env: process.env.NODE_ENV || 'Not set',
+        error_message: error instanceof Error ? error.message : 'Unknown error',
+        error_name: error instanceof Error ? error.constructor.name : 'Unknown',
+        error_stack: error instanceof Error ? error.stack?.split('\n').slice(0, 5) : undefined,
+        timestamp: new Date().toISOString()
+      }
+    });
+  }
+})
+
 // API Routes
 app.use('/api/questions', questionRoutes)
 app.use('/api/answers', answerRoutes)
