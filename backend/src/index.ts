@@ -689,6 +689,53 @@ app.get('/api/bookmark-test', async (_req, res) => {
   }
 })
 
+// Simple SQL execution endpoint for bookmark table creation
+app.post('/api/execute-sql', async (req, res) => {
+  try {
+    const { sql } = req.body;
+    if (!sql) {
+      return res.status(400).json({ error: 'SQL query required' });
+    }
+    
+    const { PrismaClient } = await import('@prisma/client');
+    
+    // Clean DATABASE_URL if it has psql prefix
+    let cleanUrl = process.env.DATABASE_URL;
+    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+      cleanUrl = cleanUrl.slice(5, -1);
+    }
+    
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: cleanUrl
+        }
+      }
+    });
+    
+    await prisma.$connect();
+    
+    const result = await prisma.$executeRawUnsafe(sql);
+    
+    await prisma.$disconnect();
+    
+    res.json({
+      status: 'SUCCESS',
+      message: 'SQL executed successfully',
+      result,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('SQL execution failed:', error);
+    res.status(500).json({
+      status: 'ERROR',
+      error: 'SQL execution failed',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+})
+
 // API Routes
 app.use('/api/questions', questionRoutes)
 app.use('/api/answers', answerRoutes)
