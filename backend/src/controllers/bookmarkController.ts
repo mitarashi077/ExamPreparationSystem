@@ -2,13 +2,23 @@ import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: 'file:C:/work/05_git/ExamPreparationSystem/database/exam_prep.db'
-    }
+// Create Prisma client with environment-based configuration
+const createPrismaClient = () => {
+  let cleanUrl = process.env.DATABASE_URL;
+  if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+    cleanUrl = cleanUrl.slice(5, -1);
   }
-})
+  
+  return new PrismaClient({
+    datasources: {
+      db: {
+        url: cleanUrl
+      }
+    }
+  });
+}
+
+const prisma = createPrismaClient()
 
 // Validation schemas
 const createBookmarkSchema = z.object({

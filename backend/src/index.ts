@@ -19,7 +19,12 @@ app.use(express.urlencoded({ extended: true }))
 
 // Health check
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' })
+  res.json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    environment: process.env.NODE_ENV,
+    database_configured: !!process.env.DATABASE_URL
+  })
 })
 
 // Simple categories test
@@ -447,7 +452,22 @@ app.post('/api/db-migrate', async (_req, res) => {
         "correctItems" INTEGER NOT NULL DEFAULT 0,
         "deviceType" TEXT,
         "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-      );`
+      );`,
+      
+      // Bookmark table
+      `CREATE TABLE IF NOT EXISTS "Bookmark" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "questionId" TEXT NOT NULL,
+        "userId" TEXT,
+        "memo" TEXT,
+        "isActive" BOOLEAN NOT NULL DEFAULT true,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY ("questionId") REFERENCES "Question"("id") ON DELETE CASCADE ON UPDATE CASCADE
+      );`,
+      
+      // Create unique constraint for Bookmark
+      `CREATE UNIQUE INDEX IF NOT EXISTS "Bookmark_questionId_userId_key" ON "Bookmark"("questionId", "userId");`
     ];
     
     // Execute each migration
@@ -499,6 +519,87 @@ app.post('/api/db-migrate', async (_req, res) => {
       error: 'Migration failed',
       details: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
+    });
+  }
+})
+
+// Bookmark table test endpoint
+app.get('/api/bookmark-test', async (_req, res) => {
+  try {
+    console.log('🔖 Bookmark test started...');
+    const { PrismaClient } = await import('@prisma/client');
+    
+    // Clean DATABASE_URL if it has psql prefix
+    let cleanUrl = process.env.DATABASE_URL;
+    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+      cleanUrl = cleanUrl.slice(5, -1);
+      console.log('🧹 Cleaned DATABASE_URL from psql format');
+    }
+    
+    console.log('📊 Creating Prisma client...');
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: cleanUrl
+        }
+      }
+    });
+    
+    console.log('🔌 Connecting to database...');
+    await prisma.$connect();
+    console.log('✅ Connected successfully');
+    
+    // Check if Bookmark table exists
+    console.log('🔖 Checking Bookmark table...');
+    try {
+      const bookmarkCount = await prisma.bookmark.count();
+      console.log(`📊 Found ${bookmarkCount} bookmarks`);
+      
+      // Try to fetch first few bookmarks
+      const bookmarks = await prisma.bookmark.findMany({
+        take: 3,
+        include: {
+          question: {
+            select: {
+              content: true,
+              categoryId: true
+            }
+          }
+        }
+      });
+      
+      await prisma.$disconnect();
+      console.log('🔌 Disconnected from database');
+      
+      res.json({ 
+        status: 'SUCCESS',
+        message: 'Bookmark test completed',
+        bookmarkCount: bookmarkCount,
+        sampleBookmarks: bookmarks,
+        tableExists: true
+      });
+      
+    } catch (tableError) {
+      console.log('❌ Bookmark table test failed:', tableError);
+      await prisma.$disconnect();
+      
+      res.json({ 
+        status: 'TABLE_NOT_FOUND',
+        message: 'Bookmark table does not exist',
+        tableExists: false,
+        error: tableError instanceof Error ? tableError.message : 'Unknown error'
+      });
+    }
+    
+  } catch (error) {
+    console.error('❌ Bookmark test failed:', error);
+    res.status(500).json({ 
+      status: 'ERROR',
+      error: 'Bookmark test failed',
+      debug: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        name: error instanceof Error ? error.constructor.name : 'Unknown'
+      }
     });
   }
 })
