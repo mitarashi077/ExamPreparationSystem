@@ -1,28 +1,37 @@
 {
   "version": 2,
   "name": "exam-preparation-system",
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "frontend/dist",
-        "buildCommand": "cd frontend && npm run build"
-      }
-    },
-    {
-      "src": "backend/src/index.ts",
-      "use": "@vercel/node"
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/dist",
+  "functions": {
+    "backend/src/index.ts": {
+      "runtime": "@vercel/node"
     }
-  ],
-  "rewrites": [
+  },
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/backend/src/index.ts"
+      "src": "/api/(.*)",
+      "dest": "/backend/src/index.ts"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/static/(.*)",
+      "dest": "/frontend/dist/static/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/frontend/dist/assets/$1"
+    },
+    {
+      "src": "/(favicon\\.ico|manifest\\.json|sw\\.js)",
+      "dest": "/frontend/dist/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))",
+      "dest": "/frontend/dist/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/dist/index.html"
     }
   ],
   "env": {
