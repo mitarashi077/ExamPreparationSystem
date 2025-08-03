@@ -535,9 +535,40 @@ async function main() {
     }),
   ])
   console.log(`✅ ${sampleQuestions.length}個のサンプル問題を作成しました`)
+
+  // サンプルブックマークの作成 (Task 6.1.2-A)
+  const sampleBookmarks = await Promise.all([
+    prisma.bookmark.create({
+      data: {
+        questionId: sampleQuestions[0].id, // リアルタイム性に関する問題
+        userId: null, // ユーザー機能未実装のためnull
+        memo: 'リアルタイムシステムの基本概念として重要。時間制約の理解が必要。',
+        isActive: true,
+      },
+    }),
+    prisma.bookmark.create({
+      data: {
+        questionId: sampleQuestions[3].id, // NVIC機能に関する問題
+        userId: null,
+        memo: 'ARM Cortex-Mの割り込み制御。組込み開発で頻出。',
+        isActive: true,
+      },
+    }),
+    prisma.bookmark.create({
+      data: {
+        questionId: sampleQuestions[8].id, // Rate Monotonic Schedulingに関する問題
+        userId: null,
+        memo: 'スケジューリングアルゴリズムの代表例。優先度の考え方を理解。',
+        isActive: true,
+      },
+    }),
+  ])
+  console.log(`✅ ${sampleBookmarks.length}個のサンプルブックマークを作成しました`)
+  
   console.log('📝 Phase 5 Task 5.1.1: 組込みハードウェア設計分野に5問追加完了')
   console.log('📝 Phase 5 Task 5.1.2: リアルタイムシステム分野に8問追加完了')
   console.log('📝 Phase 5 Task 5.1.3: 組込みソフトウェア開発分野に8問追加完了')
+  console.log('📝 Task 6.1.2-A: ブックマーク機能データベーススキーマ実装完了')
   console.log('🎉 Phase 5専門分野対応完了 - データベースシードが完了しました！')
 }
 

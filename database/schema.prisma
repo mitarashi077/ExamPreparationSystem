@@ -31,6 +31,7 @@ model Question {
   choices     Choice[]
   answers     Answer[]
   reviewItems ReviewItem[] // 復習管理との関連
+  bookmarks   Bookmark[]   // ブックマーク機能との関連
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
@@ -92,4 +93,19 @@ model ReviewSession {
   correctItems Int    @default(0) // 正解した問題数
   deviceType String?
   createdAt  DateTime @default(now())
+}
+
+// ブックマーク管理テーブル - 重要問題のマーク・メモ機能
+model Bookmark {
+  id         String   @id @default(cuid())
+  questionId String
+  userId     String?  // オプショナル（ユーザー機能未実装のため）
+  memo       String?  // メモ機能
+  isActive   Boolean  @default(true) // アクティブ状態
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, userId]) // 同一ユーザー・問題の重複防止
 }
