@@ -53,9 +53,28 @@ app.get('/api/db-test', async (_req, res) => {
     await prisma.$connect();
     console.log('Prisma connection successful');
     
-    // Test database query
-    const questionCount = await prisma.question.count();
-    console.log('Question count:', questionCount);
+    // Test simple database query first
+    const simpleQuery = await prisma.$queryRaw`SELECT 1 as test`;
+    console.log('Simple query result:', simpleQuery);
+    
+    // Test if tables exist
+    const tables = await prisma.$queryRaw`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      ORDER BY table_name
+    `;
+    console.log('Existing tables:', tables);
+    
+    // Only try question count if Question table exists
+    let questionCount = 'N/A';
+    try {
+      questionCount = await prisma.question.count();
+      console.log('Question count:', questionCount);
+    } catch (error) {
+      console.log('Question table not found, this is expected on first run');
+      questionCount = 'Table not found (first run)';
+    }
     
     res.json({ 
       status: 'OK', 
@@ -66,6 +85,8 @@ app.get('/api/db-test', async (_req, res) => {
         node_env: nodeEnv || 'Not set',
         prisma_version: '5.x',
         question_count: questionCount,
+        existing_tables: tables,
+        simple_query: simpleQuery,
         connection_test: 'PASSED',
         timestamp: new Date().toISOString()
       }
