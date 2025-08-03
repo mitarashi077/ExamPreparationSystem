@@ -1,6 +1,6 @@
 {
   "name": "exam-preparation-system",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Embedded Systems Specialist Exam Preparation System",
   "private": true,
   "scripts": {
