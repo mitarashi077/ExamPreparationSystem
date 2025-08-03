@@ -38,7 +38,14 @@
       "Bash(git merge:*)",
       "Bash(curl:*)",
       "Bash(gh pr checkout:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(git restore:*)",
+      "Bash(git rm:*)",
+      "Bash(chmod:*)",
+      "Bash(./claude-start.sh)",
+      "Bash(./claude-start-pro.sh:*)",
+      "WebFetch(domain:note.com)",
+      "Bash(node:*)"
     ],
     "deny": []
   },
