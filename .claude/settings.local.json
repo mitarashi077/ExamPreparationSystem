@@ -45,7 +45,18 @@
       "Bash(./claude-start.sh)",
       "Bash(./claude-start-pro.sh:*)",
       "WebFetch(domain:note.com)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma:*)",
+      "Bash(node:*)",
+      "Bash(npx tsc:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm test:*)",
+      "Bash(npx eslint:*)",
+      "Bash(grep:*)",
+      "Bash(mv:*)",
+      "Bash(git rm:*)"
     ],
     "deny": []
   },
