@@ -22,6 +22,166 @@ app.get('/api/health', (_req, res) => {
 })
 
 // Simple categories test
+// Production seed endpoint
+app.post('/api/seed-production', async (_req, res) => {
+  try {
+    console.log('🌱 Starting production database seed...');
+    const { PrismaClient } = await import('@prisma/client');
+    
+    // Clean DATABASE_URL if it has psql prefix
+    let cleanUrl = process.env.DATABASE_URL;
+    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+      cleanUrl = cleanUrl.slice(5, -1);
+    }
+    
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: cleanUrl
+        }
+      }
+    });
+    
+    await prisma.$connect();
+    
+    // Check existing questions
+    const existingQuestions = await prisma.question.findMany();
+    console.log(`Existing questions: ${existingQuestions.length}`);
+    
+    if (existingQuestions.length > 0) {
+      await prisma.$disconnect();
+      return res.json({
+        status: 'SKIPPED',
+        message: 'Test data already exists',
+        questionCount: existingQuestions.length
+      });
+    }
+    
+    // Get existing categories
+    const categories = await prisma.category.findMany();
+    console.log(`Found ${categories.length} categories`);
+    
+    if (categories.length === 0) {
+      await prisma.$disconnect();
+      return res.status(400).json({
+        status: 'ERROR',
+        message: 'No categories found. Please create categories first.'
+      });
+    }
+    
+    // Create test questions
+    const sampleQuestions = await Promise.all([
+      prisma.question.create({
+        data: {
+          content: 'エンベデッドシステムにおいて、リアルタイム性が重要な理由として、最も適切なものはどれか。',
+          explanation: 'リアルタイム性は、決められた時間内に処理を完了することを保証する特性で、安全性や品質に直結します。',
+          difficulty: 2,
+          year: 2023,
+          session: '秋期',
+          categoryId: categories[0].id,
+          choices: {
+            create: [
+              { content: '処理能力が向上するため', isCorrect: false },
+              { content: '消費電力が削減されるため', isCorrect: false },
+              { content: '決められた時間内に処理を完了する必要があるため', isCorrect: true },
+              { content: 'メモリ使用量が削減されるため', isCorrect: false },
+            ],
+          },
+        },
+      }),
+      prisma.question.create({
+        data: {
+          content: 'RTOS（Real-Time Operating System）の主な特徴として、適切でないものはどれか。',
+          explanation: 'RTOSは確定的な応答時間を提供するため、タスクスケジューリングが予測可能である必要があります。',
+          difficulty: 3,
+          year: 2023,
+          session: '春期',
+          categoryId: categories.length > 2 ? categories[2].id : categories[0].id,
+          choices: {
+            create: [
+              { content: '確定的な応答時間を提供する', isCorrect: false },
+              { content: 'プリエンプティブなタスクスケジューリング', isCorrect: false },
+              { content: '高いスループットを重視する', isCorrect: true },
+              { content: '割り込み処理の高速化', isCorrect: false },
+            ],
+          },
+        },
+      }),
+      prisma.question.create({
+        data: {
+          content: 'マイクロコントローラにおけるハーバードアーキテクチャの特徴はどれか。',
+          explanation: 'ハーバードアーキテクチャは、プログラムメモリとデータメモリを物理的に分離したアーキテクチャです。',
+          difficulty: 2,
+          year: 2022,
+          session: '秋期',
+          categoryId: categories.length > 1 ? categories[1].id : categories[0].id,
+          choices: {
+            create: [
+              { content: 'プログラムとデータが同じメモリ空間を共有する', isCorrect: false },
+              { content: 'プログラムメモリとデータメモリが物理的に分離されている', isCorrect: true },
+              { content: 'キャッシュメモリを必ず搭載している', isCorrect: false },
+              { content: '仮想メモリ機能を提供する', isCorrect: false },
+            ],
+          },
+        },
+      }),
+      prisma.question.create({
+        data: {
+          content: 'DMA（Direct Memory Access）コントローラの主な利点として、最も適切なものはどれか。',
+          explanation: 'DMAはCPUを介さずにメモリと周辺機器間でデータ転送を行うため、CPUの負荷を軽減できます。',
+          difficulty: 2,
+          year: 2023,
+          session: '春期',
+          categoryId: categories.length > 1 ? categories[1].id : categories[0].id,
+          choices: {
+            create: [
+              { content: 'メモリ容量が増加する', isCorrect: false },
+              { content: 'CPUの処理負荷を軽減できる', isCorrect: true },
+              { content: '消費電力が削減される', isCorrect: false },
+              { content: 'クロック周波数を向上できる', isCorrect: false },
+            ],
+          },
+        },
+      }),
+      prisma.question.create({
+        data: {
+          content: '組込みCプログラミングにおいて、volatile キーワードを使用する主な理由はどれか。',
+          explanation: 'volatileキーワードは、変数がハードウェアや割り込みハンドラによって予期せず変更される可能性があることをコンパイラに通知します。',
+          difficulty: 2,
+          year: 2024,
+          session: '春期',
+          categoryId: categories.length > 2 ? categories[2].id : categories[0].id,
+          choices: {
+            create: [
+              { content: 'メモリ使用量を削減するため', isCorrect: false },
+              { content: 'コンパイラの最適化を抑制するため', isCorrect: true },
+              { content: '実行速度を向上させるため', isCorrect: false },
+              { content: 'スタックオーバーフローを防ぐため', isCorrect: false },
+            ],
+          },
+        },
+      }),
+    ]);
+    
+    await prisma.$disconnect();
+    
+    res.json({
+      status: 'SUCCESS',
+      message: 'Production seed completed successfully',
+      questionsCreated: sampleQuestions.length,
+      categoriesUsed: categories.length
+    });
+    
+  } catch (error) {
+    console.error('❌ Production seed failed:', error);
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Production seed failed',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 app.get('/api/categories-test', async (_req, res) => {
   try {
     console.log('🔍 Categories test started...');
