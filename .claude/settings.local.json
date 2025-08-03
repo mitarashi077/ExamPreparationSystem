@@ -36,7 +36,9 @@
       "Bash(npm install:*)",
       "Bash(gh pr checks:*)",
       "Bash(git merge:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(gh pr checkout:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": []
   },
