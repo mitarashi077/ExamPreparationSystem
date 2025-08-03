@@ -31,7 +31,10 @@
       "Bash(taskkill:*)",
       "Bash(claude-code doctor)",
       "Bash(gh pr create:*)",
-      "Bash(gh pr comment:*)"
+      "Bash(gh pr comment:*)",
+      "Bash(git remote:*)",
+      "Bash(npm install:*)",
+      "Bash(gh pr checks:*)"
     ],
     "deny": []
   },
