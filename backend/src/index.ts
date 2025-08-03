@@ -525,6 +525,89 @@ app.post('/api/db-migrate', async (_req, res) => {
   }
 })
 
+// Manual Bookmark table creation endpoint
+app.post('/api/create-bookmark-table', async (_req, res) => {
+  try {
+    console.log('🔖 Creating Bookmark table...');
+    const { PrismaClient } = await import('@prisma/client');
+    
+    // Clean DATABASE_URL if it has psql prefix
+    let cleanUrl = process.env.DATABASE_URL;
+    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+      cleanUrl = cleanUrl.slice(5, -1);
+    }
+    
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: cleanUrl
+        }
+      }
+    });
+    
+    await prisma.$connect();
+    console.log('✅ Connected to database');
+    
+    // Create Bookmark table
+    try {
+      await prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "Bookmark" (
+          "id" TEXT NOT NULL PRIMARY KEY,
+          "questionId" TEXT NOT NULL,
+          "userId" TEXT,
+          "memo" TEXT,
+          "isActive" BOOLEAN NOT NULL DEFAULT true,
+          "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY ("questionId") REFERENCES "Question"("id") ON DELETE CASCADE ON UPDATE CASCADE
+        );
+      `);
+      
+      // Create unique constraint for Bookmark
+      await prisma.$executeRawUnsafe(`
+        CREATE UNIQUE INDEX IF NOT EXISTS "Bookmark_questionId_userId_key" ON "Bookmark"("questionId", "userId");
+      `);
+      
+      console.log('✅ Bookmark table created successfully');
+      
+      // Verify table creation
+      const tables = await prisma.$queryRaw`
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        ORDER BY table_name
+      `;
+      
+      await prisma.$disconnect();
+      
+      res.json({
+        status: 'SUCCESS',
+        message: 'Bookmark table created successfully',
+        tables: tables,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (tableError) {
+      console.error('❌ Bookmark table creation failed:', tableError);
+      await prisma.$disconnect();
+      
+      res.status(500).json({
+        status: 'ERROR',
+        message: 'Bookmark table creation failed',
+        error: tableError instanceof Error ? tableError.message : 'Unknown error'
+      });
+    }
+    
+  } catch (error) {
+    console.error('❌ Bookmark table creation failed:', error);
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Bookmark table creation failed',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+})
+
 // Bookmark table test endpoint
 app.get('/api/bookmark-test', async (_req, res) => {
   try {
