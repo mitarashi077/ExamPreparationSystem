@@ -58,6 +58,13 @@ const HomePage = () => {
       category: '本格',
       onClick: () => navigate('/practice?mode=timed&time=15'),
     },
+    {
+      id: 'essay-demo',
+      title: '記述式問題デモ',
+      description: '午後試験対策の記述式問題エディタ。Markdown・コードハイライト対応',
+      category: '午後対策',
+      onClick: () => navigate('/essay-demo'),
+    },
   ]
 
   return (
