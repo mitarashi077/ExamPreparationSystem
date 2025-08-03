@@ -1,23 +1,24 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 
-// Clean DATABASE_URL if it has psql prefix
-let cleanUrl = process.env.DATABASE_URL;
-if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
-  cleanUrl = cleanUrl.slice(5, -1);
-}
-
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: cleanUrl
-    }
-  }
-})
-
 // カテゴリ一覧取得
 export const getCategories = async (_req: Request, res: Response): Promise<void> => {
   try {
+    // Clean DATABASE_URL if it has psql prefix (same as db-test endpoint)
+    let cleanUrl = process.env.DATABASE_URL;
+    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+      cleanUrl = cleanUrl.slice(5, -1);
+    }
+
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: cleanUrl
+        }
+      }
+    });
+
+    await prisma.$connect();
     const categories = await prisma.category.findMany({
       select: {
         id: true,
@@ -79,16 +80,43 @@ export const getCategories = async (_req: Request, res: Response): Promise<void>
       })
     )
 
+    await prisma.$disconnect();
     res.json(categoriesWithStats)
   } catch (error) {
     console.error('Error fetching categories:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.constructor.name : 'Unknown'
+    })
+    res.status(500).json({ 
+      error: 'Internal server error',
+      debug: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        name: error instanceof Error ? error.constructor.name : 'Unknown'
+      }
+    })
   }
 }
 
 // カテゴリ別詳細統計
 export const getCategoryStats = async (req: Request, res: Response): Promise<void> => {
   try {
+    // Clean DATABASE_URL if it has psql prefix (same as db-test endpoint)
+    let cleanUrl = process.env.DATABASE_URL;
+    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+      cleanUrl = cleanUrl.slice(5, -1);
+    }
+
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: cleanUrl
+        }
+      }
+    });
+
+    await prisma.$connect();
     const { id } = req.params
     const days = parseInt(req.query.days as string) || 30
 
@@ -105,6 +133,7 @@ export const getCategoryStats = async (req: Request, res: Response): Promise<voi
     })
 
     if (!category) {
+      await prisma.$disconnect();
       res.status(404).json({ error: 'Category not found' })
       return
     }
@@ -186,6 +215,7 @@ export const getCategoryStats = async (req: Request, res: Response): Promise<voi
       }))
       .sort((a, b) => a.date.localeCompare(b.date))
 
+    await prisma.$disconnect();
     res.json({
       category,
       summary: {
