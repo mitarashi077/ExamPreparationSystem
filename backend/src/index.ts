@@ -25,7 +25,21 @@ app.get('/api/health', (_req, res) => {
 app.get('/api/db-test', async (_req, res) => {
   try {
     const { PrismaClient } = await import('@prisma/client');
-    const prisma = new PrismaClient();
+    
+    // Clean DATABASE_URL if it has psql prefix
+    let cleanUrl = process.env.DATABASE_URL;
+    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+      cleanUrl = cleanUrl.slice(5, -1); // Remove "psql '" from start and "'" from end
+      console.log('🧹 Cleaned DATABASE_URL from psql format');
+    }
+    
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: cleanUrl
+        }
+      }
+    });
     
     // Check environment variables
     const databaseUrl = process.env.DATABASE_URL;
