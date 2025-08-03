@@ -6,6 +6,7 @@ import questionRoutes from './routes/questionRoutes'
 import answerRoutes from './routes/answerRoutes'
 import categoryRoutes from './routes/categoryRoutes'
 import reviewRoutes from './routes/reviewRoutes'
+import bookmarkRoutes from './routes/bookmarkRoutes'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -507,6 +508,7 @@ app.use('/api/questions', questionRoutes)
 app.use('/api/answers', answerRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/review', reviewRoutes)
+app.use('/api/bookmarks', bookmarkRoutes)
 
 // 404 handler
 app.use('*', (_req, res) => {
@@ -514,8 +516,8 @@ app.use('*', (_req, res) => {
 })
 
 // Error handler
-app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error('Unhandled error:', err)
+app.use((_err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  // Unhandled error logged
   res.status(500).json({ error: 'Internal server error' })
 })
 
