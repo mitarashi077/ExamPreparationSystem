@@ -15,15 +15,13 @@ import {
   CheckCircle as CorrectIcon,
   Cancel as IncorrectIcon,
   Info as InfoIcon,
-  Bookmark as BookmarkIcon,
-  BookmarkBorder as BookmarkBorderIcon,
 } from '@mui/icons-material'
 import TouchButton from './TouchButton'
 import ZoomableImage from './ZoomableImage'
 import EssayQuestionCard from './EssayQuestionCard'
+import BookmarkButton from './BookmarkButton'
 import { useQuestionStore } from '../stores/useQuestionStore'
 import { useAppStore } from '../stores/useAppStore'
-import { useBookmarkStore } from '../stores/useBookmarkStore'
 
 interface QuestionCardProps {
   question?: any // 復習モード用の直接問題データ
@@ -64,11 +62,6 @@ const QuestionCard = ({
   } = useQuestionStore()
   
   const { deviceType } = useAppStore()
-  const { 
-    isBookmarked, 
-    toggleBookmark, 
-    clearError 
-  } = useBookmarkStore()
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [showHint, setShowHint] = useState(false)
   
@@ -203,22 +196,6 @@ const QuestionCard = ({
     }
   }
 
-  const handleBookmarkToggle = () => {
-    if (!activeQuestion) return
-    
-    clearError()
-    
-    const questionData = {
-      content: activeQuestion.content,
-      categoryId: activeQuestion.categoryId,
-      categoryName: categoryName || 'カテゴリ未設定',
-      difficulty: activeQuestion.difficulty,
-      year: activeQuestion.year,
-      session: activeQuestion.session,
-    }
-    
-    toggleBookmark(activeQuestion.id, questionData)
-  }
 
   if (!activeQuestion) {
     return (
@@ -266,27 +243,20 @@ const QuestionCard = ({
           
           <Box display="flex" alignItems="center" gap={1}>
             {showBookmark && (
-              <TouchButton
-                size="small"
-                variant="text"
-                touchSize="medium"
-                onClick={handleBookmarkToggle}
-                sx={{
-                  minWidth: 44,
-                  minHeight: 44,
-                  color: isBookmarked(activeQuestion.id) ? 'warning.main' : 'action.active',
-                  '&:hover': {
-                    bgcolor: 'action.hover',
-                  },
+              <BookmarkButton
+                questionId={activeQuestion.id}
+                questionData={{
+                  content: activeQuestion.content,
+                  categoryId: activeQuestion.categoryId,
+                  categoryName: categoryName || 'カテゴリ未設定',
+                  difficulty: activeQuestion.difficulty,
+                  year: activeQuestion.year,
+                  session: activeQuestion.session,
                 }}
-                aria-label={isBookmarked(activeQuestion.id) ? 'ブックマークを削除' : 'ブックマークに追加'}
-              >
-                {isBookmarked(activeQuestion.id) ? (
-                  <BookmarkIcon />
-                ) : (
-                  <BookmarkBorderIcon />
-                )}
-              </TouchButton>
+                size="medium"
+                color="warning"
+                showAnimation={true}
+              />
             )}
             {showTimer && (
               <>
