@@ -14,22 +14,22 @@
       "use": "@vercel/node"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/backend/src/index.ts"
+      "source": "/api/(.*)",
+      "destination": "/backend/src/index.ts"
     },
     {
-      "src": "/manifest.json",
-      "dest": "/frontend/dist/manifest.json"
+      "source": "/manifest.json",
+      "destination": "/frontend/dist/manifest.json"
     },
     {
-      "src": "/sw.js",
-      "dest": "/frontend/dist/sw.js"
+      "source": "/sw.js",
+      "destination": "/frontend/dist/sw.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/frontend/dist/index.html"
+      "source": "/(.*)",
+      "destination": "/frontend/dist/index.html"
     }
   ],
   "env": {
