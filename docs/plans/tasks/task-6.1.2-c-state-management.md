@@ -29,19 +29,19 @@
 Zustandを使用してブックマーク機能の状態管理ストアを実装する。ブックマークの追加/削除、メモ編集、カテゴリ管理のアクションを定義し、TypeScript型安全性を確保する。現段階ではモック関数で動作確認を行う。
 
 ## 対象ファイル
-- [ ] frontend/src/stores/useBookmarkStore.ts（新規作成）
-- [ ] frontend/src/types/bookmark.ts（新規作成）
+- [x] frontend/src/stores/useBookmarkStore.ts（新規作成）
+- [x] frontend/src/types/bookmark.ts（新規作成）
 
 ## 実装手順（TDD: Red-Green-Refactor）
 
 ### 1. **Red Phase - 失敗するテストを書く**
-   - [ ] ブックマーク状態管理ストアの基本動作テスト作成
-   - [ ] addBookmark, removeBookmark, updateMemo アクションのテスト作成
-   - [ ] 状態の永続化と復元のテスト作成
-   - [ ] テスト実行して失敗を確認：`npm test -- useBookmarkStore.test.ts`
+   - [x] ブックマーク状態管理ストアの基本動作テスト作成
+   - [x] addBookmark, removeBookmark, updateMemo アクションのテスト作成
+   - [x] 状態の永続化と復元のテスト作成
+   - [x] テスト実行して失敗を確認：`npm test -- useBookmarkStore.test.ts`
 
 ### 2. **Green Phase - 最小限の実装**
-   - [ ] TypeScript型定義の作成：
+   - [x] TypeScript型定義の作成：
      ```typescript
      export interface Bookmark {
        id: number;
@@ -61,22 +61,22 @@ Zustandを使用してブックマーク機能の状態管理ストアを実装�
        isBookmarked: (questionId: number) => boolean;
      }
      ```
-   - [ ] Zustandストアの基本実装（モック関数）
-   - [ ] 追加したテストのみ実行して通ることを確認
+   - [x] Zustandストアの基本実装（モック関数）
+   - [x] 追加したテストのみ実行して通ることを確認
 
 ### 3. **Refactor Phase - コード改善**
-   - [ ] ローカルストレージ連携の実装（永続化）
-   - [ ] カテゴリ管理機能の追加
-   - [ ] フィルタリング・検索機能のサポート
-   - [ ] エラーハンドリングの実装
-   - [ ] 追加したテストが引き続き通ることを確認
+   - [x] ローカルストレージ連携の実装（永続化）
+   - [x] カテゴリ管理機能の追加
+   - [x] フィルタリング・検索機能のサポート
+   - [x] エラーハンドリングの実装
+   - [x] 追加したテストが引き続き通ることを確認
 
 ## 完了条件
-- [ ] Red Phase: ブックマーク状態管理の動作テストを作成済み
-- [ ] Green Phase: 最小限のストア実装でテストがパス
-- [ ] Refactor Phase: 永続化・カテゴリ管理実装済み、追加したテストが通る状態を維持
-- [ ] 追加した状態管理テストのみが全てパス（全体テストは品質保証工程で実施）
-- [ ] **注記**: 全体品質保証とコミット作成は品質保証工程で別途実施
+- [x] Red Phase: ブックマーク状態管理の動作テストを作成済み
+- [x] Green Phase: 最小限のストア実装でテストがパス
+- [x] Refactor Phase: 永続化・カテゴリ管理実装済み、追加したテストが通る状態を維持
+- [x] 追加した状態管理テストのみが全てパス（全体テストは品質保証工程で実施）
+- [x] **注記**: 全体品質保証とコミット作成は品質保証工程で別途実施
 
 ## 注意事項
 ### 実装上の注意

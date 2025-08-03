@@ -6,7 +6,7 @@ import PracticePage from './pages/PracticePage'
 import ProgressPage from './pages/ProgressPage'
 import SettingsPage from './pages/SettingsPage'
 import ReviewPage from './pages/ReviewPage'
-import BookmarkPage from './pages/BookmarkPage'
+import BookmarksPage from './pages/BookmarksPage'
 import EssayQuestionDemo from './pages/EssayQuestionDemo'
 import { useDeviceDetection } from './hooks/useDeviceDetection'
 
@@ -25,7 +25,7 @@ function App() {
             <Route path="/practice" element={<PracticePage />} />
             <Route path="/progress" element={<ProgressPage />} />
             <Route path="/review" element={<ReviewPage />} />
-            <Route path="/bookmarks" element={<BookmarkPage />} />
+            <Route path="/bookmarks" element={<BookmarksPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/essay-demo" element={<EssayQuestionDemo />} />
           </Routes>

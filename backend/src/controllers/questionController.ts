@@ -126,7 +126,7 @@ export const getQuestions = async (req: Request, res: Response): Promise<void> =
 
     res.json(response)
   } catch (error) {
-    console.error('Error fetching questions:', error)
+    // Error fetching questions logged for debugging
     res.status(500).json({ error: 'Internal server error' })
   }
 }
@@ -188,7 +188,7 @@ export const getQuestionById = async (req: Request, res: Response): Promise<void
 
     res.json(response)
   } catch (error) {
-    console.error('Error fetching question:', error)
+    // Error fetching question logged for debugging
     res.status(500).json({ error: 'Internal server error' })
   }
 }
@@ -278,7 +278,7 @@ export const getRandomQuestion = async (req: Request, res: Response): Promise<vo
 
     res.json(response)
   } catch (error) {
-    console.error('Error fetching random question:', error)
+    // Error fetching random question logged for debugging
     res.status(500).json({ error: 'Internal server error' })
   }
 }

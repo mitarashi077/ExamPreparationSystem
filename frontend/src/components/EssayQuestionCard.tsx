@@ -21,13 +21,10 @@ import {
   Schedule as TimeIcon,
   Star as DifficultyIcon,
   Info as InfoIcon,
-  Bookmark as BookmarkIcon,
-  BookmarkBorder as BookmarkBorderIcon,
   Save as SaveIcon,
   Preview as PreviewIcon,
   Edit as EditIcon,
   Send as SubmitIcon,
-  Code as CodeIcon,
   Fullscreen as FullscreenIcon,
   FullscreenExit as FullscreenExitIcon,
 } from '@mui/icons-material'
@@ -36,9 +33,9 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import Editor from '@monaco-editor/react'
 import TouchButton from './TouchButton'
+import BookmarkButton from './BookmarkButton'
 import { useQuestionStore, Question } from '../stores/useQuestionStore'
 import { useAppStore } from '../stores/useAppStore'
-import { useBookmarkStore } from '../stores/useBookmarkStore'
 
 interface EssayQuestionCardProps {
   question?: Question
@@ -65,7 +62,6 @@ const EssayQuestionCard = ({
   const {
     currentQuestion,
     essayContent,
-    isEssayPreview,
     currentEssayAnswer,
     showResult,
     questionStartTime,
@@ -77,11 +73,6 @@ const EssayQuestionCard = ({
   } = useQuestionStore()
   
   const { deviceType } = useAppStore()
-  const {
-    isBookmarked,
-    toggleBookmark,
-    clearError
-  } = useBookmarkStore()
   
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [showHint, setShowHint] = useState(false)
@@ -184,22 +175,6 @@ const EssayQuestionCard = ({
     }
   }
 
-  const handleBookmarkToggle = () => {
-    if (!activeQuestion) return
-    
-    clearError()
-    
-    const questionData = {
-      content: activeQuestion.content,
-      categoryId: activeQuestion.categoryId,
-      categoryName: categoryName || 'カテゴリ未設定',
-      difficulty: activeQuestion.difficulty,
-      year: activeQuestion.year,
-      session: activeQuestion.session,
-    }
-    
-    toggleBookmark(activeQuestion.id, questionData)
-  }
 
   const handleTabChange = (_: any, newValue: number) => {
     setCurrentTab(newValue)
@@ -284,27 +259,20 @@ const EssayQuestionCard = ({
             </Tooltip>
             
             {showBookmark && (
-              <TouchButton
-                size="small"
-                variant="text"
-                touchSize="medium"
-                onClick={handleBookmarkToggle}
-                sx={{
-                  minWidth: 44,
-                  minHeight: 44,
-                  color: isBookmarked(activeQuestion.id) ? 'warning.main' : 'action.active',
-                  '&:hover': {
-                    bgcolor: 'action.hover',
-                  },
+              <BookmarkButton
+                questionId={activeQuestion.id}
+                questionData={{
+                  content: activeQuestion.content,
+                  categoryId: activeQuestion.categoryId,
+                  categoryName: categoryName || 'カテゴリ未設定',
+                  difficulty: activeQuestion.difficulty,
+                  year: activeQuestion.year,
+                  session: activeQuestion.session,
                 }}
-                aria-label={isBookmarked(activeQuestion.id) ? 'ブックマークを削除' : 'ブックマークに追加'}
-              >
-                {isBookmarked(activeQuestion.id) ? (
-                  <BookmarkIcon />
-                ) : (
-                  <BookmarkBorderIcon />
-                )}
-              </TouchButton>
+                size="medium"
+                color="warning"
+                showAnimation={true}
+              />
             )}
             
             {showTimer && (

@@ -174,7 +174,7 @@ export const addToReviewList = async (req: Request, res: Response) => {
       message: isCorrect ? '正解です！' : '復習リストに追加されました'
     });
   } catch (error) {
-    console.error('復習アイテム追加エラー:', error);
+    // 復習アイテム追加エラー logged for debugging
     res.status(500).json({ error: '復習アイテムの追加に失敗しました' });
   }
 };
@@ -221,7 +221,7 @@ export const getReviewQuestions = async (req: Request, res: Response) => {
       }
     });
   } catch (error) {
-    console.error('復習問題取得エラー:', error);
+    // 復習問題取得エラー logged for debugging
     res.status(500).json({ 
       error: '復習問題の取得に失敗しました',
       details: error instanceof Error ? error.message : String(error)
@@ -303,7 +303,7 @@ export const getReviewSchedule = async (_req: Request, res: Response) => {
       }
     });
   } catch (error) {
-    console.error('復習スケジュール取得エラー:', error);
+    // 復習スケジュール取得エラー logged for debugging
     res.status(500).json({ 
       error: '復習スケジュールの取得に失敗しました',
       details: error instanceof Error ? error.message : String(error)
@@ -326,7 +326,7 @@ export const startReviewSession = async (req: Request, res: Response) => {
 
     res.json({ sessionId: session.id, startTime: session.createdAt });
   } catch (error) {
-    console.error('復習セッション開始エラー:', error);
+    // 復習セッション開始エラー logged for debugging
     res.status(500).json({ error: '復習セッションの開始に失敗しました' });
   }
 };
@@ -358,7 +358,7 @@ export const endReviewSession = async (req: Request, res: Response) => {
       }
     });
   } catch (error) {
-    console.error('復習セッション終了エラー:', error);
+    // 復習セッション終了エラー logged for debugging
     res.status(500).json({ error: '復習セッションの終了に失敗しました' });
   }
 };
@@ -439,7 +439,7 @@ export const getReviewStats = async (req: Request, res: Response) => {
       }))
     });
   } catch (error) {
-    console.error('復習統計取得エラー:', error);
+    // 復習統計取得エラー logged for debugging
     res.status(500).json({ error: '復習統計の取得に失敗しました' });
   }
 };

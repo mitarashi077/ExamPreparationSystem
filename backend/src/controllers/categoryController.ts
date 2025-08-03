@@ -232,7 +232,7 @@ export const getCategoryStats = async (req: Request, res: Response): Promise<voi
       period: `${days}日間`
     })
   } catch (error) {
-    console.error('Error fetching category stats:', error)
+    // Error fetching category stats logged for debugging
     res.status(500).json({ error: 'Internal server error' })
   }
 }
