@@ -21,6 +21,71 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'OK', message: 'Server is running' })
 })
 
+// Simple categories test
+app.get('/api/categories-test', async (_req, res) => {
+  try {
+    console.log('🔍 Categories test started...');
+    const { PrismaClient } = await import('@prisma/client');
+    
+    // Clean DATABASE_URL if it has psql prefix
+    let cleanUrl = process.env.DATABASE_URL;
+    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+      cleanUrl = cleanUrl.slice(5, -1);
+      console.log('🧹 Cleaned DATABASE_URL from psql format');
+    }
+    
+    console.log('📊 Creating Prisma client...');
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: cleanUrl
+        }
+      }
+    });
+    
+    console.log('🔌 Connecting to database...');
+    await prisma.$connect();
+    console.log('✅ Connected successfully');
+    
+    console.log('📋 Fetching categories...');
+    const categories = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true
+      }
+    });
+    console.log(`📊 Found ${categories.length} categories:`, categories);
+    
+    await prisma.$disconnect();
+    console.log('🔌 Disconnected from database');
+    
+    res.json({ 
+      status: 'SUCCESS',
+      message: 'Categories test completed',
+      count: categories.length,
+      categories: categories
+    });
+    
+  } catch (error) {
+    console.error('❌ Categories test failed:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack?.split('\n').slice(0, 5) : undefined,
+      name: error instanceof Error ? error.constructor.name : 'Unknown'
+    });
+    
+    res.status(500).json({ 
+      status: 'ERROR',
+      error: 'Categories test failed',
+      debug: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        name: error instanceof Error ? error.constructor.name : 'Unknown'
+      }
+    });
+  }
+})
+
 // Database connection test
 app.get('/api/db-test', async (_req, res) => {
   try {

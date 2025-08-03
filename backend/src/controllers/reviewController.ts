@@ -2,10 +2,16 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 
+// Clean DATABASE_URL if it has psql prefix
+let cleanUrl = process.env.DATABASE_URL;
+if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+  cleanUrl = cleanUrl.slice(5, -1);
+}
+
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: 'file:C:/work/05_git/ExamPreparationSystem/database/exam_prep.db'
+      url: cleanUrl
     }
   }
 });
