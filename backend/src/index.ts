@@ -23,7 +23,9 @@ app.get('/api/health', (_req, res) => {
     status: 'OK', 
     message: 'Server is running',
     environment: process.env.NODE_ENV,
-    database_configured: !!process.env.DATABASE_URL
+    database_configured: !!process.env.DATABASE_URL,
+    timestamp: new Date().toISOString(),
+    version: '1.1.0'
   })
 })
 
