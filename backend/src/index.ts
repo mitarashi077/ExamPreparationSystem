@@ -17,18 +17,18 @@ app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
 
 // Health check
-app.get('/api/health', (_req, res) => {
+app.get('/health', (_req, res) => {
   res.json({ status: 'OK', message: 'Server is running' })
 })
 
 // API Routes
-app.use('/api/questions', questionRoutes)
-app.use('/api/answers', answerRoutes)
-app.use('/api/categories', categoryRoutes)
-app.use('/api/review', reviewRoutes)
+app.use('/questions', questionRoutes)
+app.use('/answers', answerRoutes)
+app.use('/categories', categoryRoutes)
+app.use('/review', reviewRoutes)
 
 // 404 handler
-app.use('/api/*', (_req, res) => {
+app.use('*', (_req, res) => {
   res.status(404).json({ error: 'API endpoint not found' })
 })
 
@@ -38,7 +38,13 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(500).json({ error: 'Internal server error' })
 })
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`)
-  console.log(`Health check: http://localhost:${PORT}/api/health`)
-})
+// Export for Vercel serverless
+export default app
+
+// Local development server
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`)
+    console.log(`Health check: http://localhost:${PORT}/api/health`)
+  })
+}
