@@ -17,15 +17,15 @@ app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
 
 // Health check
-app.get('/health', (_req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'OK', message: 'Server is running' })
 })
 
 // API Routes
-app.use('/questions', questionRoutes)
-app.use('/answers', answerRoutes)
-app.use('/categories', categoryRoutes)
-app.use('/review', reviewRoutes)
+app.use('/api/questions', questionRoutes)
+app.use('/api/answers', answerRoutes)
+app.use('/api/categories', categoryRoutes)
+app.use('/api/review', reviewRoutes)
 
 // 404 handler
 app.use('*', (_req, res) => {
