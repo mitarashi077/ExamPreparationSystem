@@ -6,7 +6,8 @@
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "frontend/dist",
+        "buildCommand": "cd frontend && npm run build"
       }
     },
     {
@@ -20,16 +21,8 @@
       "destination": "/backend/src/index.ts"
     },
     {
-      "source": "/manifest.json",
-      "destination": "/frontend/dist/manifest.json"
-    },
-    {
-      "source": "/sw.js",
-      "destination": "/frontend/dist/sw.js"
-    },
-    {
       "source": "/(.*)",
-      "destination": "/frontend/dist/index.html"
+      "destination": "/index.html"
     }
   ],
   "env": {
