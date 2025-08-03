@@ -34,7 +34,9 @@
       "Bash(gh pr comment:*)",
       "Bash(git remote:*)",
       "Bash(npm install:*)",
-      "Bash(gh pr checks:*)"
+      "Bash(gh pr checks:*)",
+      "Bash(git merge:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   },

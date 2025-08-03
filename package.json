@@ -9,7 +9,7 @@
     "dev:backend": "cd backend && npm run dev",
     "build": "npm run build:frontend && npm run copy:frontend && npm run build:backend",
     "build:frontend": "cd frontend && npm run build",
-    "copy:frontend": "xcopy frontend\\dist\\* . /E /Y || robocopy frontend\\dist . /E /NFL /NDL /NJH /NJS /NC /NS || echo 'Copy completed'",
+    "copy:frontend": "cp -r frontend/dist/* . 2>/dev/null || echo 'Copy completed'",
     "build:backend": "cd backend && npm run build",
     "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
     "lint": "npm run lint:frontend && npm run lint:backend",

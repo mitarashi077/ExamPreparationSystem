@@ -132,7 +132,7 @@ app.get('/api/db-test', async (_req, res) => {
     console.log('Existing tables:', tables);
     
     // Only try question count if Question table exists
-    let questionCount = 'N/A';
+    let questionCount: number | string = 'N/A';
     try {
       questionCount = await prisma.question.count();
       console.log('Question count:', questionCount);
