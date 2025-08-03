@@ -1,0 +1,8 @@
+🔒 Claude Code Essential Rules
+
+1. Atomic commits (1 feature = 1 commit)
+2. Use Sub-agents for specialized tasks  
+3. TDD (Test → Code → Refactor)
+4. Quality checks before commit
+
+That's it. Keep it simple.
