@@ -8,15 +8,16 @@ datasource db {
 }
 
 model Category {
-  id          String     @id @default(cuid())
+  id          String        @id @default(cuid())
   name        String
   description String?
   parentId    String?
-  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children    Category[] @relation("CategoryHierarchy")
+  parent      Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[]    @relation("CategoryHierarchy")
   questions   Question[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  studyTargets StudyTarget[] // 学習目標との関連
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 model Question {
@@ -108,4 +109,39 @@ model Bookmark {
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@unique([questionId, userId]) // 同一ユーザー・問題の重複防止
+}
+
+// 試験スケジュール管理テーブル - 試験日程・目標管理
+model ExamSchedule {
+  id          String   @id @default(cuid())
+  examType    String   // "spring" | "autumn" | "special"
+  examDate    DateTime
+  targetScore Int?     // 目標点数（オプション）
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  studyTargets StudyTarget[]
+  
+  @@index([examDate, isActive])
+}
+
+// 学習目標管理テーブル - カテゴリ別・期間別の学習目標
+model StudyTarget {
+  id             String   @id @default(cuid())
+  examScheduleId String
+  categoryId     String?  // カテゴリ別目標（オプション）
+  targetType     String   // "daily" | "weekly" | "total"
+  targetValue    Int      // 目標値（問題数・時間など）
+  currentValue   Int      @default(0)
+  unit          String   // "questions" | "minutes" | "sessions"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  examSchedule ExamSchedule @relation(fields: [examScheduleId], references: [id], onDelete: Cascade)
+  category     Category?    @relation(fields: [categoryId], references: [id])
+  
+  @@index([examScheduleId])
 }
