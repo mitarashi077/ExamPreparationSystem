@@ -64,7 +64,14 @@
       "Bash(npm run build:*)",
       "Bash(DATABASE_URL=\"postgresql://dummy:dummy@localhost:5432/dummy\" npm run generate)",
       "Bash(DATABASE_URL=\"postgresql://dummy:dummy@localhost:5432/dummy\" npx prisma generate --schema=../database/schema.prisma)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm start)",
+      "Bash(pkill:*)",
+      "Bash(for f in essayController.ts examScheduleController.ts reviewController.ts)",
+      "Bash(do sed -i 's/let cleanUrl = process.env.DATABASE_URL;//g' \"$f\")",
+      "Bash(sed:*)",
+      "Bash(done)"
     ],
     "deny": []
   },
