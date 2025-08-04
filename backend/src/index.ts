@@ -7,6 +7,8 @@ import answerRoutes from './routes/answerRoutes'
 import categoryRoutes from './routes/categoryRoutes'
 import reviewRoutes from './routes/reviewRoutes'
 import bookmarkRoutes from './routes/bookmarkRoutes'
+import examScheduleRoutes from './routes/examScheduleRoutes'
+import essayRoutes from './routes/essayRoutes'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -741,12 +743,20 @@ app.use('/api/questions', questionRoutes)
 app.use('/api/answers', answerRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/review', reviewRoutes)
+app.use('/api/essays', essayRoutes)
 console.log('📚 Registering bookmark routes at startup...')
 try {
   app.use('/api/bookmarks', bookmarkRoutes)
   console.log('✅ Bookmark routes registered successfully')
 } catch (error) {
   console.error('❌ Failed to register bookmark routes:', error)
+}
+console.log('📅 Registering exam schedule routes at startup...')
+try {
+  app.use('/api/exam-schedules', examScheduleRoutes)
+  console.log('✅ Exam schedule routes registered successfully')
+} catch (error) {
+  console.error('❌ Failed to register exam schedule routes:', error)
 }
 
 // Debug route to check bookmark import

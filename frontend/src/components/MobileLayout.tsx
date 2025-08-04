@@ -30,10 +30,13 @@ import {
   SwipeRight as SwipeRightIcon,
   Info as InfoIcon,
   Bookmark as BookmarkIcon,
+  Schedule as ScheduleIcon,
+  EmojiEvents as GoalsIcon,
 } from '@mui/icons-material'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppStore } from '../stores/useAppStore'
 import { useSwipeNavigation } from '../hooks/useSwipeNavigation'
+import CompactCountdown from './CompactCountdown'
 
 interface MobileLayoutProps {
   children: React.ReactNode
@@ -75,6 +78,8 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
     { text: 'ホーム', icon: <HomeIcon />, path: '/', badge: 0 },
     { text: '問題演習', icon: <QuizIcon />, path: '/practice', badge: 0 },
     { text: 'ブックマーク', icon: <BookmarkIcon />, path: '/bookmarks', badge: 0 },
+    { text: '試験日程', icon: <ScheduleIcon />, path: '/exam-schedule', badge: 0 },
+    { text: '目標管理', icon: <GoalsIcon />, path: '/goals', badge: 0 },
     { text: '進捗確認', icon: <ProgressIcon />, path: '/progress', badge: 0 },
     { text: '設定', icon: <SettingsIcon />, path: '/settings', badge: 0 },
   ]
@@ -202,11 +207,14 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
             ESS試験対策
           </Typography>
           
-          {!isOnline && (
-            <IconButton color="inherit" size="small">
-              <OfflineIcon />
-            </IconButton>
-          )}
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <CompactCountdown />
+            {!isOnline && (
+              <IconButton color="inherit" size="small">
+                <OfflineIcon />
+              </IconButton>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
 

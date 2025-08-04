@@ -4,6 +4,20 @@ export interface Choice {
   isCorrect: boolean
 }
 
+export interface QuestionSection {
+  id: string
+  questionId: string
+  title: string
+  content: string
+  order: number
+  sectionType: 'introduction' | 'main' | 'subsection' | 'conclusion'
+  hasImage: boolean
+  hasTable: boolean
+  hasCode: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Question {
   id: string
   content: string
@@ -12,7 +26,27 @@ export interface Question {
   year?: number
   session?: string
   categoryId: string
+  questionType?: 'multiple_choice' | 'essay' | 'long_form'
+  maxScore?: number
+  sampleAnswer?: string
+  hasImages?: boolean
+  hasTables?: boolean
+  hasCodeBlocks?: boolean
+  readingTime?: number
+  sections?: QuestionSection[]
   choices: Choice[]
+}
+
+export interface EssayAnswer {
+  id: string
+  content: string
+  timeSpent?: number
+  deviceType?: string
+  isDraft: boolean
+  score?: number
+  feedback?: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface QuestionSummary {
@@ -51,4 +85,5 @@ export interface QuestionDetailResponse {
     timeSpent?: number
     createdAt: string
   }
+  essayAnswer?: EssayAnswer
 }

@@ -7,7 +7,11 @@ import ProgressPage from './pages/ProgressPage'
 import SettingsPage from './pages/SettingsPage'
 import ReviewPage from './pages/ReviewPage'
 import BookmarksPage from './pages/BookmarksPage'
+import ExamSchedulePage from './pages/ExamSchedulePage'
+import GoalManagementPage from './pages/GoalManagementPage'
 import EssayQuestionDemo from './pages/EssayQuestionDemo'
+import EssayPracticeDemo from './pages/EssayPracticeDemo'
+import LongQuestionDemo from './pages/LongQuestionDemo'
 import { useDeviceDetection } from './hooks/useDeviceDetection'
 
 function App() {
@@ -26,8 +30,12 @@ function App() {
             <Route path="/progress" element={<ProgressPage />} />
             <Route path="/review" element={<ReviewPage />} />
             <Route path="/bookmarks" element={<BookmarksPage />} />
+            <Route path="/exam-schedule" element={<ExamSchedulePage />} />
+            <Route path="/goals" element={<GoalManagementPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/essay-demo" element={<EssayQuestionDemo />} />
+            <Route path="/essay-practice" element={<EssayPracticeDemo />} />
+            <Route path="/long-question-demo" element={<LongQuestionDemo />} />
           </Routes>
         </Box>
       </Container>

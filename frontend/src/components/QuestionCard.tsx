@@ -19,6 +19,7 @@ import {
 import TouchButton from './TouchButton'
 import ZoomableImage from './ZoomableImage'
 import EssayQuestionCard from './EssayQuestionCard'
+import LongQuestionDisplay from './LongQuestionDisplay'
 import BookmarkButton from './BookmarkButton'
 import { useQuestionStore } from '../stores/useQuestionStore'
 import { useAppStore } from '../stores/useAppStore'
@@ -87,6 +88,24 @@ const QuestionCard = ({
         onNextQuestion={onNextQuestion}
         showTimer={showTimer}
         timeLimit={timeLimit}
+        showBookmark={showBookmark}
+        categoryName={categoryName}
+      />
+    )
+  }
+
+  // 長文問題の場合はLongQuestionDisplayを使用
+  if (activeQuestion?.questionType === 'long_form') {
+    return (
+      <LongQuestionDisplay
+        question={activeQuestion}
+        onAnswer={onAnswer}
+        onEssaySubmit={onEssaySubmit}
+        onNextQuestion={onNextQuestion}
+        showTimer={showTimer}
+        timeLimit={timeLimit}
+        reviewMode={reviewMode}
+        showExplanation={showExplanation}
         showBookmark={showBookmark}
         categoryName={categoryName}
       />

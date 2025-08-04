@@ -8,32 +8,61 @@ datasource db {
 }
 
 model Category {
-  id          String     @id @default(cuid())
+  id          String        @id @default(cuid())
   name        String
   description String?
   parentId    String?
-  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children    Category[] @relation("CategoryHierarchy")
+  parent      Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[]    @relation("CategoryHierarchy")
   questions   Question[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  studyTargets StudyTarget[] // 学習目標との関連
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 model Question {
+  id           String       @id @default(cuid())
+  content      String
+  explanation  String?
+  difficulty   Int          @default(1) // 1-5 scale
+  year         Int?
+  session      String?      // 春期、秋期など
+  categoryId   String
+  questionType String       @default("multiple_choice") // "multiple_choice" | "essay" | "long_form"
+  maxScore     Int?         // 記述式問題の満点（記述式問題のみ）
+  sampleAnswer String?      // 記述式問題のサンプル回答（Markdown形式）
+  // Long-form question support
+  hasImages    Boolean      @default(false)
+  hasTables    Boolean      @default(false)
+  hasCodeBlocks Boolean     @default(false)
+  readingTime  Int?         // 推定読解時間（分）
+  category     Category     @relation(fields: [categoryId], references: [id])
+  choices      Choice[]
+  answers      Answer[]
+  essayAnswers EssayAnswer[] // 記述式回答との関連
+  reviewItems  ReviewItem[] // 復習管理との関連
+  bookmarks    Bookmark[]   // ブックマーク機能との関連
+  sections     QuestionSection[] // 長文問題のセクション
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+// 長文問題のセクション管理
+model QuestionSection {
   id          String       @id @default(cuid())
-  content     String
-  explanation String?
-  difficulty  Int          @default(1) // 1-5 scale
-  year        Int?
-  session     String?      // 春期、秋期など
-  categoryId  String
-  category    Category     @relation(fields: [categoryId], references: [id])
-  choices     Choice[]
-  answers     Answer[]
-  reviewItems ReviewItem[] // 復習管理との関連
-  bookmarks   Bookmark[]   // ブックマーク機能との関連
+  questionId  String
+  title       String
+  content     String       // Markdown形式のコンテンツ
+  order       Int          // セクション順序
+  sectionType String       @default("main") // "introduction" | "main" | "subsection" | "conclusion"
+  hasImage    Boolean      @default(false)
+  hasTable    Boolean      @default(false)
+  hasCode     Boolean      @default(false)
+  question    Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+
+  @@index([questionId, order])
 }
 
 model Choice {
@@ -54,6 +83,23 @@ model Answer {
   questionId String
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
+}
+
+// 記述式回答テーブル - 記述式問題の回答管理
+model EssayAnswer {
+  id         String   @id @default(cuid())
+  content    String   // Markdown形式の回答内容
+  timeSpent  Int?     // seconds
+  deviceType String?  // "pc", "mobile", "tablet"
+  isDraft    Boolean  @default(false) // 下書きフラグ
+  score      Int?     // 採点結果（手動採点）
+  feedback   String?  // フィードバック
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([questionId, isDraft])
 }
 
 model StudySession {
@@ -108,4 +154,39 @@ model Bookmark {
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@unique([questionId, userId]) // 同一ユーザー・問題の重複防止
+}
+
+// 試験スケジュール管理テーブル - 試験日程・目標管理
+model ExamSchedule {
+  id          String   @id @default(cuid())
+  examType    String   // "spring" | "autumn" | "special"
+  examDate    DateTime
+  targetScore Int?     // 目標点数（オプション）
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  studyTargets StudyTarget[]
+  
+  @@index([examDate, isActive])
+}
+
+// 学習目標管理テーブル - カテゴリ別・期間別の学習目標
+model StudyTarget {
+  id             String   @id @default(cuid())
+  examScheduleId String
+  categoryId     String?  // カテゴリ別目標（オプション）
+  targetType     String   // "daily" | "weekly" | "total"
+  targetValue    Int      // 目標値（問題数・時間など）
+  currentValue   Int      @default(0)
+  unit          String   // "questions" | "minutes" | "sessions"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  examSchedule ExamSchedule @relation(fields: [examScheduleId], references: [id], onDelete: Cascade)
+  category     Category?    @relation(fields: [categoryId], references: [id])
+  
+  @@index([examScheduleId])
 }

@@ -2,19 +2,7 @@ import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { QuestionListResponse, QuestionDetailResponse } from '../types/Question'
 
-// Clean DATABASE_URL if it has psql prefix
-let cleanUrl = process.env.DATABASE_URL;
-if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
-  cleanUrl = cleanUrl.slice(5, -1);
-}
-
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: cleanUrl
-    }
-  }
-})
+const prisma = new PrismaClient()
 
 // 問題一覧取得（軽量レスポンス・ページネーション対応）
 export const getQuestions = async (req: Request, res: Response): Promise<void> => {
@@ -150,6 +138,20 @@ export const getQuestionById = async (req: Request, res: Response): Promise<void
             createdAt: 'desc'
           }
         },
+        essayAnswers: {
+          where: {
+            isDraft: false
+          },
+          take: 1,
+          orderBy: {
+            createdAt: 'desc'
+          }
+        },
+        sections: {
+          orderBy: {
+            order: 'asc'
+          }
+        },
         category: {
           select: {
             name: true
@@ -172,6 +174,26 @@ export const getQuestionById = async (req: Request, res: Response): Promise<void
         year: question.year || undefined,
         session: question.session || undefined,
         categoryId: question.categoryId,
+        questionType: (question.questionType as 'multiple_choice' | 'essay' | 'long_form') || 'multiple_choice',
+        maxScore: question.maxScore || undefined,
+        sampleAnswer: question.sampleAnswer || undefined,
+        hasImages: question.hasImages || false,
+        hasTables: question.hasTables || false,
+        hasCodeBlocks: question.hasCodeBlocks || false,
+        readingTime: question.readingTime || undefined,
+        sections: question.sections?.map(section => ({
+          id: section.id,
+          questionId: section.questionId,
+          title: section.title,
+          content: section.content,
+          order: section.order,
+          sectionType: section.sectionType as 'introduction' | 'main' | 'subsection' | 'conclusion',
+          hasImage: section.hasImage,
+          hasTable: section.hasTable,
+          hasCode: section.hasCode,
+          createdAt: section.createdAt.toISOString(),
+          updatedAt: section.updatedAt.toISOString()
+        })) || [],
         choices: question.choices.map(choice => ({
           id: choice.id,
           content: choice.content,
@@ -183,6 +205,17 @@ export const getQuestionById = async (req: Request, res: Response): Promise<void
         isCorrect: question.answers[0].isCorrect,
         timeSpent: question.answers[0].timeSpent || undefined,
         createdAt: question.answers[0].createdAt.toISOString()
+      } : undefined,
+      essayAnswer: question.essayAnswers.length > 0 ? {
+        id: question.essayAnswers[0].id,
+        content: question.essayAnswers[0].content,
+        timeSpent: question.essayAnswers[0].timeSpent || undefined,
+        deviceType: question.essayAnswers[0].deviceType || undefined,
+        isDraft: question.essayAnswers[0].isDraft,
+        score: question.essayAnswers[0].score || undefined,
+        feedback: question.essayAnswers[0].feedback || undefined,
+        createdAt: question.essayAnswers[0].createdAt.toISOString(),
+        updatedAt: question.essayAnswers[0].updatedAt.toISOString()
       } : undefined
     }
 
@@ -242,6 +275,15 @@ export const getRandomQuestion = async (req: Request, res: Response): Promise<vo
           orderBy: {
             createdAt: 'desc'
           }
+        },
+        essayAnswers: {
+          where: {
+            isDraft: false
+          },
+          take: 1,
+          orderBy: {
+            createdAt: 'desc'
+          }
         }
       }
     })
@@ -262,6 +304,9 @@ export const getRandomQuestion = async (req: Request, res: Response): Promise<vo
         year: selectedQuestion.year || undefined,
         session: selectedQuestion.session || undefined,
         categoryId: selectedQuestion.categoryId,
+        questionType: (selectedQuestion.questionType as 'multiple_choice' | 'essay') || 'multiple_choice',
+        maxScore: selectedQuestion.maxScore || undefined,
+        sampleAnswer: selectedQuestion.sampleAnswer || undefined,
         choices: selectedQuestion.choices.map(choice => ({
           id: choice.id,
           content: choice.content,
@@ -273,6 +318,17 @@ export const getRandomQuestion = async (req: Request, res: Response): Promise<vo
         isCorrect: selectedQuestion.answers[0].isCorrect,
         timeSpent: selectedQuestion.answers[0].timeSpent || undefined,
         createdAt: selectedQuestion.answers[0].createdAt.toISOString()
+      } : undefined,
+      essayAnswer: selectedQuestion.essayAnswers.length > 0 ? {
+        id: selectedQuestion.essayAnswers[0].id,
+        content: selectedQuestion.essayAnswers[0].content,
+        timeSpent: selectedQuestion.essayAnswers[0].timeSpent || undefined,
+        deviceType: selectedQuestion.essayAnswers[0].deviceType || undefined,
+        isDraft: selectedQuestion.essayAnswers[0].isDraft,
+        score: selectedQuestion.essayAnswers[0].score || undefined,
+        feedback: selectedQuestion.essayAnswers[0].feedback || undefined,
+        createdAt: selectedQuestion.essayAnswers[0].createdAt.toISOString(),
+        updatedAt: selectedQuestion.essayAnswers[0].updatedAt.toISOString()
       } : undefined
     }
 
