@@ -65,6 +65,20 @@ const HomePage = () => {
       category: '午後対策',
       onClick: () => navigate('/essay-demo'),
     },
+    {
+      id: 'essay-practice',
+      title: '記述式問題演習',
+      description: '本格的な記述式問題演習。全画面モード・自動保存・プレビュー機能完備',
+      category: '午後演習',
+      onClick: () => navigate('/essay-practice'),
+    },
+    {
+      id: 'long-question-demo',
+      title: '長文問題表示デモ',
+      description: '長文読解問題対応。セクション式表示・目次ナビ・画像/表/コード表示対応',
+      category: '長文対応',
+      onClick: () => navigate('/long-question-demo'),
+    },
   ]
 
   return (

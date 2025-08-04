@@ -24,6 +24,7 @@ import {
   Refresh as ReviewIcon,
   Bookmark as BookmarkIcon,
   Schedule as ScheduleIcon,
+  EmojiEvents as GoalsIcon,
 } from '@mui/icons-material'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppStore } from '../stores/useAppStore'
@@ -46,6 +47,7 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
     { text: 'ブックマーク', icon: <BookmarkIcon />, path: '/bookmarks', badge: 0 },
     { text: '間違い問題復習', icon: <ReviewIcon />, path: '/review', badge: 0 },
     { text: '試験日程', icon: <ScheduleIcon />, path: '/exam-schedule', badge: 0 },
+    { text: '目標管理', icon: <GoalsIcon />, path: '/goals', badge: 0 },
     { text: '進捗確認', icon: <ProgressIcon />, path: '/progress', badge: 0 },
   ]
 
