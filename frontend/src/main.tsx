@@ -24,11 +24,38 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        html: {
+          writingMode: 'horizontal-tb',
+          textOrientation: 'mixed',
+        },
+        body: {
+          writingMode: 'horizontal-tb',
+          textOrientation: 'mixed',
+        },
+        '*': {
+          writingMode: 'horizontal-tb !important',
+          textOrientation: 'mixed !important',
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          writingMode: 'horizontal-tb',
+          textOrientation: 'mixed',
+          direction: 'ltr',
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
           minHeight: '48px',
           fontSize: '1rem',
+          writingMode: 'horizontal-tb',
+          textOrientation: 'mixed',
           '@media (max-width: 600px)': {
             minHeight: '56px',
             fontSize: '1.1rem',
@@ -39,9 +66,19 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
+          writingMode: 'horizontal-tb',
+          textOrientation: 'mixed',
           '@media (max-width: 600px)': {
             margin: '8px',
           },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          writingMode: 'horizontal-tb',
+          textOrientation: 'mixed',
         },
       },
     },

@@ -48,7 +48,16 @@ const TouchCardList = ({
           >
             <Box sx={{ flexGrow: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Typography variant="h6" component="h3" sx={{ flexGrow: 1 }}>
+                <Typography 
+                  variant="h6" 
+                  component="h3" 
+                  sx={{ 
+                    flexGrow: 1,
+                    writingMode: 'horizontal-tb !important',
+                    textOrientation: 'mixed !important',
+                    direction: 'ltr',
+                  }}
+                >
                   {item.title}
                 </Typography>
                 {item.category && (
@@ -56,7 +65,15 @@ const TouchCardList = ({
                     label={item.category} 
                     size="small" 
                     color="primary" 
-                    variant="outlined" 
+                    variant="outlined"
+                    sx={{
+                      writingMode: 'horizontal-tb !important',
+                      textOrientation: 'mixed !important',
+                      '& .MuiChip-label': {
+                        writingMode: 'horizontal-tb !important',
+                        textOrientation: 'mixed !important',
+                      },
+                    }}
                   />
                 )}
                 {item.badge && item.badge > 0 && (
@@ -64,7 +81,15 @@ const TouchCardList = ({
                     label={item.badge} 
                     size="small" 
                     color="error" 
-                    sx={{ minWidth: 24 }}
+                    sx={{ 
+                      minWidth: 24,
+                      writingMode: 'horizontal-tb !important',
+                      textOrientation: 'mixed !important',
+                      '& .MuiChip-label': {
+                        writingMode: 'horizontal-tb !important',
+                        textOrientation: 'mixed !important',
+                      },
+                    }}
                   />
                 )}
               </Box>
@@ -72,7 +97,13 @@ const TouchCardList = ({
               <Typography 
                 variant="body2" 
                 color="text.secondary" 
-                sx={{ mb: 3, lineHeight: 1.6 }}
+                sx={{ 
+                  mb: 3, 
+                  lineHeight: 1.6,
+                  writingMode: 'horizontal-tb !important',
+                  textOrientation: 'mixed !important',
+                  direction: 'ltr',
+                }}
               >
                 {item.description}
               </Typography>

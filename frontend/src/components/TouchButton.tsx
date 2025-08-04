@@ -16,6 +16,9 @@ const StyledTouchButton = styled(Button)<{ touchsize: string }>(({ theme, touchs
   fontWeight: 600,
   transition: 'all 0.2s ease-in-out',
   boxShadow: theme.shadows[2],
+  writingMode: 'horizontal-tb !important',
+  textOrientation: 'mixed !important',
+  direction: 'ltr',
   
   '&:hover': {
     transform: 'translateY(-2px)',
