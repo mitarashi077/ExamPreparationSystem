@@ -1,19 +1,7 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 
-// Clean DATABASE_URL if it has psql prefix
-let cleanUrl = process.env.DATABASE_URL;
-if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
-  cleanUrl = cleanUrl.slice(5, -1);
-}
-
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: cleanUrl
-    }
-  }
-})
+const prisma = new PrismaClient()
 
 // 間隔反復学習アルゴリズム - Spaced Repetition
 class SpacedRepetitionAlgorithm {

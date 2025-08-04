@@ -2,23 +2,7 @@ import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
-// Create Prisma client with environment-based configuration
-const createPrismaClient = () => {
-  let cleanUrl = process.env.DATABASE_URL;
-  if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
-    cleanUrl = cleanUrl.slice(5, -1);
-  }
-  
-  return new PrismaClient({
-    datasources: {
-      db: {
-        url: cleanUrl
-      }
-    }
-  });
-}
-
-const prisma = createPrismaClient()
+const prisma = new PrismaClient()
 
 // Validation schemas
 const createExamScheduleSchema = z.object({
@@ -110,7 +94,7 @@ const calculateProgressSummary = (studyTargets: any[]) => {
 }
 
 // 試験スケジュール一覧取得
-export const getExamSchedules = async (req: Request, res: Response): Promise<void> => {
+export const getExamSchedules = async (_req: Request, res: Response): Promise<void> => {
   try {
     const examSchedules = await prisma.examSchedule.findMany({
       where: { isActive: true },

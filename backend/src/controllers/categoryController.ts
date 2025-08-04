@@ -1,22 +1,11 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 
+const prisma = new PrismaClient()
+
 // カテゴリ一覧取得
 export const getCategories = async (_req: Request, res: Response): Promise<void> => {
   try {
-    // Clean DATABASE_URL if it has psql prefix (same as db-test endpoint)
-    let cleanUrl = process.env.DATABASE_URL;
-    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
-      cleanUrl = cleanUrl.slice(5, -1);
-    }
-
-    const prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: cleanUrl
-        }
-      }
-    });
 
     await prisma.$connect();
     const categories = await prisma.category.findMany({
@@ -102,20 +91,6 @@ export const getCategories = async (_req: Request, res: Response): Promise<void>
 // カテゴリ別詳細統計
 export const getCategoryStats = async (req: Request, res: Response): Promise<void> => {
   try {
-    // Clean DATABASE_URL if it has psql prefix (same as db-test endpoint)
-    let cleanUrl = process.env.DATABASE_URL;
-    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
-      cleanUrl = cleanUrl.slice(5, -1);
-    }
-
-    const prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: cleanUrl
-        }
-      }
-    });
-
     await prisma.$connect();
     const { id } = req.params
     const days = parseInt(req.query.days as string) || 30
