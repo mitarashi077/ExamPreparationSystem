@@ -35,6 +35,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppStore } from '../stores/useAppStore'
 import { useSwipeNavigation } from '../hooks/useSwipeNavigation'
+import CompactCountdown from './CompactCountdown'
 
 interface MobileLayoutProps {
   children: React.ReactNode
@@ -204,11 +205,14 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
             ESS試験対策
           </Typography>
           
-          {!isOnline && (
-            <IconButton color="inherit" size="small">
-              <OfflineIcon />
-            </IconButton>
-          )}
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <CompactCountdown />
+            {!isOnline && (
+              <IconButton color="inherit" size="small">
+                <OfflineIcon />
+              </IconButton>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
 
