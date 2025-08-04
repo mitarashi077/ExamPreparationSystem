@@ -34,11 +34,11 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import Editor from '@monaco-editor/react'
 import TouchButton from './TouchButton'
 import BookmarkButton from './BookmarkButton'
-import { useQuestionStore, Question } from '../stores/useQuestionStore'
+import { useQuestionStore } from '../stores/useQuestionStore'
 import { useAppStore } from '../stores/useAppStore'
 
 interface EssayQuestionCardProps {
-  question?: Question
+  question?: any
   onSubmit?: (questionId: string, content: string, timeSpent: number) => Promise<any>
   onNextQuestion?: () => void
   showTimer?: boolean
