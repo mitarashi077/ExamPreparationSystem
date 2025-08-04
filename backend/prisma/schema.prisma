@@ -21,20 +21,48 @@ model Category {
 }
 
 model Question {
+  id           String       @id @default(cuid())
+  content      String
+  explanation  String?
+  difficulty   Int          @default(1) // 1-5 scale
+  year         Int?
+  session      String?      // 春期、秋期など
+  categoryId   String
+  questionType String       @default("multiple_choice") // "multiple_choice" | "essay" | "long_form"
+  maxScore     Int?         // 記述式問題の満点（記述式問題のみ）
+  sampleAnswer String?      // 記述式問題のサンプル回答（Markdown形式）
+  // Long-form question support
+  hasImages    Boolean      @default(false)
+  hasTables    Boolean      @default(false)
+  hasCodeBlocks Boolean     @default(false)
+  readingTime  Int?         // 推定読解時間（分）
+  category     Category     @relation(fields: [categoryId], references: [id])
+  choices      Choice[]
+  answers      Answer[]
+  essayAnswers EssayAnswer[] // 記述式回答との関連
+  reviewItems  ReviewItem[] // 復習管理との関連
+  bookmarks    Bookmark[]   // ブックマーク機能との関連
+  sections     QuestionSection[] // 長文問題のセクション
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+// 長文問題のセクション管理
+model QuestionSection {
   id          String       @id @default(cuid())
-  content     String
-  explanation String?
-  difficulty  Int          @default(1) // 1-5 scale
-  year        Int?
-  session     String?      // 春期、秋期など
-  categoryId  String
-  category    Category     @relation(fields: [categoryId], references: [id])
-  choices     Choice[]
-  answers     Answer[]
-  reviewItems ReviewItem[] // 復習管理との関連
-  bookmarks   Bookmark[]   // ブックマーク機能との関連
+  questionId  String
+  title       String
+  content     String       // Markdown形式のコンテンツ
+  order       Int          // セクション順序
+  sectionType String       @default("main") // "introduction" | "main" | "subsection" | "conclusion"
+  hasImage    Boolean      @default(false)
+  hasTable    Boolean      @default(false)
+  hasCode     Boolean      @default(false)
+  question    Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+
+  @@index([questionId, order])
 }
 
 model Choice {
@@ -55,6 +83,23 @@ model Answer {
   questionId String
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
+}
+
+// 記述式回答テーブル - 記述式問題の回答管理
+model EssayAnswer {
+  id         String   @id @default(cuid())
+  content    String   // Markdown形式の回答内容
+  timeSpent  Int?     // seconds
+  deviceType String?  // "pc", "mobile", "tablet"
+  isDraft    Boolean  @default(false) // 下書きフラグ
+  score      Int?     // 採点結果（手動採点）
+  feedback   String?  // フィードバック
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([questionId, isDraft])
 }
 
 model StudySession {
