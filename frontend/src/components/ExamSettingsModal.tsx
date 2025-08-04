@@ -26,10 +26,7 @@ import {
   Delete as DeleteIcon,
   Save as SaveIcon
 } from '@mui/icons-material'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { ja } from 'date-fns/locale'
+import { format } from 'date-fns'
 import {
   ExamSchedule,
   CreateExamScheduleRequest,
@@ -167,8 +164,7 @@ const ExamSettingsModal: React.FC<ExamSettingsModalProps> = ({ open, onClose, sc
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ja}>
-      <Dialog 
+    <Dialog 
         open={open} 
         onClose={handleClose} 
         maxWidth="md" 
@@ -218,18 +214,18 @@ const ExamSettingsModal: React.FC<ExamSettingsModalProps> = ({ open, onClose, sc
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <DatePicker
+                  <TextField
                     label="試験日"
-                    value={examForm.examDate ? new Date(examForm.examDate) : null}
-                    onChange={(date) => setExamForm(prev => ({ 
+                    type="date"
+                    fullWidth
+                    required
+                    value={examForm.examDate ? examForm.examDate.split('T')[0] : ''}
+                    onChange={(e) => setExamForm(prev => ({ 
                       ...prev, 
-                      examDate: date ? date.toISOString() : ''
+                      examDate: e.target.value ? new Date(e.target.value).toISOString() : ''
                     }))}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        required: true
-                      }
+                    InputLabelProps={{
+                      shrink: true,
                     }}
                   />
                 </Grid>
@@ -417,7 +413,6 @@ const ExamSettingsModal: React.FC<ExamSettingsModalProps> = ({ open, onClose, sc
           )}
         </DialogActions>
       </Dialog>
-    </LocalizationProvider>
   )
 }
 

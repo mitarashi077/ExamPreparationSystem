@@ -10,7 +10,7 @@ import {
   UpdateStudyTargetRequest,
   UpdateProgressRequest
 } from '../types/examSchedule'
-import { apiClient } from '../utils/apiClient'
+import apiClient from '../utils/apiClient'
 
 interface ExamScheduleStore {
   // State
