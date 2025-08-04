@@ -831,6 +831,45 @@ app.get('/api/bookmarks', async (_req, res) => {
   }
 })
 
+// SQL Execution endpoint for database management
+app.post('/api/execute-sql', async (req, res) => {
+  try {
+    const { PrismaClient } = await import('@prisma/client');
+    const { sql } = req.body;
+    
+    if (!sql) {
+      return res.status(400).json({ error: 'SQL query is required' });
+    }
+    
+    let cleanUrl = process.env.DATABASE_URL;
+    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+      cleanUrl = cleanUrl.slice(5, -1);
+    }
+    
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: cleanUrl
+        }
+      }
+    });
+    
+    const result = await prisma.$executeRawUnsafe(sql);
+    
+    res.json({
+      success: true,
+      message: 'SQL executed successfully',
+      result: result
+    });
+  } catch (error) {
+    console.error('SQL execution error:', error);
+    res.status(500).json({
+      error: 'SQL execution failed',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+})
+
 // 404 handler
 app.use('*', (_req, res) => {
   res.status(404).json({ error: 'API endpoint not found' })
