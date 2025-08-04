@@ -769,6 +769,68 @@ app.get('/api/debug-bookmarks', async (_req, res) => {
   }
 })
 
+// Direct bookmark route for testing
+app.get('/api/bookmarks', async (_req, res) => {
+  try {
+    const { PrismaClient } = await import('@prisma/client');
+    
+    let cleanUrl = process.env.DATABASE_URL;
+    if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
+      cleanUrl = cleanUrl.slice(5, -1);
+    }
+    
+    const prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: cleanUrl
+        }
+      }
+    });
+    
+    // Check if Bookmark table exists
+    const tables = await prisma.$queryRaw`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      AND table_name = 'Bookmark'
+    `;
+    
+    if (!Array.isArray(tables) || tables.length === 0) {
+      return res.status(503).json({
+        success: false,
+        message: 'Bookmark table not found in database. Migration needed.',
+        data: []
+      });
+    }
+    
+    // Get bookmarks
+    const bookmarks = await prisma.bookmark.findMany({
+      where: { isActive: true },
+      include: {
+        question: {
+          include: {
+            category: true
+          }
+        }
+      },
+      orderBy: { updatedAt: 'desc' }
+    });
+    
+    res.json({
+      success: true,
+      data: bookmarks,
+      message: 'Bookmarks retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Bookmark route error:', error);
+    res.status(500).json({
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to fetch bookmarks',
+      data: []
+    });
+  }
+})
+
 // 404 handler
 app.use('*', (_req, res) => {
   res.status(404).json({ error: 'API endpoint not found' })
