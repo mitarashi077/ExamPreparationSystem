@@ -69,7 +69,16 @@ const HomePage = () => {
 
   return (
     <Box>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography 
+        variant="h4" 
+        component="h1" 
+        gutterBottom
+        sx={{
+          writingMode: 'horizontal-tb !important',
+          textOrientation: 'mixed !important',
+          direction: 'ltr',
+        }}
+      >
         ESS試験対策
       </Typography>
       
@@ -77,25 +86,67 @@ const HomePage = () => {
       <Card sx={{ mb: 4, p: 2 }}>
         <Box display="flex" alignItems="center" mb={2}>
           <ScheduleIcon color="primary" sx={{ mr: 1 }} />
-          <Typography variant="h6">今日の学習状況</Typography>
+          <Typography 
+            variant="h6"
+            sx={{
+              writingMode: 'horizontal-tb !important',
+              textOrientation: 'mixed !important',
+              direction: 'ltr',
+            }}
+          >
+            今日の学習状況
+          </Typography>
           <Chip 
             label="連続3日" 
             size="small" 
             color="success" 
-            sx={{ ml: 'auto' }} 
+            sx={{ 
+              ml: 'auto',
+              writingMode: 'horizontal-tb !important',
+              textOrientation: 'mixed !important',
+              '& .MuiChip-label': {
+                writingMode: 'horizontal-tb !important',
+                textOrientation: 'mixed !important',
+              },
+            }} 
           />
         </Box>
-        <Typography variant="body2" color="text.secondary" mb={1}>
+        <Typography 
+          variant="body2" 
+          color="text.secondary" 
+          mb={1}
+          sx={{
+            writingMode: 'horizontal-tb !important',
+            textOrientation: 'mixed !important',
+            direction: 'ltr',
+          }}
+        >
           今日の目標: 10問
         </Typography>
         <LinearProgress variant="determinate" value={30} sx={{ mb: 1, height: 8, borderRadius: 4 }} />
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="body2" color="text.secondary">
+          <Typography 
+            variant="body2" 
+            color="text.secondary"
+            sx={{
+              writingMode: 'horizontal-tb !important',
+              textOrientation: 'mixed !important',
+              direction: 'ltr',
+            }}
+          >
             3/10問 完了 (30%)
           </Typography>
           <Box display="flex" alignItems="center" gap={1}>
             <SpeedIcon fontSize="small" color="action" />
-            <Typography variant="caption" color="text.secondary">
+            <Typography 
+              variant="caption" 
+              color="text.secondary"
+              sx={{
+                writingMode: 'horizontal-tb !important',
+                textOrientation: 'mixed !important',
+                direction: 'ltr',
+              }}
+            >
               平均 2.5分/問
             </Typography>
           </Box>
@@ -103,7 +154,18 @@ const HomePage = () => {
       </Card>
 
       {/* メインメニュー */}
-      <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4, mb: 2 }}>
+      <Typography 
+        variant="h5" 
+        component="h2" 
+        gutterBottom 
+        sx={{ 
+          mt: 4, 
+          mb: 2,
+          writingMode: 'horizontal-tb !important',
+          textOrientation: 'mixed !important',
+          direction: 'ltr',
+        }}
+      >
         メインメニュー
       </Typography>
       <TouchCardList 
@@ -114,7 +176,18 @@ const HomePage = () => {
       />
 
       {/* 通勤学習モード */}
-      <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4, mb: 2 }}>
+      <Typography 
+        variant="h5" 
+        component="h2" 
+        gutterBottom 
+        sx={{ 
+          mt: 4, 
+          mb: 2,
+          writingMode: 'horizontal-tb !important',
+          textOrientation: 'mixed !important',
+          direction: 'ltr',
+        }}
+      >
         通勤学習モード
       </Typography>
       <TouchCardList 
@@ -125,11 +198,31 @@ const HomePage = () => {
       />
 
       {/* サンプル図表（ズーム機能デモ） */}
-      <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4, mb: 2 }}>
+      <Typography 
+        variant="h5" 
+        component="h2" 
+        gutterBottom 
+        sx={{ 
+          mt: 4, 
+          mb: 2,
+          writingMode: 'horizontal-tb !important',
+          textOrientation: 'mixed !important',
+          direction: 'ltr',
+        }}
+      >
         サンプル図表（ピンチズーム対応）
       </Typography>
       <Card sx={{ p: 2 }}>
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography 
+          variant="body2" 
+          color="text.secondary" 
+          mb={2}
+          sx={{
+            writingMode: 'horizontal-tb !important',
+            textOrientation: 'mixed !important',
+            direction: 'ltr',
+          }}
+        >
           実際の試験問題では、回路図やシステム構成図が表示されます。
           モバイルでもピンチズームで詳細を確認できます。
         </Typography>
