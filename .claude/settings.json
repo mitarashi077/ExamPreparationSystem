@@ -1,0 +1,109 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '🔍 Branch Check: '$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'not-git-repo'); if [ -f CLAUDE-TASK-CONTEXT.md ]; then echo '📋 Current Task:'; head -1 CLAUDE-TASK-CONTEXT.md; fi; echo '❓ New task matches current context? Press Enter to continue, Ctrl+C to stop'; timeout 3 read || echo 'Continuing...'"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command", 
+            "command": "echo '✏️ Editing: Current branch: '$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'not-git-repo')"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[$(date)] File written successfully' >> .claude/dev.log 2>/dev/null || echo '[$(date)] File written successfully' >> dev.log"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit", 
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[$(date)] File edited successfully' >> .claude/dev.log 2>/dev/null || echo '[$(date)] File edited successfully' >> dev.log"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '🚀 [$(date)] Claude Code Integrated Development Automation System started' | tee -a .claude/dev.log 2>/dev/null || echo '🚀 [$(date)] Claude Code Integrated Development Automation System started' >> dev.log"
+          },
+          {
+            "type": "command",
+            "command": "echo '📍 Current branch: '$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'not-git-repo')"
+          },
+          {
+            "type": "command",
+            "command": "if [ -f CLAUDE-TASK-CONTEXT.md ]; then echo '📋 Active task context found'; else echo '📋 No active task context'; fi"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '🔚 [$(date)] Session ended' >> .claude/dev.log 2>/dev/null || echo '🔚 [$(date)] Session ended' >> dev.log"
+          }
+        ]
+      }
+    ]
+  },
+  "allowedTools": [
+    "Read",
+    "Write", 
+    "Edit",
+    "MultiEdit",
+    "Bash",
+    "TodoWrite",
+    "Task",
+    "Grep",
+    "Glob", 
+    "LS",
+    "WebFetch",
+    "WebSearch"
+  ],
+  "preferences": {
+    "auto_compact": true,
+    "parallel_execution": true,
+    "quality_gates": true,
+    "atomic_commits": true
+  },
+  "development": {
+    "branch_protection": {
+      "main": "protected",
+      "master": "protected"
+    },
+    "commit_template": {
+      "footer": "🤖 Generated with [Claude Code](https://claude.ai/code)\\nCo-Authored-By: Claude <noreply@anthropic.com>"
+    },
+    "quality_commands": {
+      "lint": "npm run lint",
+      "type_check": "npm run type-check || npx tsc --noEmit",
+      "test": "npm test",
+      "build": "npm run build"
+    }
+  }
+}
