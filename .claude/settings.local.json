@@ -73,7 +73,12 @@
       "Bash(claude-code --version)",
       "Bash(npm outdated:*)",
       "Bash(npm view:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(./scripts/init-project.sh:*)",
+      "Bash(./scripts/quality-check.sh:*)",
+      "Bash(npx typescript:*)",
+      "Bash(npx:*)",
+      "Bash(npm audit:*)"
     ],
     "deny": []
   },

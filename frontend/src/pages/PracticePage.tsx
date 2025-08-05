@@ -53,7 +53,7 @@ const PracticePage = () => {
     fetchCategories 
   } = useQuestionApi()
 
-  const [categories, setCategories] = useState<any[]>([])
+  const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([])
   const [practiceMode] = useState<'random' | 'list'>('random')
   const [sessionComplete, setSessionComplete] = useState(false)
   
@@ -119,33 +119,6 @@ const PracticePage = () => {
     }
   }, [mode, categoryId, difficulty])
 
-  // const loadRandomQuestion = async () => {
-  //   const question = await fetchRandomQuestion({
-  //     categoryId: categoryId || undefined,
-  //     difficulty: difficulty || undefined,
-  //     excludeAnswered: true,
-  //   })
-
-  //   if (question) {
-  //     setCurrentQuestion(question)
-  //   }
-  // }
-
-  // const loadQuestionList = async () => {
-  //   const response = await fetchQuestions(1, 10, {
-  //     categoryId: categoryId || undefined,
-  //     difficulty: difficulty || undefined,
-  //     onlyUnanswered: true,
-  //   })
-
-  //   if (response?.questions.length) {
-  //     setQuestions(response.questions)
-  //     const firstQuestion = await fetchQuestionById(response.questions[0].id)
-  //     if (firstQuestion) {
-  //       setCurrentQuestion(firstQuestion)
-  //     }
-  //   }
-  // }
 
   const handleAnswerSubmit = async (choiceId: string, timeSpent: number) => {
     if (!currentQuestion) return

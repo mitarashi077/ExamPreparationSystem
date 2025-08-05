@@ -7,36 +7,36 @@ interface TouchButtonProps extends ButtonProps {
   hapticFeedback?: boolean
 }
 
-const StyledTouchButton = styled(Button)<{ touchsize: string }>(({ theme, touchsize }) => ({
-  minHeight: touchsize === 'large' ? 64 : touchsize === 'medium' ? 56 : 48,
-  minWidth: touchsize === 'large' ? 120 : touchsize === 'medium' ? 100 : 80,
-  fontSize: touchsize === 'large' ? '1.2rem' : touchsize === 'medium' ? '1rem' : '0.9rem',
-  padding: theme.spacing(2, 3),
-  borderRadius: touchsize === 'large' ? 16 : touchsize === 'medium' ? 12 : 8,
-  fontWeight: 600,
-  transition: 'all 0.2s ease-in-out',
-  boxShadow: theme.shadows[2],
-  writingMode: 'horizontal-tb !important',
-  textOrientation: 'mixed !important',
-  direction: 'ltr',
+const StyledTouchButton = styled(Button)<{ touchsize: string }>`
+  min-height: ${({ touchsize }) => touchsize === 'large' ? '64px' : touchsize === 'medium' ? '56px' : '48px'};
+  min-width: ${({ touchsize }) => touchsize === 'large' ? '120px' : touchsize === 'medium' ? '100px' : '80px'};
+  font-size: ${({ touchsize }) => touchsize === 'large' ? '1.2rem' : touchsize === 'medium' ? '1rem' : '0.9rem'};
+  padding: ${({ theme }) => theme.spacing(2, 3)};
+  border-radius: ${({ touchsize }) => touchsize === 'large' ? '16px' : touchsize === 'medium' ? '12px' : '8px'};
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  box-shadow: ${({ theme }) => theme.shadows[2]};
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr;
   
-  '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: theme.shadows[4],
-  },
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${({ theme }) => theme.shadows[4]};
+  }
   
-  '&:active': {
-    transform: 'translateY(0px)',
-    boxShadow: theme.shadows[1],
-  },
+  &:active {
+    transform: translateY(0px);
+    box-shadow: ${({ theme }) => theme.shadows[1]};
+  }
   
-  [theme.breakpoints.down('sm')]: {
-    minHeight: touchsize === 'large' ? 72 : touchsize === 'medium' ? 64 : 56,
-    minWidth: touchsize === 'large' ? 140 : touchsize === 'medium' ? 120 : 100,
-    fontSize: touchsize === 'large' ? '1.3rem' : touchsize === 'medium' ? '1.1rem' : '1rem',
-    padding: theme.spacing(2.5, 4),
-  },
-}))
+  ${({ theme }) => theme.breakpoints.down('sm')} {
+    min-height: ${({ touchsize }) => touchsize === 'large' ? '72px' : touchsize === 'medium' ? '64px' : '56px'};
+    min-width: ${({ touchsize }) => touchsize === 'large' ? '140px' : touchsize === 'medium' ? '120px' : '100px'};
+    font-size: ${({ touchsize }) => touchsize === 'large' ? '1.3rem' : touchsize === 'medium' ? '1.1rem' : '1rem'};
+    padding: ${({ theme }) => theme.spacing(2.5, 4)};
+  }
+`
 
 const TouchButton = forwardRef<HTMLButtonElement, TouchButtonProps>(
   ({ touchSize = 'medium', hapticFeedback = true, onClick, children, ...props }, ref) => {
