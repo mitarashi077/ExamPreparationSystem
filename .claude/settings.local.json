@@ -66,7 +66,19 @@
       "Bash(DATABASE_URL=\"postgresql://dummy:dummy@localhost:5432/dummy\" npx prisma generate --schema=../database/schema.prisma)",
       "Bash(npx tsc:*)",
       "Bash(gh run list:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(gh issue create:*)",
+      "Bash(gh issue edit:*)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(claude-code --version)",
+      "Bash(npm outdated:*)",
+      "Bash(npm view:*)",
+      "Bash(tree:*)",
+      "Bash(./scripts/init-project.sh:*)",
+      "Bash(./scripts/quality-check.sh:*)",
+      "Bash(npx typescript:*)",
+      "Bash(npx:*)",
+      "Bash(npm audit:*)"
     ],
     "deny": []
   },

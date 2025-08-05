@@ -13,13 +13,15 @@ import { useAppStore } from '../stores/useAppStore'
 
 interface QuestionSwiperProps {
   onAnswerSubmit?: (choiceId: string, timeSpent: number) => void
+  onNextQuestion?: () => void // External next question handler for random mode
   showTimer?: boolean
   timeLimit?: number
   allowSwipeNavigation?: boolean
 }
 
 const QuestionSwiper = ({ 
-  onAnswerSubmit, 
+  onAnswerSubmit,
+  onNextQuestion: externalOnNextQuestion,
   showTimer = true, 
   timeLimit,
   allowSwipeNavigation = true 
@@ -60,14 +62,18 @@ const QuestionSwiper = ({
   }
 
   const handleNextQuestion = () => {
-    if (canGoNext) {
+    if (externalOnNextQuestion) {
+      // Use external handler for random mode or when single question mode
+      externalOnNextQuestion()
+    } else if (canGoNext) {
+      // Use internal navigation for list mode
       setCurrentQuestionIndex(currentQuestionIndex + 1)
     }
   }
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
-      if (allowSwipeNavigation && canGoNext && !showResult) {
+      if (allowSwipeNavigation && !showResult && (externalOnNextQuestion || canGoNext)) {
         handleNextQuestion()
       }
     },
@@ -146,7 +152,7 @@ const QuestionSwiper = ({
 
           <IconButton
             onClick={handleNextQuestion}
-            disabled={!canGoNext || showResult}
+            disabled={!(externalOnNextQuestion || canGoNext) || showResult}
             sx={{
               position: 'absolute',
               right: -16,
@@ -208,7 +214,7 @@ const QuestionSwiper = ({
             </Box>
           )}
 
-          {canGoNext && (
+          {(externalOnNextQuestion || canGoNext) && (
             <Box
               sx={{
                 position: 'absolute',
@@ -271,7 +277,7 @@ const QuestionSwiper = ({
       >
         <QuestionCard
           onAnswerSubmit={onAnswerSubmit}
-          onNextQuestion={showResult && canGoNext ? handleNextQuestion : undefined}
+          onNextQuestion={showResult && (externalOnNextQuestion || canGoNext) ? handleNextQuestion : undefined}
           showTimer={showTimer}
           timeLimit={timeLimit}
         />

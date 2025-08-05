@@ -53,7 +53,7 @@ const PracticePage = () => {
     fetchCategories 
   } = useQuestionApi()
 
-  const [categories, setCategories] = useState<any[]>([])
+  const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([])
   const [practiceMode] = useState<'random' | 'list'>('random')
   const [sessionComplete, setSessionComplete] = useState(false)
   
@@ -119,33 +119,6 @@ const PracticePage = () => {
     }
   }, [mode, categoryId, difficulty])
 
-  // const loadRandomQuestion = async () => {
-  //   const question = await fetchRandomQuestion({
-  //     categoryId: categoryId || undefined,
-  //     difficulty: difficulty || undefined,
-  //     excludeAnswered: true,
-  //   })
-
-  //   if (question) {
-  //     setCurrentQuestion(question)
-  //   }
-  // }
-
-  // const loadQuestionList = async () => {
-  //   const response = await fetchQuestions(1, 10, {
-  //     categoryId: categoryId || undefined,
-  //     difficulty: difficulty || undefined,
-  //     onlyUnanswered: true,
-  //   })
-
-  //   if (response?.questions.length) {
-  //     setQuestions(response.questions)
-  //     const firstQuestion = await fetchQuestionById(response.questions[0].id)
-  //     if (firstQuestion) {
-  //       setCurrentQuestion(firstQuestion)
-  //     }
-  //   }
-  // }
 
   const handleAnswerSubmit = async (choiceId: string, timeSpent: number) => {
     if (!currentQuestion) return
@@ -201,12 +174,19 @@ const PracticePage = () => {
     }
   }
 
-  // const handleNextQuestion = async () => {
-  //   if (mode === 'quick' || practiceMode === 'random') {
-  //     await loadRandomQuestion()
-  //   }
-  //   // For list mode, QuestionSwiper handles navigation
-  // }
+  const handleNextQuestion = async () => {
+    if (mode === 'quick' || practiceMode === 'random') {
+      const nextQuestion = await fetchRandomQuestion({
+        categoryId: categoryId || undefined,
+        difficulty: difficulty || undefined,
+        excludeAnswered: true,
+      })
+      if (nextQuestion) {
+        setCurrentQuestion(nextQuestion)
+      }
+    }
+    // For list mode, QuestionSwiper handles navigation
+  }
 
   const handleRefresh = () => {
     resetSession()
@@ -365,6 +345,7 @@ const PracticePage = () => {
       <Box sx={{ mb: 4 }}>
         <QuestionSwiper
           onAnswerSubmit={handleAnswerSubmit}
+          onNextQuestion={(mode === 'quick' || practiceMode === 'random') ? handleNextQuestion : undefined}
           showTimer={true}
           timeLimit={timeLimit}
           allowSwipeNavigation={practiceMode === 'list'}
