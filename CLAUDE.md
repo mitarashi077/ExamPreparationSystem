@@ -546,3 +546,241 @@ project/
 **🔥 Failure is Not an Option**: Non-adherence to this system compromises project integrity and reliability.
 
 **🎯 Success Key**: If rules are forgotten, immediately reload `CLAUDE.md`.
+
+## 🔍 Automated PR Review System
+
+### 4-Stage Review Process with Auto-Comments
+
+#### Stage 1: Quality Review (quality-fixer)
+```xml
+<quality-review>
+  <agent>quality-fixer</agent>
+  <automated-checks>
+    <lint>biome check --apply</lint>
+    <type-check>tsc --noEmit</type-check>
+    <test>npm test --coverage</test>
+    <build>npm run build</build>
+    <security>npm audit --audit-level high</security>
+    <performance>lighthouse-ci</performance>
+  </automated-checks>
+  <pr-comment-template>
+## 🔍 Quality Review Results
+
+### ✅ Automated Checks
+- **Lint**: {{LINT_STATUS}} ({{LINT_ERRORS}} errors, {{LINT_WARNINGS}} warnings)
+- **Type Check**: {{TYPE_STATUS}} ({{TYPE_ERRORS}} errors)
+- **Tests**: {{TEST_STATUS}} ({{TEST_COVERAGE}}% coverage)
+- **Build**: {{BUILD_STATUS}}
+- **Security**: {{SECURITY_STATUS}} ({{VULNERABILITIES}} vulnerabilities)
+- **Performance**: {{PERFORMANCE_SCORE}}/100
+
+### 📊 Quality Metrics
+- **Lines of Code**: {{LOC}}
+- **Cyclomatic Complexity**: {{COMPLEXITY}}
+- **Technical Debt**: {{DEBT_RATIO}}
+
+### 🎯 Recommendations
+{{QUALITY_RECOMMENDATIONS}}
+
+**Status**: {{QUALITY_GATE_STATUS}}
+  </pr-comment-template>
+</quality-review>
+```
+
+#### Stage 2: Design Review (technical-designer)
+```xml
+<design-review>
+  <agent>technical-designer</agent>
+  <review-criteria>
+    <architecture-compliance>design patterns adherence</architecture-compliance>
+    <solid-principles>single responsibility, open-closed, etc.</solid-principles>
+    <performance-impact>scalability and efficiency analysis</performance-impact>
+    <security-considerations>vulnerability assessment</security-considerations>
+  </review-criteria>
+  <pr-comment-template>
+## 🏗️ Technical Design Review
+
+### 🔍 Architecture Analysis
+- **Design Patterns**: {{PATTERN_COMPLIANCE}}
+- **SOLID Principles**: {{SOLID_SCORE}}/5
+- **Separation of Concerns**: {{SEPARATION_STATUS}}
+- **Abstraction Level**: {{ABSTRACTION_QUALITY}}
+
+### 🚀 Performance Impact
+- **Scalability**: {{SCALABILITY_ASSESSMENT}}
+- **Memory Usage**: {{MEMORY_IMPACT}}
+- **Database Queries**: {{QUERY_EFFICIENCY}}
+
+### 🛡️ Security Review
+- **Input Validation**: {{INPUT_VALIDATION}}
+- **Authentication**: {{AUTH_STATUS}}
+- **Data Exposure**: {{DATA_SECURITY}}
+
+### 💡 Design Recommendations
+{{DESIGN_RECOMMENDATIONS}}
+
+**Status**: {{DESIGN_GATE_STATUS}}
+  </pr-comment-template>
+</design-review>
+```
+
+#### Stage 3: Documentation Review (document-reviewer)
+```xml
+<documentation-review>
+  <agent>document-reviewer</agent>
+  <review-scope>
+    <code-comments>inline documentation quality</code-comments>
+    <api-documentation>endpoint documentation completeness</api-documentation>
+    <readme-updates>project documentation updates</readme-updates>
+    <changelog>version history maintenance</changelog>
+  </review-scope>
+  <pr-comment-template>
+## 📚 Documentation Review
+
+### 📝 Code Documentation
+- **Inline Comments**: {{COMMENT_COVERAGE}}% coverage
+- **Function Documentation**: {{FUNCTION_DOCS}}% documented
+- **Complex Logic**: {{COMPLEXITY_DOCS}} explanations
+
+### 📖 API Documentation
+- **Endpoint Coverage**: {{API_DOC_COVERAGE}}%
+- **Request/Response Examples**: {{EXAMPLES_STATUS}}
+- **Error Handling**: {{ERROR_DOC_STATUS}}
+
+### 📋 Project Documentation
+- **README Updates**: {{README_STATUS}}
+- **CHANGELOG Entry**: {{CHANGELOG_STATUS}}
+- **Architecture Docs**: {{ARCH_DOC_STATUS}}
+
+### 🎯 Documentation Recommendations
+{{DOC_RECOMMENDATIONS}}
+
+**Status**: {{DOC_GATE_STATUS}}
+  </pr-comment-template>
+</documentation-review>
+```
+
+#### Stage 4: Requirements Review (requirement-analyzer)
+```xml
+<requirements-review>
+  <agent>requirement-analyzer</agent>
+  <validation-criteria>
+    <acceptance-criteria>user story fulfillment</acceptance-criteria>
+    <edge-cases>boundary condition handling</edge-cases>
+    <user-experience>usability and accessibility</user-experience>
+    <business-logic>requirement implementation accuracy</business-logic>
+  </validation-criteria>
+  <pr-comment-template>
+## ✅ Requirements Validation
+
+### 🎯 Acceptance Criteria
+- **User Stories**: {{USER_STORY_COMPLETION}}% complete
+- **Business Rules**: {{BUSINESS_LOGIC_STATUS}}
+- **Edge Cases**: {{EDGE_CASE_COVERAGE}} scenarios covered
+
+### 👤 User Experience
+- **Accessibility**: {{A11Y_SCORE}}/100
+- **Usability**: {{UX_ASSESSMENT}}
+- **Performance**: {{UX_PERFORMANCE}}
+
+### 🔍 Requirement Traceability
+- **Original Request**: {{REQUIREMENT_LINK}}
+- **Implementation Match**: {{IMPL_ACCURACY}}%
+- **Scope Creep**: {{SCOPE_STATUS}}
+
+### 🎉 Final Recommendations
+{{FINAL_RECOMMENDATIONS}}
+
+**Status**: {{REQUIREMENT_GATE_STATUS}}
+  </pr-comment-template>
+</requirements-review>
+```
+
+### Final PR Status Summary
+```xml
+<pr-final-status>
+  <all-stages-complete>
+    <quality-gate>{{QUALITY_STATUS}}</quality-gate>
+    <design-gate>{{DESIGN_STATUS}}</design-gate>
+    <documentation-gate>{{DOC_STATUS}}</documentation-gate>
+    <requirements-gate>{{REQ_STATUS}}</requirements-gate>
+  </all-stages-complete>
+  <final-comment-template>
+# 🎉 PR Review Complete - All Stages Passed
+
+## 🏆 Review Summary
+- ✅ **Quality Gate**: Passed (lint, tests, build, security)
+- ✅ **Design Gate**: Passed (architecture, patterns, performance)
+- ✅ **Documentation Gate**: Passed (comments, API docs, README)
+- ✅ **Requirements Gate**: Passed (acceptance criteria, UX, business logic)
+
+## 📊 Overall Metrics
+- **Code Quality Score**: {{OVERALL_QUALITY}}/100
+- **Test Coverage**: {{FINAL_COVERAGE}}%
+- **Performance Score**: {{FINAL_PERFORMANCE}}/100
+- **Security Score**: {{FINAL_SECURITY}}/100
+
+## 🚀 Ready for Merge
+This PR meets all quality standards and is approved for merge to main branch.
+
+**Merged by**: git-manager agent
+**Merge Strategy**: squash and merge
+  </final-comment-template>
+</pr-final-status>
+```
+
+## 🌍 English-First Development Standards
+
+### Language Usage Policy
+```xml
+<language-standards>
+  <english-required>
+    <commits>All commit messages in English</commits>
+    <pr-titles>All PR titles and descriptions in English</pr-titles>
+    <issue-titles>All issue titles and descriptions in English</issue-titles>
+    <code-comments>All inline code comments in English</code-comments>
+    <variable-names>All variable, function, class names in English</variable-names>
+    <documentation>All technical documentation in English</documentation>
+    <api-responses>All API error messages and responses in English</api-responses>
+  </english-required>
+  
+  <japanese-allowed>
+    <user-facing-ui>User interface text for Japanese users</user-facing-ui>
+    <user-communication>Direct communication with Japanese stakeholders</user-communication>
+    <meeting-notes>Internal meeting notes in Japanese (if preferred)</meeting-notes>
+  </japanese-allowed>
+  
+  <enforcement>
+    <pre-commit-hook>Check commit message language</pre-commit-hook>
+    <pr-template>English-only PR template</pr-template>
+    <code-review>Language compliance check in reviews</code-review>
+  </enforcement>
+</language-standards>
+```
+
+### Pre-commit Hook for English Enforcement
+```bash
+#!/bin/bash
+# Check commit message is in English
+commit_msg=$(cat "$1")
+
+# Check for Japanese characters
+if echo "$commit_msg" | grep -q '[ひらがなカタカナ漢字]'; then
+    echo "❌ Error: Commit messages must be in English"
+    echo "Current message contains Japanese characters:"
+    echo "$commit_msg"
+    echo ""
+    echo "Please rewrite your commit message in English."
+    echo "Example: feat: Add user authentication system"
+    exit 1
+fi
+
+# Check for proper conventional commit format
+if ! echo "$commit_msg" | grep -qE '^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+'; then
+    echo "⚠️  Warning: Consider using conventional commit format"
+    echo "Examples:"
+    echo "  feat: add new feature"
+    echo "  fix: resolve bug in authentication"
+    echo "  docs: update README documentation"
+fi
+```
