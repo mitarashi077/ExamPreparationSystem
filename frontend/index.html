@@ -21,47 +21,42 @@
     
     <title>エンベデッドシステムスペシャリスト試験対策</title>
     <style>
-      /* ULTIMATE FIX: Override all Japanese text orientation */
-      html, body {
+      /* DEFINITIVE FIX: Force horizontal layout with flexbox */
+      * {
         writing-mode: horizontal-tb !important;
         text-orientation: mixed !important;
         direction: ltr !important;
-      }
-      
-      *, *::before, *::after {
-        writing-mode: horizontal-tb !important;
-        text-orientation: mixed !important;
-        text-combine-upright: none !important;
         -webkit-writing-mode: horizontal-tb !important;
         -ms-writing-mode: horizontal-tb !important;
-        direction: ltr !important;
         unicode-bidi: normal !important;
+        text-combine-upright: none !important;
       }
       
-      /* Override ALL possible selectors */
-      div, span, p, h1, h2, h3, h4, h5, h6, button, a, label {
+      /* Force card content to be horizontal flexbox */
+      .MuiCard-root {
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      
+      .MuiCard-root h3,
+      .MuiCard-root .MuiTypography-h6 {
+        display: block !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
         writing-mode: horizontal-tb !important;
         text-orientation: mixed !important;
-        direction: ltr !important;
       }
       
-      /* MUI specific overrides */
-      [class*="MuiTypography"], 
-      [class*="MuiButton"], 
-      [class*="MuiChip"],
-      [class*="MuiCard"] {
+      /* Bottom navigation fix */
+      .MuiBottomNavigationAction-label {
         writing-mode: horizontal-tb !important;
         text-orientation: mixed !important;
-        direction: ltr !important;
+        white-space: nowrap !important;
       }
       
-      /* Force on mobile specifically */
-      @media (max-width: 768px) {
-        * {
-          writing-mode: horizontal-tb !important;
-          text-orientation: mixed !important;
-          direction: ltr !important;
-        }
+      /* Transform override */
+      .MuiCard-root * {
+        transform: none !important;
       }
     </style>
   </head>
