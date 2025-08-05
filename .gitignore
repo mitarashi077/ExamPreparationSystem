@@ -51,9 +51,24 @@ coverage/
 ehthumbs.db
 Thumbs.db
 
-# PWA files
-sw.js
-workbox-*.js
+# PWA files (prevent root directory pollution)
+/sw.js
+/sw.js.map
+/workbox-*.js
+/workbox-*.js.map
+/registerSW.js
+/manifest.json
+/index.html
+/pwa-*.png
+/assets/
+
+# Build outputs in root (should be in frontend/dist)
+/*.js
+/*.js.map
+/*.html
+/*.json
+/*.png
+/assets/
 
 # Temporary files
 temp/
