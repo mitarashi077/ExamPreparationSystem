@@ -20,6 +20,26 @@
     <meta name="msapplication-tap-highlight" content="no" />
     
     <title>エンベデッドシステムスペシャリスト試験対策</title>
+    <style>
+      /* EMERGENCY FIX: Force horizontal text display */
+      *, *::before, *::after {
+        writing-mode: horizontal-tb !important;
+        text-orientation: mixed !important;
+        text-combine-upright: none !important;
+        -webkit-writing-mode: horizontal-tb !important;
+        -ms-writing-mode: horizontal-tb !important;
+      }
+      
+      /* Target specific MUI classes */
+      [class*="MuiTypography"], 
+      [class*="MuiButton"], 
+      [class*="MuiChip"],
+      h1, h2, h3, h4, h5, h6, p, span, div {
+        writing-mode: horizontal-tb !important;
+        text-orientation: mixed !important;
+        direction: ltr !important;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
