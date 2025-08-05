@@ -1,0 +1,50 @@
+/* Force horizontal text on all elements */
+* {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  text-combine-upright: none !important;
+  -webkit-writing-mode: horizontal-tb !important;
+  -ms-writing-mode: horizontal-tb !important;
+}
+
+/* Typography specific */
+.MuiTypography-root,
+.MuiTypography-h1,
+.MuiTypography-h2,
+.MuiTypography-h3,
+.MuiTypography-h4,
+.MuiTypography-h5,
+.MuiTypography-h6,
+.MuiTypography-body1,
+.MuiTypography-body2,
+.MuiTypography-caption {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+}
+
+/* Button and Chip labels */
+.MuiButton-root,
+.MuiChip-root,
+.MuiChip-label {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
+
+/* Card content */
+.MuiCard-root h3,
+.MuiCard-root p,
+.MuiCard-root span {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
+
+/* Mobile specific override */
+@media (max-width: 600px) {
+  body * {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    -webkit-writing-mode: horizontal-tb !important;
+    -ms-writing-mode: horizontal-tb !important;
+  }
+}
