@@ -201,12 +201,19 @@ const PracticePage = () => {
     }
   }
 
-  // const handleNextQuestion = async () => {
-  //   if (mode === 'quick' || practiceMode === 'random') {
-  //     await loadRandomQuestion()
-  //   }
-  //   // For list mode, QuestionSwiper handles navigation
-  // }
+  const handleNextQuestion = async () => {
+    if (mode === 'quick' || practiceMode === 'random') {
+      const nextQuestion = await fetchRandomQuestion({
+        categoryId: categoryId || undefined,
+        difficulty: difficulty || undefined,
+        excludeAnswered: true,
+      })
+      if (nextQuestion) {
+        setCurrentQuestion(nextQuestion)
+      }
+    }
+    // For list mode, QuestionSwiper handles navigation
+  }
 
   const handleRefresh = () => {
     resetSession()
@@ -365,6 +372,7 @@ const PracticePage = () => {
       <Box sx={{ mb: 4 }}>
         <QuestionSwiper
           onAnswerSubmit={handleAnswerSubmit}
+          onNextQuestion={(mode === 'quick' || practiceMode === 'random') ? handleNextQuestion : undefined}
           showTimer={true}
           timeLimit={timeLimit}
           allowSwipeNavigation={practiceMode === 'list'}
