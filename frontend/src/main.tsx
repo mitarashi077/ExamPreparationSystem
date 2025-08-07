@@ -17,7 +17,7 @@ const theme = createTheme({
   breakpoints: {
     values: {
       xs: 0,
-      sm: 600,  
+      sm: 600,
       md: 900,
       lg: 1200,
       xl: 1536,
@@ -84,7 +84,6 @@ const theme = createTheme({
     },
   },
 })
-
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

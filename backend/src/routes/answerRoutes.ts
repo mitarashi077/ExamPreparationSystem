@@ -1,5 +1,9 @@
 import { Router } from 'express'
-import { submitAnswer, getStudyStats, getHeatmapData } from '../controllers/answerController'
+import {
+  submitAnswer,
+  getStudyStats,
+  getHeatmapData,
+} from '../controllers/answerController'
 
 const router = Router()
 

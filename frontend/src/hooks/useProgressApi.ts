@@ -39,18 +39,20 @@ export const useHeatmapData = (days: number = 30) => {
   const fetchHeatmapData = async () => {
     setLoading(true)
     setError(null)
-    
+
     try {
       const response = await fetch(`/api/answers/heatmap?days=${days}`)
       if (!response.ok) {
         throw new Error('ヒートマップデータの取得に失敗しました')
       }
-      
+
       const result: HeatmapResponse = await response.json()
       setData(result.heatmapData)
       setLastUpdated(result.updatedAt)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '不明なエラーが発生しました')
+      setError(
+        err instanceof Error ? err.message : '不明なエラーが発生しました',
+      )
     } finally {
       setLoading(false)
     }
@@ -65,7 +67,7 @@ export const useHeatmapData = (days: number = 30) => {
     loading,
     error,
     lastUpdated,
-    refresh: fetchHeatmapData
+    refresh: fetchHeatmapData,
   }
 }
 
@@ -77,17 +79,19 @@ export const useStudyStats = (days: number = 7) => {
   const fetchStats = async () => {
     setLoading(true)
     setError(null)
-    
+
     try {
       const response = await fetch(`/api/answers/stats?days=${days}`)
       if (!response.ok) {
         throw new Error('統計データの取得に失敗しました')
       }
-      
+
       const result: StudyStats = await response.json()
       setData(result)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '不明なエラーが発生しました')
+      setError(
+        err instanceof Error ? err.message : '不明なエラーが発生しました',
+      )
     } finally {
       setLoading(false)
     }
@@ -101,6 +105,6 @@ export const useStudyStats = (days: number = 7) => {
     data,
     loading,
     error,
-    refresh: fetchStats
+    refresh: fetchStats,
   }
 }

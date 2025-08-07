@@ -98,7 +98,7 @@ const ZoomableImage = ({
                 >
                   <ZoomInIcon />
                 </IconButton>
-                
+
                 <IconButton
                   onClick={() => zoomOut()}
                   size="small"
@@ -109,7 +109,7 @@ const ZoomableImage = ({
                 >
                   <ZoomOutIcon />
                 </IconButton>
-                
+
                 <IconButton
                   onClick={() => resetTransform()}
                   size="small"
@@ -120,7 +120,7 @@ const ZoomableImage = ({
                 >
                   <ResetIcon />
                 </IconButton>
-                
+
                 <IconButton
                   onClick={handleFullscreen}
                   size="small"
@@ -187,7 +187,8 @@ const ZoomableImage = ({
                 }}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
-                  target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVlaWdodD0iMTAwJSIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTRweCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuODu+ODoeODvOOCuOOCkuiqrOOBv+i+vOOCgeOBvuOBm+OCk+OBp+OBl+OBnzwvdGV4dD48L3N2Zz4='
+                  target.src =
+                    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVlaWdodD0iMTAwJSIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTRweCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuODu+ODoeODvOOCuOOCkuiqrOOBv+i+vOOCgeOBvuOBm+OCk+OBp+OBl+OBnzwvdGV4dD48L3N2Zz4='
                 }}
               />
             </TransformComponent>

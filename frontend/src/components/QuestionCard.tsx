@@ -25,9 +25,17 @@ import { useAppStore } from '../stores/useAppStore'
 
 interface QuestionCardProps {
   question?: any // 復習モード用の直接問題データ
-  onAnswer?: (questionId: string, choiceId: string, timeSpent: number) => Promise<any> // 復習モード用
+  onAnswer?: (
+    questionId: string,
+    choiceId: string,
+    timeSpent: number,
+  ) => Promise<any> // 復習モード用
   onAnswerSubmit?: (choiceId: string, timeSpent: number) => void
-  onEssaySubmit?: (questionId: string, content: string, timeSpent: number) => Promise<any> // 記述式回答送信
+  onEssaySubmit?: (
+    questionId: string,
+    content: string,
+    timeSpent: number,
+  ) => Promise<any> // 記述式回答送信
   onNextQuestion?: () => void
   showTimer?: boolean
   timeLimit?: number // minutes
@@ -37,44 +45,50 @@ interface QuestionCardProps {
   categoryName?: string // カテゴリ名（ブックマーク用）
 }
 
-const QuestionCard = ({ 
+const QuestionCard = ({
   question: propQuestion,
   onAnswer,
   onAnswerSubmit,
   onEssaySubmit,
-  onNextQuestion, 
+  onNextQuestion,
   showTimer = true,
   timeLimit,
   reviewMode = false,
   showExplanation = false,
   showBookmark = true,
-  categoryName
+  categoryName,
 }: QuestionCardProps) => {
-  const { 
-    currentQuestion, 
-    currentAnswers, 
-    selectedChoiceId, 
-    userAnswer, 
+  const {
+    currentQuestion,
+    currentAnswers,
+    selectedChoiceId,
+    userAnswer,
     showResult,
     questionStartTime,
     setSelectedChoice,
     startQuestion,
   } = useQuestionStore()
-  
+
   const { deviceType } = useAppStore()
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [showHint, setShowHint] = useState(false)
-  
+
   // 復習モード用の状態
-  const [reviewSelectedChoice, setReviewSelectedChoice] = useState<string | null>(null)
+  const [reviewSelectedChoice, setReviewSelectedChoice] = useState<
+    string | null
+  >(null)
   const [reviewShowResult, setReviewShowResult] = useState(false)
   const [reviewAnswer, setReviewAnswer] = useState<any>(null)
   const [reviewStartTime, setReviewStartTime] = useState<number | null>(null)
-  
+
   // 実際に使用するデータを決定
   const activeQuestion = reviewMode ? propQuestion : currentQuestion
-  const activeAnswers = reviewMode ? propQuestion?.choices || [] : currentAnswers
-  const activeSelectedChoice = reviewMode ? reviewSelectedChoice : selectedChoiceId
+  const activeAnswers = reviewMode
+    ? propQuestion?.choices || []
+    : currentAnswers
+  const activeSelectedChoice = reviewMode
+    ? reviewSelectedChoice
+    : selectedChoiceId
   const activeShowResult = reviewMode ? reviewShowResult : showResult
   const activeStartTime = reviewMode ? reviewStartTime : questionStartTime
 
@@ -100,7 +114,7 @@ const QuestionCard = ({
     const interval = setInterval(() => {
       const elapsed = Math.floor((Date.now() - activeStartTime) / 1000)
       setTimeElapsed(elapsed)
-      
+
       // Auto-submit if time limit exceeded
       if (timeLimit && elapsed >= timeLimit * 60) {
         if (activeSelectedChoice) {
@@ -114,7 +128,16 @@ const QuestionCard = ({
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [activeStartTime, activeShowResult, timeLimit, activeSelectedChoice, onAnswerSubmit, onAnswer, reviewMode, activeQuestion])
+  }, [
+    activeStartTime,
+    activeShowResult,
+    timeLimit,
+    activeSelectedChoice,
+    onAnswerSubmit,
+    onAnswer,
+    reviewMode,
+    activeQuestion,
+  ])
 
   // Start timer when question loads
   useEffect(() => {
@@ -129,7 +152,14 @@ const QuestionCard = ({
       setShowHint(true)
       setTimeout(() => setShowHint(false), 3000)
     }
-  }, [reviewMode, propQuestion, currentQuestion, questionStartTime, reviewStartTime, startQuestion])
+  }, [
+    reviewMode,
+    propQuestion,
+    currentQuestion,
+    questionStartTime,
+    reviewStartTime,
+    startQuestion,
+  ])
 
   // 復習モードで問題が変わったときの初期化
   useEffect(() => {
@@ -150,29 +180,41 @@ const QuestionCard = ({
 
   const getDifficultyColor = (difficulty: number) => {
     switch (difficulty) {
-      case 1: return 'success'
-      case 2: return 'info'
-      case 3: return 'warning'
-      case 4: return 'error'
-      case 5: return 'error'
-      default: return 'default'
+      case 1:
+        return 'success'
+      case 2:
+        return 'info'
+      case 3:
+        return 'warning'
+      case 4:
+        return 'error'
+      case 5:
+        return 'error'
+      default:
+        return 'default'
     }
   }
 
   const getDifficultyLabel = (difficulty: number) => {
     switch (difficulty) {
-      case 1: return '基礎'
-      case 2: return '標準'
-      case 3: return '応用'
-      case 4: return '発展'
-      case 5: return '最高'
-      default: return '不明'
+      case 1:
+        return '基礎'
+      case 2:
+        return '標準'
+      case 3:
+        return '応用'
+      case 4:
+        return '発展'
+      case 5:
+        return '最高'
+      default:
+        return '不明'
     }
   }
 
   const handleChoiceSelect = (choiceId: string) => {
     if (activeShowResult) return // Prevent selection after answer
-    
+
     if (reviewMode) {
       setReviewSelectedChoice(choiceId)
     } else {
@@ -182,10 +224,14 @@ const QuestionCard = ({
 
   const handleSubmitAnswer = async () => {
     if (!activeSelectedChoice) return
-    
+
     if (reviewMode && onAnswer) {
       try {
-        const result = await onAnswer(activeQuestion.id, activeSelectedChoice, timeElapsed)
+        const result = await onAnswer(
+          activeQuestion.id,
+          activeSelectedChoice,
+          timeElapsed,
+        )
         setReviewAnswer(result)
         setReviewShowResult(true)
       } catch (error) {
@@ -195,7 +241,6 @@ const QuestionCard = ({
       onAnswerSubmit(activeSelectedChoice, timeElapsed)
     }
   }
-
 
   if (!activeQuestion) {
     return (
@@ -208,14 +253,19 @@ const QuestionCard = ({
   }
 
   const timeProgress = timeLimit ? (timeElapsed / (timeLimit * 60)) * 100 : 0
-  const isTimeWarning = timeLimit && timeElapsed > (timeLimit * 60 * 0.8)
+  const isTimeWarning = timeLimit && timeElapsed > timeLimit * 60 * 0.8
   const isTimeUp = timeLimit && timeElapsed >= timeLimit * 60
 
   return (
     <Card sx={{ maxWidth: '100%', mx: 'auto' }}>
       {/* Progress and Info Bar */}
       <Box sx={{ p: 2, pb: 0 }}>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={1}
+        >
           <Box display="flex" alignItems="center" gap={1}>
             <Chip
               icon={<DifficultyIcon fontSize="small" />}
@@ -240,7 +290,7 @@ const QuestionCard = ({
               />
             )}
           </Box>
-          
+
           <Box display="flex" alignItems="center" gap={1}>
             {showBookmark && (
               <BookmarkButton
@@ -260,12 +310,12 @@ const QuestionCard = ({
             )}
             {showTimer && (
               <>
-                <TimeIcon 
-                  fontSize="small" 
-                  color={isTimeWarning ? 'error' : 'action'} 
+                <TimeIcon
+                  fontSize="small"
+                  color={isTimeWarning ? 'error' : 'action'}
                 />
-                <Typography 
-                  variant="body2" 
+                <Typography
+                  variant="body2"
                   color={isTimeWarning ? 'error' : 'text.secondary'}
                   fontWeight={isTimeWarning ? 'bold' : 'normal'}
                 >
@@ -290,7 +340,12 @@ const QuestionCard = ({
 
       <CardContent sx={{ pt: 1 }}>
         {/* Question Content */}
-        <Typography variant="h6" component="h2" gutterBottom sx={{ lineHeight: 1.6 }}>
+        <Typography
+          variant="h6"
+          component="h2"
+          gutterBottom
+          sx={{ lineHeight: 1.6 }}
+        >
           {activeQuestion.content}
         </Typography>
 
@@ -333,17 +388,19 @@ const QuestionCard = ({
             <TouchButton
               key={choice.id}
               fullWidth
-              variant={activeSelectedChoice === choice.id ? 'contained' : 'outlined'}
+              variant={
+                activeSelectedChoice === choice.id ? 'contained' : 'outlined'
+              }
               color={
                 activeShowResult && (userAnswer || reviewAnswer)
                   ? choice.isCorrect
                     ? 'success'
                     : activeSelectedChoice === choice.id && !choice.isCorrect
-                    ? 'error'
-                    : 'inherit'
+                      ? 'error'
+                      : 'inherit'
                   : activeSelectedChoice === choice.id
-                  ? 'primary'
-                  : 'inherit'
+                    ? 'primary'
+                    : 'inherit'
               }
               touchSize="large"
               onClick={() => handleChoiceSelect(choice.id)}
@@ -362,7 +419,8 @@ const QuestionCard = ({
                 activeShowResult && (userAnswer || reviewAnswer) ? (
                   choice.isCorrect ? (
                     <CorrectIcon />
-                  ) : activeSelectedChoice === choice.id && !choice.isCorrect ? (
+                  ) : activeSelectedChoice === choice.id &&
+                    !choice.isCorrect ? (
                     <IncorrectIcon />
                   ) : null
                 ) : (
@@ -375,8 +433,14 @@ const QuestionCard = ({
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      bgcolor: activeSelectedChoice === choice.id ? 'primary.contrastText' : 'action.disabled',
-                      color: activeSelectedChoice === choice.id ? 'primary.main' : 'text.secondary',
+                      bgcolor:
+                        activeSelectedChoice === choice.id
+                          ? 'primary.contrastText'
+                          : 'action.disabled',
+                      color:
+                        activeSelectedChoice === choice.id
+                          ? 'primary.main'
+                          : 'text.secondary',
                       fontSize: '0.875rem',
                       fontWeight: 600,
                     }}
@@ -386,7 +450,10 @@ const QuestionCard = ({
                 )
               }
             >
-              <Typography variant="body1" sx={{ flex: 1, whiteSpace: 'normal' }}>
+              <Typography
+                variant="body1"
+                sx={{ flex: 1, whiteSpace: 'normal' }}
+              >
                 {choice.content}
               </Typography>
             </TouchButton>
@@ -417,13 +484,21 @@ const QuestionCard = ({
                 sx={{
                   p: 2,
                   borderRadius: 2,
-                  bgcolor: (userAnswer?.isCorrect || reviewAnswer?.isCorrect) ? 'success.light' : 'error.light',
-                  color: (userAnswer?.isCorrect || reviewAnswer?.isCorrect) ? 'success.contrastText' : 'error.contrastText',
+                  bgcolor:
+                    userAnswer?.isCorrect || reviewAnswer?.isCorrect
+                      ? 'success.light'
+                      : 'error.light',
+                  color:
+                    userAnswer?.isCorrect || reviewAnswer?.isCorrect
+                      ? 'success.contrastText'
+                      : 'error.contrastText',
                   mb: 2,
                 }}
               >
                 <Typography variant="h6" gutterBottom>
-                  {(userAnswer?.isCorrect || reviewAnswer?.isCorrect) ? '正解！' : '不正解'}
+                  {userAnswer?.isCorrect || reviewAnswer?.isCorrect
+                    ? '正解！'
+                    : '不正解'}
                 </Typography>
                 <Typography variant="body2">
                   回答時間: {formatTime(timeElapsed)}

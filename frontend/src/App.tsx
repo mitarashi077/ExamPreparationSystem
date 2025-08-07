@@ -13,14 +13,19 @@ import { useDeviceDetection } from './hooks/useDeviceDetection'
 
 function App() {
   const { isMobile, isTablet } = useDeviceDetection()
-  
+
   return (
     <Layout>
-      <Container 
-        maxWidth={isMobile || isTablet ? false : "lg"}
+      <Container
+        maxWidth={isMobile || isTablet ? false : 'lg'}
         disableGutters={isMobile || isTablet}
       >
-        <Box sx={{ py: isMobile || isTablet ? 0 : 2, height: isMobile || isTablet ? '100%' : 'auto' }}>
+        <Box
+          sx={{
+            py: isMobile || isTablet ? 0 : 2,
+            height: isMobile || isTablet ? '100%' : 'auto',
+          }}
+        >
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/practice" element={<PracticePage />} />

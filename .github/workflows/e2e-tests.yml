@@ -1,0 +1,316 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd frontend && npm ci
+          cd ../backend && npm ci
+      
+      - name: Setup database
+        run: |
+          cd backend
+          npm run db:generate
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Install Playwright browsers
+        run: |
+          cd frontend
+          npx playwright install ${{ matrix.browser }}
+      
+      - name: Start application for testing
+        run: |
+          npm run dev &
+          sleep 30  # Wait for application to start
+        env:
+          NODE_ENV: test
+      
+      - name: Run E2E tests
+        run: |
+          cd frontend
+          npx playwright test --project=${{ matrix.browser }}
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3003
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-results-${{ matrix.browser }}
+          path: |
+            frontend/e2e-results/
+            frontend/test-results/
+          retention-days: 7
+      
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: frontend/e2e-results/html/
+          retention-days: 7
+
+  mobile-e2e-tests:
+    name: Mobile E2E Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd frontend && npm ci
+          cd ../backend && npm ci
+      
+      - name: Setup database
+        run: |
+          cd backend
+          npm run db:generate
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Install Playwright browsers
+        run: |
+          cd frontend
+          npx playwright install chromium
+      
+      - name: Start application for testing
+        run: |
+          npm run dev &
+          sleep 30
+        env:
+          NODE_ENV: test
+      
+      - name: Run Mobile E2E tests
+        run: |
+          cd frontend
+          npx playwright test --project=mobile-chrome --project=mobile-safari
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3003
+      
+      - name: Upload mobile test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-e2e-results
+          path: |
+            frontend/e2e-results/
+            frontend/test-results/
+          retention-days: 7
+
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd frontend && npm ci
+          cd ../backend && npm ci
+      
+      - name: Setup database
+        run: |
+          cd backend
+          npm run db:generate
+      
+      - name: Build application (production)
+        run: npm run build
+        env:
+          NODE_ENV: production
+      
+      - name: Install Playwright browsers
+        run: |
+          cd frontend
+          npx playwright install chromium
+      
+      - name: Start application for testing
+        run: |
+          npm run dev &
+          sleep 30
+        env:
+          NODE_ENV: production
+      
+      - name: Run Performance tests
+        run: |
+          cd frontend
+          npx playwright test e2e/tests/performance.spec.ts
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3003
+      
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-test-results
+          path: |
+            frontend/e2e-results/
+            frontend/test-results/
+          retention-days: 7
+
+  accessibility-tests:
+    name: Accessibility Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd frontend && npm ci
+          cd ../backend && npm ci
+      
+      - name: Setup database
+        run: |
+          cd backend
+          npm run db:generate
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Install Playwright browsers
+        run: |
+          cd frontend
+          npx playwright install chromium
+      
+      - name: Start application for testing
+        run: |
+          npm run dev &
+          sleep 30
+        env:
+          NODE_ENV: test
+      
+      - name: Run Accessibility tests
+        run: |
+          cd frontend
+          npx playwright test e2e/tests/accessibility.spec.ts
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3003
+      
+      - name: Upload accessibility results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-test-results
+          path: |
+            frontend/e2e-results/
+            frontend/test-results/
+          retention-days: 7
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [e2e-tests, mobile-e2e-tests, performance-tests, accessibility-tests]
+    if: always()
+    
+    steps:
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          path: test-results
+      
+      - name: Create test summary
+        run: |
+          echo "# E2E Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Status" >> $GITHUB_STEP_SUMMARY
+          echo "- E2E Tests: ${{ needs.e2e-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Mobile Tests: ${{ needs.mobile-e2e-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Performance Tests: ${{ needs.performance-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Accessibility Tests: ${{ needs.accessibility-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "Test results and HTML reports are available in the workflow artifacts." >> $GITHUB_STEP_SUMMARY
+      
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes('E2E Test Results')
+            );
+            
+            const body = `## E2E Test Results
+            
+            | Test Suite | Status |
+            |------------|--------|
+            | E2E Tests | ${{ needs.e2e-tests.result == 'success' && '✅' || '❌' }} ${{ needs.e2e-tests.result }} |
+            | Mobile Tests | ${{ needs.mobile-e2e-tests.result == 'success' && '✅' || '❌' }} ${{ needs.mobile-e2e-tests.result }} |
+            | Performance Tests | ${{ needs.performance-tests.result == 'success' && '✅' || '❌' }} ${{ needs.performance-tests.result }} |
+            | Accessibility Tests | ${{ needs.accessibility-tests.result == 'success' && '✅' || '❌' }} ${{ needs.accessibility-tests.result }} |
+            
+            Test reports are available in the [workflow artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).`;
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }

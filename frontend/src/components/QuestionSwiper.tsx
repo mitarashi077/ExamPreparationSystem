@@ -19,20 +19,20 @@ interface QuestionSwiperProps {
   allowSwipeNavigation?: boolean
 }
 
-const QuestionSwiper = ({ 
+const QuestionSwiper = ({
   onAnswerSubmit,
   onNextQuestion: externalOnNextQuestion,
-  showTimer = true, 
+  showTimer = true,
   timeLimit,
-  allowSwipeNavigation = true 
+  allowSwipeNavigation = true,
 }: QuestionSwiperProps) => {
-  const { 
-    questions, 
-    currentQuestionIndex, 
+  const {
+    questions,
+    currentQuestionIndex,
     showResult,
     setCurrentQuestionIndex,
   } = useQuestionStore()
-  
+
   const { deviceType } = useAppStore()
   const [showSwipeHint, setShowSwipeHint] = useState(false)
 
@@ -42,7 +42,11 @@ const QuestionSwiper = ({
 
   // Show swipe hint for mobile users
   useEffect(() => {
-    if (deviceType === 'mobile' && hasMultipleQuestions && allowSwipeNavigation) {
+    if (
+      deviceType === 'mobile' &&
+      hasMultipleQuestions &&
+      allowSwipeNavigation
+    ) {
       const hasSeenHint = localStorage.getItem('question-swipe-hint-seen')
       if (!hasSeenHint) {
         setShowSwipeHint(true)
@@ -73,7 +77,11 @@ const QuestionSwiper = ({
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
-      if (allowSwipeNavigation && !showResult && (externalOnNextQuestion || canGoNext)) {
+      if (
+        allowSwipeNavigation &&
+        !showResult &&
+        (externalOnNextQuestion || canGoNext)
+      ) {
         handleNextQuestion()
       }
     },
@@ -117,9 +125,7 @@ const QuestionSwiper = ({
           }}
         >
           <SwipeRightIcon fontSize="small" />
-          <Typography variant="body2">
-            左右にスワイプで問題切り替え
-          </Typography>
+          <Typography variant="body2">左右にスワイプで問題切り替え</Typography>
           <SwipeLeftIcon fontSize="small" />
         </Box>
       </Fade>
@@ -196,41 +202,44 @@ const QuestionSwiper = ({
       )}
 
       {/* Swipe Indicators (Mobile) */}
-      {deviceType === 'mobile' && hasMultipleQuestions && allowSwipeNavigation && !showResult && (
-        <>
-          {canGoPrev && (
-            <Box
-              sx={{
-                position: 'absolute',
-                left: 8,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                zIndex: 5,
-                opacity: 0.3,
-                pointerEvents: 'none',
-              }}
-            >
-              <SwipeRightIcon color="primary" />
-            </Box>
-          )}
+      {deviceType === 'mobile' &&
+        hasMultipleQuestions &&
+        allowSwipeNavigation &&
+        !showResult && (
+          <>
+            {canGoPrev && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  left: 8,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 5,
+                  opacity: 0.3,
+                  pointerEvents: 'none',
+                }}
+              >
+                <SwipeRightIcon color="primary" />
+              </Box>
+            )}
 
-          {(externalOnNextQuestion || canGoNext) && (
-            <Box
-              sx={{
-                position: 'absolute',
-                right: 8,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                zIndex: 5,
-                opacity: 0.3,
-                pointerEvents: 'none',
-              }}
-            >
-              <SwipeLeftIcon color="primary" />
-            </Box>
-          )}
-        </>
-      )}
+            {(externalOnNextQuestion || canGoNext) && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 5,
+                  opacity: 0.3,
+                  pointerEvents: 'none',
+                }}
+              >
+                <SwipeLeftIcon color="primary" />
+              </Box>
+            )}
+          </>
+        )}
 
       {/* Question Progress Dots */}
       {hasMultipleQuestions && questions.length <= 10 && (
@@ -252,13 +261,14 @@ const QuestionSwiper = ({
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                bgcolor: index === currentQuestionIndex 
-                  ? 'primary.main' 
-                  : questions[index]?.hasAnswered 
-                    ? questions[index]?.isCorrect 
-                      ? 'success.main' 
-                      : 'error.main'
-                    : 'action.disabled',
+                bgcolor:
+                  index === currentQuestionIndex
+                    ? 'primary.main'
+                    : questions[index]?.hasAnswered
+                      ? questions[index]?.isCorrect
+                        ? 'success.main'
+                        : 'error.main'
+                      : 'action.disabled',
                 transition: 'all 0.3s ease',
                 cursor: 'pointer',
               }}
@@ -277,7 +287,11 @@ const QuestionSwiper = ({
       >
         <QuestionCard
           onAnswerSubmit={onAnswerSubmit}
-          onNextQuestion={showResult && (externalOnNextQuestion || canGoNext) ? handleNextQuestion : undefined}
+          onNextQuestion={
+            showResult && (externalOnNextQuestion || canGoNext)
+              ? handleNextQuestion
+              : undefined
+          }
           showTimer={showTimer}
           timeLimit={timeLimit}
         />

@@ -10,8 +10,10 @@ interface SwipeablePagesProps {
 const SwipeablePages = ({ children }: SwipeablePagesProps) => {
   const location = useLocation()
   const { navigationItems } = useSwipeNavigation()
-  
-  const currentIndex = navigationItems.findIndex(item => item.path === location.pathname)
+
+  const currentIndex = navigationItems.findIndex(
+    (item) => item.path === location.pathname,
+  )
   const isValidPage = currentIndex !== -1
 
   if (!isValidPage) {

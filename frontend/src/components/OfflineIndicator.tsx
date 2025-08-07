@@ -1,20 +1,20 @@
 import React from 'react'
-import { 
-  Box, 
-  Chip, 
-  Badge, 
-  Tooltip, 
+import {
+  Box,
+  Chip,
+  Badge,
+  Tooltip,
   Alert,
   Button,
   LinearProgress,
-  Typography
+  Typography,
 } from '@mui/material'
 import {
   WifiOff,
   CloudSync,
   CloudDone,
   Sync,
-  Warning
+  Warning,
 } from '@mui/icons-material'
 import { useOfflineSync } from '../hooks/useOfflineSync'
 
@@ -23,9 +23,9 @@ interface OfflineIndicatorProps {
   compact?: boolean
 }
 
-const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ 
-  showAlert = false, 
-  compact = false 
+const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
+  showAlert = false,
+  compact = false,
 }) => {
   const { syncStatus, manualSync } = useOfflineSync()
 
@@ -52,8 +52,10 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
   if (compact) {
     return (
       <Tooltip title={getStatusText()}>
-        <Badge 
-          badgeContent={syncStatus.pendingCount > 0 ? syncStatus.pendingCount : 0}
+        <Badge
+          badgeContent={
+            syncStatus.pendingCount > 0 ? syncStatus.pendingCount : 0
+          }
           color="warning"
           max={99}
         >
@@ -63,7 +65,11 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
             color={getStatusColor()}
             size="small"
             variant="outlined"
-            onClick={syncStatus.isOnline && syncStatus.pendingCount > 0 ? manualSync : undefined}
+            onClick={
+              syncStatus.isOnline && syncStatus.pendingCount > 0
+                ? manualSync
+                : undefined
+            }
             clickable={syncStatus.isOnline && syncStatus.pendingCount > 0}
           />
         </Badge>

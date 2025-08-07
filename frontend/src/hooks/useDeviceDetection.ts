@@ -8,7 +8,7 @@ export const useDeviceDetection = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'))
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'))
-  
+
   const { setDeviceType, setOnlineStatus } = useAppStore()
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export const useDeviceDetection = () => {
 
     window.addEventListener('online', handleOnlineStatus)
     window.addEventListener('offline', handleOnlineStatus)
-    
+
     // Initial status
     handleOnlineStatus()
 

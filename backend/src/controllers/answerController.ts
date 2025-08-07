@@ -2,40 +2,50 @@ import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 
 // Clean DATABASE_URL if it has psql prefix
-let cleanUrl = process.env.DATABASE_URL;
+let cleanUrl = process.env.DATABASE_URL
 if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
-  cleanUrl = cleanUrl.slice(5, -1);
+  cleanUrl = cleanUrl.slice(5, -1)
 }
 
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: cleanUrl
-    }
-  }
+      url: cleanUrl,
+    },
+  },
 })
 
 // 間隔反復学習アルゴリズム - Spaced Repetition
 class SpacedRepetitionAlgorithm {
-  static getNextReviewInterval(masteryLevel: number, isCorrect: boolean): number {
-    const baseIntervals = [1, 5, 30, 180, 1440, 4320];
-    const newLevel = isCorrect 
+  static getNextReviewInterval(
+    masteryLevel: number,
+    isCorrect: boolean,
+  ): number {
+    const baseIntervals = [1, 5, 30, 180, 1440, 4320]
+    const newLevel = isCorrect
       ? Math.min(5, masteryLevel + 1)
-      : Math.max(0, masteryLevel - 1);
-    return baseIntervals[newLevel] || baseIntervals[0];
+      : Math.max(0, masteryLevel - 1)
+    return baseIntervals[newLevel] || baseIntervals[0]
   }
 
-  static calculatePriority(masteryLevel: number, wrongCount: number, daysSinceLastReview: number): number {
-    let priority = 1;
-    priority += (5 - masteryLevel);
-    priority += Math.min(wrongCount * 0.5, 3);
-    priority += Math.min(daysSinceLastReview * 0.1, 2);
-    return Math.min(Math.round(priority), 5);
+  static calculatePriority(
+    masteryLevel: number,
+    wrongCount: number,
+    daysSinceLastReview: number,
+  ): number {
+    let priority = 1
+    priority += 5 - masteryLevel
+    priority += Math.min(wrongCount * 0.5, 3)
+    priority += Math.min(daysSinceLastReview * 0.1, 2)
+    return Math.min(Math.round(priority), 5)
   }
 }
 
 // 回答提出
-export const submitAnswer = async (req: Request, res: Response): Promise<void> => {
+export const submitAnswer = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const { questionId, choiceId, timeSpent, deviceType } = req.body
 
@@ -50,10 +60,10 @@ export const submitAnswer = async (req: Request, res: Response): Promise<void> =
       include: {
         question: {
           include: {
-            choices: true
-          }
-        }
-      }
+            choices: true,
+          },
+        },
+      },
     })
 
     if (!choice) {
@@ -67,40 +77,50 @@ export const submitAnswer = async (req: Request, res: Response): Promise<void> =
         questionId,
         isCorrect: choice.isCorrect,
         timeSpent: timeSpent || null,
-        deviceType: deviceType || null
-      }
+        deviceType: deviceType || null,
+      },
     })
 
     // 復習リストへの自動追加処理
-    let reviewItem = null;
+    let reviewItem = null
     try {
       const existingReviewItem = await prisma.reviewItem.findUnique({
-        where: { questionId }
-      });
+        where: { questionId },
+      })
 
-      const now = new Date();
+      const now = new Date()
 
       if (existingReviewItem) {
         // 既存アイテムの更新
-        const newMasteryLevel = choice.isCorrect 
+        const newMasteryLevel = choice.isCorrect
           ? Math.min(5, existingReviewItem.masteryLevel + 1)
-          : Math.max(0, existingReviewItem.masteryLevel - 1);
+          : Math.max(0, existingReviewItem.masteryLevel - 1)
 
-        const correctStreak = choice.isCorrect 
-          ? existingReviewItem.correctStreak + 1 
-          : 0;
+        const correctStreak = choice.isCorrect
+          ? existingReviewItem.correctStreak + 1
+          : 0
 
-        const wrongCount = choice.isCorrect 
-          ? existingReviewItem.wrongCount 
-          : existingReviewItem.wrongCount + 1;
+        const wrongCount = choice.isCorrect
+          ? existingReviewItem.wrongCount
+          : existingReviewItem.wrongCount + 1
 
-        const intervalMinutes = SpacedRepetitionAlgorithm.getNextReviewInterval(newMasteryLevel, choice.isCorrect);
-        const nextReview = new Date(now.getTime() + intervalMinutes * 60 * 1000);
+        const intervalMinutes = SpacedRepetitionAlgorithm.getNextReviewInterval(
+          newMasteryLevel,
+          choice.isCorrect,
+        )
+        const nextReview = new Date(now.getTime() + intervalMinutes * 60 * 1000)
 
-        const daysSinceLastReview = existingReviewItem.lastReviewed 
-          ? Math.floor((now.getTime() - existingReviewItem.lastReviewed.getTime()) / (1000 * 60 * 60 * 24))
-          : 0;
-        const priority = SpacedRepetitionAlgorithm.calculatePriority(newMasteryLevel, wrongCount, daysSinceLastReview);
+        const daysSinceLastReview = existingReviewItem.lastReviewed
+          ? Math.floor(
+              (now.getTime() - existingReviewItem.lastReviewed.getTime()) /
+                (1000 * 60 * 60 * 24),
+            )
+          : 0
+        const priority = SpacedRepetitionAlgorithm.calculatePriority(
+          newMasteryLevel,
+          wrongCount,
+          daysSinceLastReview,
+        )
 
         reviewItem = await prisma.reviewItem.update({
           where: { questionId },
@@ -113,14 +133,17 @@ export const submitAnswer = async (req: Request, res: Response): Promise<void> =
             correctStreak,
             priority,
             isActive: newMasteryLevel < 5,
-            updatedAt: now
-          }
-        });
+            updatedAt: now,
+          },
+        })
       } else if (!choice.isCorrect) {
         // 新規間違い問題の追加（正解の場合は追加しない）
-        const intervalMinutes = SpacedRepetitionAlgorithm.getNextReviewInterval(0, false);
-        const nextReview = new Date(now.getTime() + intervalMinutes * 60 * 1000);
-        const priority = SpacedRepetitionAlgorithm.calculatePriority(0, 1, 0);
+        const intervalMinutes = SpacedRepetitionAlgorithm.getNextReviewInterval(
+          0,
+          false,
+        )
+        const nextReview = new Date(now.getTime() + intervalMinutes * 60 * 1000)
+        const priority = SpacedRepetitionAlgorithm.calculatePriority(0, 1, 0)
 
         reviewItem = await prisma.reviewItem.create({
           data: {
@@ -132,9 +155,9 @@ export const submitAnswer = async (req: Request, res: Response): Promise<void> =
             wrongCount: 1,
             correctStreak: 0,
             priority,
-            isActive: true
-          }
-        });
+            isActive: true,
+          },
+        })
       }
     } catch (reviewError) {
       // 復習アイテム処理エラー logged for debugging
@@ -150,12 +173,14 @@ export const submitAnswer = async (req: Request, res: Response): Promise<void> =
       correctChoiceId: correctChoice?.id,
       explanation: choice.question.explanation,
       timeSpent: answer.timeSpent,
-      reviewItem: reviewItem ? { 
-        id: reviewItem.id, 
-        masteryLevel: reviewItem.masteryLevel,
-        nextReview: reviewItem.nextReview,
-        priority: reviewItem.priority
-      } : null
+      reviewItem: reviewItem
+        ? {
+            id: reviewItem.id,
+            masteryLevel: reviewItem.masteryLevel,
+            nextReview: reviewItem.nextReview,
+            priority: reviewItem.priority,
+          }
+        : null,
     })
   } catch (error) {
     // Error submitting answer logged for debugging
@@ -164,7 +189,10 @@ export const submitAnswer = async (req: Request, res: Response): Promise<void> =
 }
 
 // ヒートマップデータ取得
-export const getHeatmapData = async (req: Request, res: Response): Promise<void> => {
+export const getHeatmapData = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const days = parseInt(req.query.days as string) || 30
 
@@ -175,25 +203,28 @@ export const getHeatmapData = async (req: Request, res: Response): Promise<void>
     const answers = await prisma.answer.findMany({
       where: {
         createdAt: {
-          gte: startDate
-        }
+          gte: startDate,
+        },
       },
       include: {
         question: {
           include: {
-            category: true
-          }
-        }
-      }
+            category: true,
+          },
+        },
+      },
     })
 
     // 分野別にデータを集約
-    const categoryMap = new Map<string, { 
-      categoryId: string; 
-      categoryName: string; 
-      totalAttempts: number; 
-      correctAttempts: number; 
-    }>()
+    const categoryMap = new Map<
+      string,
+      {
+        categoryId: string
+        categoryName: string
+        totalAttempts: number
+        correctAttempts: number
+      }
+    >()
 
     answers.forEach((answer: any) => {
       if (!answer.question?.category) return
@@ -203,7 +234,7 @@ export const getHeatmapData = async (req: Request, res: Response): Promise<void>
         categoryId,
         categoryName: answer.question.category.name,
         totalAttempts: 0,
-        correctAttempts: 0
+        correctAttempts: 0,
       }
 
       existing.totalAttempts += 1
@@ -215,18 +246,24 @@ export const getHeatmapData = async (req: Request, res: Response): Promise<void>
     })
 
     // ヒートマップ用のデータ形式に変換
-    const heatmapData = Array.from(categoryMap.values()).map(category => ({
+    const heatmapData = Array.from(categoryMap.values()).map((category) => ({
       categoryId: category.categoryId,
       categoryName: category.categoryName,
       attempts: category.totalAttempts,
-      accuracy: category.totalAttempts > 0 ? (category.correctAttempts / category.totalAttempts) * 100 : 0,
-      colorIntensity: category.totalAttempts > 0 ? (category.correctAttempts / category.totalAttempts) : 0
+      accuracy:
+        category.totalAttempts > 0
+          ? (category.correctAttempts / category.totalAttempts) * 100
+          : 0,
+      colorIntensity:
+        category.totalAttempts > 0
+          ? category.correctAttempts / category.totalAttempts
+          : 0,
     }))
 
     res.json({
       heatmapData,
       period: `${days}日間`,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     })
   } catch (error) {
     // Error fetching heatmap data logged for debugging
@@ -235,7 +272,10 @@ export const getHeatmapData = async (req: Request, res: Response): Promise<void>
 }
 
 // 学習統計取得
-export const getStudyStats = async (req: Request, res: Response): Promise<void> => {
+export const getStudyStats = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const deviceType = req.query.deviceType as string
     const categoryId = req.query.categoryId as string
@@ -246,8 +286,8 @@ export const getStudyStats = async (req: Request, res: Response): Promise<void> 
 
     const where: any = {
       createdAt: {
-        gte: startDate
-      }
+        gte: startDate,
+      },
     }
 
     if (deviceType) {
@@ -256,7 +296,7 @@ export const getStudyStats = async (req: Request, res: Response): Promise<void> 
 
     if (categoryId) {
       where.question = {
-        categoryId
+        categoryId,
       }
     }
 
@@ -265,8 +305,8 @@ export const getStudyStats = async (req: Request, res: Response): Promise<void> 
     const correctAnswers = await prisma.answer.count({
       where: {
         ...where,
-        isCorrect: true
-      }
+        isCorrect: true,
+      },
     })
 
     // 分野別統計（現在は使用されていないがデータ構造を保持）
@@ -287,24 +327,31 @@ export const getStudyStats = async (req: Request, res: Response): Promise<void> 
       select: {
         createdAt: true,
         isCorrect: true,
-        timeSpent: true
+        timeSpent: true,
       },
       orderBy: {
-        createdAt: 'asc'
-      }
+        createdAt: 'asc',
+      },
     })
 
     // 日別データを集計
-    const dailyMap = new Map<string, { correct: number; total: number; totalTime: number }>()
-    
+    const dailyMap = new Map<
+      string,
+      { correct: number; total: number; totalTime: number }
+    >()
+
     dailyStats.forEach((answer: any) => {
       const date = answer.createdAt.toISOString().split('T')[0]
-      const current = dailyMap.get(date) || { correct: 0, total: 0, totalTime: 0 }
-      
+      const current = dailyMap.get(date) || {
+        correct: 0,
+        total: 0,
+        totalTime: 0,
+      }
+
       current.total += 1
       if (answer.isCorrect) current.correct += 1
       if (answer.timeSpent) current.totalTime += answer.timeSpent
-      
+
       dailyMap.set(date, current)
     })
 
@@ -313,7 +360,7 @@ export const getStudyStats = async (req: Request, res: Response): Promise<void> 
       correctAnswers: stats.correct,
       totalAnswers: stats.total,
       accuracy: stats.total > 0 ? (stats.correct / stats.total) * 100 : 0,
-      averageTime: stats.total > 0 ? stats.totalTime / stats.total : 0
+      averageTime: stats.total > 0 ? stats.totalTime / stats.total : 0,
     }))
 
     res.json({
@@ -321,9 +368,9 @@ export const getStudyStats = async (req: Request, res: Response): Promise<void> 
         totalAnswers,
         correctAnswers,
         accuracy: totalAnswers > 0 ? (correctAnswers / totalAnswers) * 100 : 0,
-        period: `${days}日間`
+        period: `${days}日間`,
       },
-      daily: dailyArray
+      daily: dailyArray,
     })
   } catch (error) {
     // Error fetching study stats logged for debugging

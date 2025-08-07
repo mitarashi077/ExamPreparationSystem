@@ -1,41 +1,47 @@
 import React, { useState } from 'react'
-import { 
-  Typography, 
-  Box, 
-  Paper, 
-  Grid, 
-  Card, 
-  CardContent, 
+import {
+  Typography,
+  Box,
+  Paper,
+  Grid,
+  Card,
+  CardContent,
   CircularProgress,
   Alert,
   ToggleButton,
   ToggleButtonGroup,
-  IconButton
+  IconButton,
 } from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import HeatmapChart from '../components/HeatmapChart'
 import DailyStatsChart from '../components/DailyStatsChart'
 import OfflineIndicator from '../components/OfflineIndicator'
-import { useHeatmapData, useStudyStats, HeatmapData } from '../hooks/useProgressApi'
+import {
+  useHeatmapData,
+  useStudyStats,
+  HeatmapData,
+} from '../hooks/useProgressApi'
 
 const ProgressPage = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<number>(30)
-  const [selectedCategory, setSelectedCategory] = useState<HeatmapData | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<HeatmapData | null>(
+    null,
+  )
   const [chartType, setChartType] = useState<'line' | 'bar'>('line')
-  
-  const { 
-    data: heatmapData, 
-    loading: heatmapLoading, 
+
+  const {
+    data: heatmapData,
+    loading: heatmapLoading,
     error: heatmapError,
     refresh: refreshHeatmap,
-    lastUpdated
+    lastUpdated,
   } = useHeatmapData(selectedPeriod)
-  
-  const { 
-    data: statsData, 
-    loading: statsLoading, 
+
+  const {
+    data: statsData,
+    loading: statsLoading,
     error: statsError,
-    refresh: refreshStats
+    refresh: refreshStats,
   } = useStudyStats(7)
 
   const handlePeriodChange = (
@@ -67,21 +73,23 @@ const ProgressPage = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        mb: 3,
-        flexDirection: { xs: 'column', sm: 'row' },
-        gap: 2
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+        }}
+      >
         <Typography variant="h4" component="h1">
           学習進捗
         </Typography>
-        
+
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <OfflineIndicator compact />
-          
+
           <ToggleButtonGroup
             value={selectedPeriod}
             exclusive
@@ -92,8 +100,11 @@ const ProgressPage = () => {
             <ToggleButton value={30}>30日</ToggleButton>
             <ToggleButton value={90}>90日</ToggleButton>
           </ToggleButtonGroup>
-          
-          <IconButton onClick={handleRefresh} disabled={heatmapLoading || statsLoading}>
+
+          <IconButton
+            onClick={handleRefresh}
+            disabled={heatmapLoading || statsLoading}
+          >
             <RefreshIcon />
           </IconButton>
         </Box>
@@ -117,7 +128,7 @@ const ProgressPage = () => {
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -134,7 +145,7 @@ const ProgressPage = () => {
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -151,7 +162,7 @@ const ProgressPage = () => {
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -162,7 +173,7 @@ const ProgressPage = () => {
                 {heatmapLoading ? (
                   <CircularProgress size={24} />
                 ) : (
-                  heatmapData.filter(d => d.attempts > 0).length
+                  heatmapData.filter((d) => d.attempts > 0).length
                 )}
               </Typography>
             </CardContent>
@@ -184,12 +195,9 @@ const ProgressPage = () => {
             <CircularProgress />
           </Box>
         ) : (
-          <HeatmapChart 
-            data={heatmapData} 
-            onCellClick={handleCellClick}
-          />
+          <HeatmapChart data={heatmapData} onCellClick={handleCellClick} />
         )}
-        
+
         {lastUpdated && (
           <Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
             <Typography variant="caption" color="text.secondary">
@@ -202,18 +210,20 @@ const ProgressPage = () => {
       {/* 日別統計グラフ */}
       <Paper sx={{ mb: 4 }}>
         <Box sx={{ p: 3 }}>
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            mb: 3,
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: 2
-          }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 3,
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: 2,
+            }}
+          >
             <Typography variant="h6" component="h2">
               日別学習統計
             </Typography>
-            
+
             <ToggleButtonGroup
               value={chartType}
               exclusive
@@ -230,16 +240,15 @@ const ProgressPage = () => {
               <CircularProgress />
             </Box>
           ) : statsData?.daily && statsData.daily.length > 0 ? (
-            <DailyStatsChart 
-              data={statsData.daily} 
-              chartType={chartType}
-            />
+            <DailyStatsChart data={statsData.daily} chartType={chartType} />
           ) : (
-            <Box sx={{ 
-              textAlign: 'center', 
-              py: 4,
-              color: 'text.secondary'
-            }}>
+            <Box
+              sx={{
+                textAlign: 'center',
+                py: 4,
+                color: 'text.secondary',
+              }}
+            >
               <Typography>
                 統計データがありません。問題を解いて学習を開始してください。
               </Typography>
@@ -254,7 +263,7 @@ const ProgressPage = () => {
           <Typography variant="h6" gutterBottom>
             分野詳細: {selectedCategory.categoryName}
           </Typography>
-          
+
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
               <Box sx={{ textAlign: 'center' }}>
@@ -266,7 +275,7 @@ const ProgressPage = () => {
                 </Typography>
               </Box>
             </Grid>
-            
+
             <Grid item xs={12} sm={4}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="h3">
@@ -277,14 +286,17 @@ const ProgressPage = () => {
                 </Typography>
               </Box>
             </Grid>
-            
+
             <Grid item xs={12} sm={4}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="h3">
-                  {selectedCategory.attempts > 0 
-                    ? Math.round(selectedCategory.accuracy * selectedCategory.attempts / 100)
-                    : 0
-                  }
+                  {selectedCategory.attempts > 0
+                    ? Math.round(
+                        (selectedCategory.accuracy *
+                          selectedCategory.attempts) /
+                          100,
+                      )
+                    : 0}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   正解数

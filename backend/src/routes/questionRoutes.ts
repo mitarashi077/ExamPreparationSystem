@@ -1,5 +1,9 @@
 import { Router } from 'express'
-import { getQuestions, getQuestionById, getRandomQuestion } from '../controllers/questionController'
+import {
+  getQuestions,
+  getQuestionById,
+  getRandomQuestion,
+} from '../controllers/questionController'
 
 const router = Router()
 

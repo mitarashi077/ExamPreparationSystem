@@ -4,18 +4,18 @@ import { z } from 'zod'
 
 // Create Prisma client with environment-based configuration
 const createPrismaClient = () => {
-  let cleanUrl = process.env.DATABASE_URL;
+  let cleanUrl = process.env.DATABASE_URL
   if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
-    cleanUrl = cleanUrl.slice(5, -1);
+    cleanUrl = cleanUrl.slice(5, -1)
   }
-  
+
   return new PrismaClient({
     datasources: {
       db: {
-        url: cleanUrl
-      }
-    }
-  });
+        url: cleanUrl,
+      },
+    },
+  })
 }
 
 const prisma = createPrismaClient()
@@ -23,11 +23,11 @@ const prisma = createPrismaClient()
 // Validation schemas
 const createBookmarkSchema = z.object({
   questionId: z.string().min(1, 'QuestionId is required'),
-  memo: z.string().optional()
+  memo: z.string().optional(),
 })
 
 const updateBookmarkSchema = z.object({
-  memo: z.string().optional()
+  memo: z.string().optional(),
 })
 
 const querySchema = z.object({
@@ -35,19 +35,22 @@ const querySchema = z.object({
   difficulty: z.coerce.number().int().min(1).max(5).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
-  search: z.string().optional()
+  search: z.string().optional(),
 })
 
 // ブックマーク一覧取得（フィルタリング・ページネーション対応）
-export const getBookmarks = async (req: Request, res: Response): Promise<void> => {
+export const getBookmarks = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const validation = querySchema.safeParse(req.query)
-    
+
     if (!validation.success) {
-      res.status(400).json({ 
+      res.status(400).json({
         success: false,
         error: 'Invalid query parameters',
-        details: validation.error.issues
+        details: validation.error.issues,
       })
       return
     }
@@ -57,23 +60,23 @@ export const getBookmarks = async (req: Request, res: Response): Promise<void> =
 
     // フィルター条件の構築
     const where: any = {
-      isActive: true
+      isActive: true,
     }
 
     // 関連する問題の条件
     const questionWhere: any = {}
-    
+
     if (categoryId) {
       questionWhere.categoryId = categoryId
     }
-    
+
     if (difficulty) {
       questionWhere.difficulty = difficulty
     }
-    
+
     if (search) {
       questionWhere.content = {
-        contains: search
+        contains: search,
       }
     }
 
@@ -95,15 +98,15 @@ export const getBookmarks = async (req: Request, res: Response): Promise<void> =
           include: {
             category: {
               select: {
-                name: true
-              }
-            }
-          }
-        }
+                name: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     })
 
     const totalPages = Math.ceil(total / limit)
@@ -111,12 +114,13 @@ export const getBookmarks = async (req: Request, res: Response): Promise<void> =
     const response = {
       success: true,
       data: {
-        bookmarks: bookmarks.map(bookmark => ({
+        bookmarks: bookmarks.map((bookmark: { id: string; questionId: string; question: { content: string; categoryId: string; category: { name: string } } }) => ({
           id: bookmark.id,
           questionId: bookmark.questionId,
-          questionContent: bookmark.question.content.length > 100 
-            ? bookmark.question.content.substring(0, 100) + '...' 
-            : bookmark.question.content,
+          questionContent:
+            bookmark.question.content.length > 100
+              ? bookmark.question.content.substring(0, 100) + '...'
+              : bookmark.question.content,
           categoryId: bookmark.question.categoryId,
           categoryName: bookmark.question.category.name,
           difficulty: bookmark.question.difficulty,
@@ -124,7 +128,7 @@ export const getBookmarks = async (req: Request, res: Response): Promise<void> =
           session: bookmark.question.session,
           memo: bookmark.memo,
           createdAt: bookmark.createdAt.toISOString(),
-          updatedAt: bookmark.updatedAt.toISOString()
+          updatedAt: bookmark.updatedAt.toISOString(),
         })),
         pagination: {
           page,
@@ -132,37 +136,40 @@ export const getBookmarks = async (req: Request, res: Response): Promise<void> =
           total,
           totalPages,
           hasNextPage: page < totalPages,
-          hasPrevPage: page > 1
+          hasPrevPage: page > 1,
         },
         filters: {
           categoryId,
           difficulty,
-          search
-        }
+          search,
+        },
       },
-      message: 'Bookmarks retrieved successfully'
+      message: 'Bookmarks retrieved successfully',
     }
 
     res.json(response)
   } catch (error) {
     // Error logged for debugging
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      error: 'Internal server error' 
+      error: 'Internal server error',
     })
   }
 }
 
 // ブックマーク作成
-export const createBookmark = async (req: Request, res: Response): Promise<void> => {
+export const createBookmark = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const validation = createBookmarkSchema.safeParse(req.body)
-    
+
     if (!validation.success) {
-      res.status(400).json({ 
+      res.status(400).json({
         success: false,
         error: 'Invalid request data',
-        details: validation.error.issues
+        details: validation.error.issues,
       })
       return
     }
@@ -175,16 +182,16 @@ export const createBookmark = async (req: Request, res: Response): Promise<void>
       include: {
         category: {
           select: {
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     })
 
     if (!question) {
-      res.status(404).json({ 
+      res.status(404).json({
         success: false,
-        error: 'Question not found' 
+        error: 'Question not found',
       })
       return
     }
@@ -194,14 +201,14 @@ export const createBookmark = async (req: Request, res: Response): Promise<void>
       where: {
         questionId,
         userId: null,
-        isActive: true
-      }
+        isActive: true,
+      },
     })
 
     if (existingBookmark) {
-      res.status(409).json({ 
+      res.status(409).json({
         success: false,
-        error: 'Bookmark already exists for this question' 
+        error: 'Bookmark already exists for this question',
       })
       return
     }
@@ -212,19 +219,19 @@ export const createBookmark = async (req: Request, res: Response): Promise<void>
         questionId,
         userId: null, // 現時点ではユーザー管理未実装
         memo: memo || null,
-        isActive: true
+        isActive: true,
       },
       include: {
         question: {
           include: {
             category: {
               select: {
-                name: true
-              }
-            }
-          }
-        }
-      }
+                name: true,
+              },
+            },
+          },
+        },
+      },
     })
 
     const response = {
@@ -240,32 +247,35 @@ export const createBookmark = async (req: Request, res: Response): Promise<void>
         session: bookmark.question.session,
         memo: bookmark.memo,
         createdAt: bookmark.createdAt.toISOString(),
-        updatedAt: bookmark.updatedAt.toISOString()
+        updatedAt: bookmark.updatedAt.toISOString(),
       },
-      message: 'Bookmark created successfully'
+      message: 'Bookmark created successfully',
     }
 
     res.status(201).json(response)
   } catch (error) {
     // Error logged for debugging
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      error: 'Internal server error' 
+      error: 'Internal server error',
     })
   }
 }
 
 // ブックマーク更新（メモのみ）
-export const updateBookmark = async (req: Request, res: Response): Promise<void> => {
+export const updateBookmark = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const { id } = req.params
     const validation = updateBookmarkSchema.safeParse(req.body)
-    
+
     if (!validation.success) {
-      res.status(400).json({ 
+      res.status(400).json({
         success: false,
         error: 'Invalid request data',
-        details: validation.error.issues
+        details: validation.error.issues,
       })
       return
     }
@@ -276,14 +286,14 @@ export const updateBookmark = async (req: Request, res: Response): Promise<void>
     const existingBookmark = await prisma.bookmark.findFirst({
       where: {
         id,
-        isActive: true
-      }
+        isActive: true,
+      },
     })
 
     if (!existingBookmark) {
-      res.status(404).json({ 
+      res.status(404).json({
         success: false,
-        error: 'Bookmark not found' 
+        error: 'Bookmark not found',
       })
       return
     }
@@ -293,19 +303,19 @@ export const updateBookmark = async (req: Request, res: Response): Promise<void>
       where: { id },
       data: {
         memo: memo || null,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       include: {
         question: {
           include: {
             category: {
               select: {
-                name: true
-              }
-            }
-          }
-        }
-      }
+                name: true,
+              },
+            },
+          },
+        },
+      },
     })
 
     const response = {
@@ -321,23 +331,26 @@ export const updateBookmark = async (req: Request, res: Response): Promise<void>
         session: bookmark.question.session,
         memo: bookmark.memo,
         createdAt: bookmark.createdAt.toISOString(),
-        updatedAt: bookmark.updatedAt.toISOString()
+        updatedAt: bookmark.updatedAt.toISOString(),
       },
-      message: 'Bookmark updated successfully'
+      message: 'Bookmark updated successfully',
     }
 
     res.json(response)
   } catch (error) {
     // Error logged for debugging
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      error: 'Internal server error' 
+      error: 'Internal server error',
     })
   }
 }
 
 // ブックマーク削除
-export const deleteBookmark = async (req: Request, res: Response): Promise<void> => {
+export const deleteBookmark = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const { id } = req.params
 
@@ -345,14 +358,14 @@ export const deleteBookmark = async (req: Request, res: Response): Promise<void>
     const existingBookmark = await prisma.bookmark.findFirst({
       where: {
         id,
-        isActive: true
-      }
+        isActive: true,
+      },
     })
 
     if (!existingBookmark) {
-      res.status(404).json({ 
+      res.status(404).json({
         success: false,
-        error: 'Bookmark not found' 
+        error: 'Bookmark not found',
       })
       return
     }
@@ -362,40 +375,43 @@ export const deleteBookmark = async (req: Request, res: Response): Promise<void>
       where: { id },
       data: {
         isActive: false,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
     const response = {
       success: true,
       data: null,
-      message: 'Bookmark deleted successfully'
+      message: 'Bookmark deleted successfully',
     }
 
     res.json(response)
   } catch (error) {
     // Error logged for debugging
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      error: 'Internal server error' 
+      error: 'Internal server error',
     })
   }
 }
 
 // 特定の問題がブックマークされているかチェック
-export const checkBookmarkStatus = async (req: Request, res: Response): Promise<void> => {
+export const checkBookmarkStatus = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const { questionId } = req.params
 
     // 問題の存在確認
     const question = await prisma.question.findUnique({
-      where: { id: questionId }
+      where: { id: questionId },
     })
 
     if (!question) {
-      res.status(404).json({ 
+      res.status(404).json({
         success: false,
-        error: 'Question not found' 
+        error: 'Question not found',
       })
       return
     }
@@ -405,8 +421,8 @@ export const checkBookmarkStatus = async (req: Request, res: Response): Promise<
       where: {
         questionId,
         userId: null, // 現時点ではユーザー管理未実装
-        isActive: true
-      }
+        isActive: true,
+      },
     })
 
     const response = {
@@ -415,17 +431,17 @@ export const checkBookmarkStatus = async (req: Request, res: Response): Promise<
         questionId,
         isBookmarked: !!bookmark,
         bookmarkId: bookmark?.id || null,
-        memo: bookmark?.memo || null
+        memo: bookmark?.memo || null,
       },
-      message: 'Bookmark status retrieved successfully'
+      message: 'Bookmark status retrieved successfully',
     }
 
     res.json(response)
   } catch (error) {
     // Error logged for debugging
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      error: 'Internal server error' 
+      error: 'Internal server error',
     })
   }
 }

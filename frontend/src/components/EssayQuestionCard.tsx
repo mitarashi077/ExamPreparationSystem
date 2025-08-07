@@ -39,7 +39,11 @@ import { useAppStore } from '../stores/useAppStore'
 
 interface EssayQuestionCardProps {
   question?: Question
-  onSubmit?: (questionId: string, content: string, timeSpent: number) => Promise<any>
+  onSubmit?: (
+    questionId: string,
+    content: string,
+    timeSpent: number,
+  ) => Promise<any>
   onNextQuestion?: () => void
   showTimer?: boolean
   timeLimit?: number // minutes
@@ -54,11 +58,11 @@ const EssayQuestionCard = ({
   showTimer = true,
   timeLimit,
   showBookmark = true,
-  categoryName
+  categoryName,
 }: EssayQuestionCardProps) => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  
+
   const {
     currentQuestion,
     essayContent,
@@ -71,18 +75,18 @@ const EssayQuestionCard = ({
     submitEssayAnswer,
     startQuestion,
   } = useQuestionStore()
-  
+
   const { deviceType } = useAppStore()
-  
+
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [showHint, setShowHint] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [currentTab, setCurrentTab] = useState(0) // 0: Editor, 1: Preview
   const [lastSaved, setLastSaved] = useState<string | null>(null)
   const [editorHeight, setEditorHeight] = useState(400)
-  
+
   const activeQuestion = propQuestion || currentQuestion
-  
+
   // Timer effect
   useEffect(() => {
     if (!questionStartTime || showResult) return
@@ -90,12 +94,12 @@ const EssayQuestionCard = ({
     const interval = setInterval(() => {
       const elapsed = Math.floor((Date.now() - questionStartTime) / 1000)
       setTimeElapsed(elapsed)
-      
+
       // Auto-save draft every 30 seconds
       if (elapsed % 30 === 0 && essayContent.trim() && activeQuestion) {
         handleSaveDraft()
       }
-      
+
       // Auto-submit if time limit exceeded
       if (timeLimit && elapsed >= timeLimit * 60) {
         if (essayContent.trim() && activeQuestion) {
@@ -134,36 +138,48 @@ const EssayQuestionCard = ({
 
   const getDifficultyColor = (difficulty: number) => {
     switch (difficulty) {
-      case 1: return 'success'
-      case 2: return 'info'
-      case 3: return 'warning'
-      case 4: return 'error'
-      case 5: return 'error'
-      default: return 'default'
+      case 1:
+        return 'success'
+      case 2:
+        return 'info'
+      case 3:
+        return 'warning'
+      case 4:
+        return 'error'
+      case 5:
+        return 'error'
+      default:
+        return 'default'
     }
   }
 
   const getDifficultyLabel = (difficulty: number) => {
     switch (difficulty) {
-      case 1: return '基礎'
-      case 2: return '標準'
-      case 3: return '応用'
-      case 4: return '発展'
-      case 5: return '最高'
-      default: return '不明'
+      case 1:
+        return '基礎'
+      case 2:
+        return '標準'
+      case 3:
+        return '応用'
+      case 4:
+        return '発展'
+      case 5:
+        return '最高'
+      default:
+        return '不明'
     }
   }
 
   const handleSaveDraft = useCallback(() => {
     if (!activeQuestion || !essayContent.trim()) return
-    
+
     saveEssayDraft(activeQuestion.id)
     setLastSaved(new Date().toLocaleTimeString())
   }, [activeQuestion, essayContent, saveEssayDraft])
 
   const handleSubmit = async () => {
     if (!activeQuestion || !essayContent.trim()) return
-    
+
     try {
       if (onSubmit) {
         await onSubmit(activeQuestion.id, essayContent, timeElapsed)
@@ -174,7 +190,6 @@ const EssayQuestionCard = ({
       console.error('記述式回答送信エラー:', error)
     }
   }
-
 
   const handleTabChange = (_: any, newValue: number) => {
     setCurrentTab(newValue)
@@ -200,27 +215,34 @@ const EssayQuestionCard = ({
   }
 
   const timeProgress = timeLimit ? (timeElapsed / (timeLimit * 60)) * 100 : 0
-  const isTimeWarning = !!(timeLimit && timeElapsed > (timeLimit * 60 * 0.8))
+  const isTimeWarning = !!(timeLimit && timeElapsed > timeLimit * 60 * 0.8)
   const isTimeUp = !!(timeLimit && timeElapsed >= timeLimit * 60)
   const wordCount = essayContent.length
   const isSubmittable = essayContent.trim().length > 0
 
   return (
-    <Card sx={{ 
-      maxWidth: '100%', 
-      mx: 'auto',
-      height: isFullscreen ? '100vh' : 'auto',
-      position: isFullscreen ? 'fixed' : 'relative',
-      top: isFullscreen ? 0 : 'auto',
-      left: isFullscreen ? 0 : 'auto',
-      right: isFullscreen ? 0 : 'auto',
-      bottom: isFullscreen ? 0 : 'auto',
-      zIndex: isFullscreen ? 9999 : 'auto',
-      overflow: isFullscreen ? 'auto' : 'visible',
-    }}>
+    <Card
+      sx={{
+        maxWidth: '100%',
+        mx: 'auto',
+        height: isFullscreen ? '100vh' : 'auto',
+        position: isFullscreen ? 'fixed' : 'relative',
+        top: isFullscreen ? 0 : 'auto',
+        left: isFullscreen ? 0 : 'auto',
+        right: isFullscreen ? 0 : 'auto',
+        bottom: isFullscreen ? 0 : 'auto',
+        zIndex: isFullscreen ? 9999 : 'auto',
+        overflow: isFullscreen ? 'auto' : 'visible',
+      }}
+    >
       {/* Progress and Info Bar */}
       <Box sx={{ p: 2, pb: 0 }}>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={1}
+        >
           <Box display="flex" alignItems="center" gap={1}>
             <Chip
               icon={<DifficultyIcon fontSize="small" />}
@@ -250,14 +272,14 @@ const EssayQuestionCard = ({
               />
             )}
           </Box>
-          
+
           <Box display="flex" alignItems="center" gap={1}>
             <Tooltip title={isFullscreen ? '通常表示' : '全画面表示'}>
               <IconButton size="small" onClick={toggleFullscreen}>
                 {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
               </IconButton>
             </Tooltip>
-            
+
             {showBookmark && (
               <BookmarkButton
                 questionId={activeQuestion.id}
@@ -274,15 +296,15 @@ const EssayQuestionCard = ({
                 showAnimation={true}
               />
             )}
-            
+
             {showTimer && (
               <>
-                <TimeIcon 
-                  fontSize="small" 
-                  color={isTimeWarning ? 'error' : 'action'} 
+                <TimeIcon
+                  fontSize="small"
+                  color={isTimeWarning ? 'error' : 'action'}
                 />
-                <Typography 
-                  variant="body2" 
+                <Typography
+                  variant="body2"
                   color={isTimeWarning ? 'error' : 'text.secondary'}
                   fontWeight={isTimeWarning ? 'bold' : 'normal'}
                 >
@@ -307,7 +329,12 @@ const EssayQuestionCard = ({
 
       <CardContent sx={{ pt: 1 }}>
         {/* Question Content */}
-        <Typography variant="h6" component="h2" gutterBottom sx={{ lineHeight: 1.6 }}>
+        <Typography
+          variant="h6"
+          component="h2"
+          gutterBottom
+          sx={{ lineHeight: 1.6 }}
+        >
           {activeQuestion.content}
         </Typography>
 
@@ -357,48 +384,55 @@ const EssayQuestionCard = ({
             {/* Editor Panel */}
             {currentTab === 0 && (
               <Box sx={{ mb: 2 }}>
-                <Box sx={{ 
-                  border: 1, 
-                  borderColor: 'divider', 
-                  borderRadius: 1,
-                  overflow: 'hidden'
-                }}>
+                <Box
+                  sx={{
+                    border: 1,
+                    borderColor: 'divider',
+                    borderRadius: 1,
+                    overflow: 'hidden',
+                  }}
+                >
                   <Editor
                     height={editorHeight}
                     defaultLanguage="markdown"
                     value={essayContent}
                     onChange={(value) => setEssayContent(value || '')}
                     theme={theme.palette.mode === 'dark' ? 'vs-dark' : 'vs'}
-                    options={{
-                      minimap: { enabled: !isMobile },
-                      wordWrap: 'on',
-                      lineNumbers: 'on',
-                      fontSize: isMobile ? 14 : 16,
-                      fontFamily: 'Monaco, Menlo, "Ubuntu Mono", consolas, monospace',
-                      scrollBeyondLastLine: false,
-                      automaticLayout: true,
-                      tabSize: 2,
-                      insertSpaces: true,
-                      renderWhitespace: 'selection',
-                      bracketPairColorization: {
-                        enabled: true
-                      },
-                      suggestOnTriggerCharacters: true,
-                      acceptSuggestionOnEnter: 'on',
-                      quickSuggestions: true,
-                    } as any}
+                    options={
+                      {
+                        minimap: { enabled: !isMobile },
+                        wordWrap: 'on',
+                        lineNumbers: 'on',
+                        fontSize: isMobile ? 14 : 16,
+                        fontFamily:
+                          'Monaco, Menlo, "Ubuntu Mono", consolas, monospace',
+                        scrollBeyondLastLine: false,
+                        automaticLayout: true,
+                        tabSize: 2,
+                        insertSpaces: true,
+                        renderWhitespace: 'selection',
+                        bracketPairColorization: {
+                          enabled: true,
+                        },
+                        suggestOnTriggerCharacters: true,
+                        acceptSuggestionOnEnter: 'on',
+                        quickSuggestions: true,
+                      } as any
+                    }
                   />
                 </Box>
-                
+
                 {/* Editor Status Bar */}
-                <Box sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  mt: 1,
-                  fontSize: '0.875rem',
-                  color: 'text.secondary'
-                }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mt: 1,
+                    fontSize: '0.875rem',
+                    color: 'text.secondary',
+                  }}
+                >
                   <Box display="flex" alignItems="center" gap={2}>
                     <Typography variant="caption">
                       文字数: {wordCount}
@@ -409,7 +443,7 @@ const EssayQuestionCard = ({
                       </Typography>
                     )}
                   </Box>
-                  
+
                   <Button
                     size="small"
                     startIcon={<SaveIcon />}
@@ -424,21 +458,23 @@ const EssayQuestionCard = ({
 
             {/* Preview Panel */}
             {currentTab === 1 && (
-              <Box sx={{ 
-                mb: 2,
-                p: 2,
-                border: 1,
-                borderColor: 'divider',
-                borderRadius: 1,
-                minHeight: editorHeight,
-                bgcolor: 'background.paper',
-                overflow: 'auto'
-              }}>
+              <Box
+                sx={{
+                  mb: 2,
+                  p: 2,
+                  border: 1,
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  minHeight: editorHeight,
+                  bgcolor: 'background.paper',
+                  overflow: 'auto',
+                }}
+              >
                 {essayContent.trim() ? (
                   <ReactMarkdown
                     components={{
                       code(props) {
-                        const {children, className, ...rest} = props
+                        const { children, className, ...rest } = props
                         const match = /language-(\w+)/.exec(className || '')
                         return match ? (
                           <SyntaxHighlighter
@@ -453,13 +489,17 @@ const EssayQuestionCard = ({
                             {children}
                           </code>
                         )
-                      }
+                      },
                     }}
                   >
                     {essayContent}
                   </ReactMarkdown>
                 ) : (
-                  <Typography variant="body2" color="text.secondary" fontStyle="italic">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    fontStyle="italic"
+                  >
                     プレビューするには左のエディタで回答を記述してください
                   </Typography>
                 )}
@@ -507,7 +547,8 @@ const EssayQuestionCard = ({
                 </Typography>
                 {currentEssayAnswer.score && (
                   <Typography variant="body2" sx={{ mt: 1 }}>
-                    採点結果: {currentEssayAnswer.score}点 / {activeQuestion.maxScore || 100}点
+                    採点結果: {currentEssayAnswer.score}点 /{' '}
+                    {activeQuestion.maxScore || 100}点
                   </Typography>
                 )}
                 {currentEssayAnswer.feedback && (
@@ -531,17 +572,19 @@ const EssayQuestionCard = ({
                 <Typography variant="subtitle2" gutterBottom>
                   サンプル回答
                 </Typography>
-                <Box sx={{ 
-                  bgcolor: 'background.paper',
-                  p: 2,
-                  borderRadius: 1,
-                  border: 1,
-                  borderColor: 'divider'
-                }}>
+                <Box
+                  sx={{
+                    bgcolor: 'background.paper',
+                    p: 2,
+                    borderRadius: 1,
+                    border: 1,
+                    borderColor: 'divider',
+                  }}
+                >
                   <ReactMarkdown
                     components={{
                       code(props) {
-                        const {children, className, ...rest} = props
+                        const { children, className, ...rest } = props
                         const match = /language-(\w+)/.exec(className || '')
                         return match ? (
                           <SyntaxHighlighter
@@ -556,7 +599,7 @@ const EssayQuestionCard = ({
                             {children}
                           </code>
                         )
-                      }
+                      },
                     }}
                   >
                     {activeQuestion.sampleAnswer}

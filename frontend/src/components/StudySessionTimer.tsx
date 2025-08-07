@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { 
-  Box, 
-  Paper, 
-  Typography, 
-  Button, 
-  Chip, 
+import {
+  Box,
+  Paper,
+  Typography,
+  Button,
+  Chip,
   LinearProgress,
   Alert,
   Dialog,
@@ -12,15 +12,15 @@ import {
   DialogContent,
   DialogActions,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
 } from '@mui/material'
-import { 
-  PlayArrow, 
-  Pause, 
-  Stop, 
+import {
+  PlayArrow,
+  Pause,
+  Stop,
   Timer as TimerIcon,
   CheckCircle,
-  Warning
+  Warning,
 } from '@mui/icons-material'
 
 interface StudySessionTimerProps {
@@ -45,7 +45,7 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
   onSessionComplete,
   onSessionPause,
   onSessionResume,
-  questionsAnswered = 0
+  questionsAnswered = 0,
 }) => {
   const [session, setSession] = useState<SessionState>({
     duration: 5,
@@ -53,7 +53,7 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
     isRunning: false,
     isPaused: false,
     questionsAnswered,
-    startTime: null
+    startTime: null,
   })
 
   const [showCompletionDialog, setShowCompletionDialog] = useState(false)
@@ -65,9 +65,9 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
 
     if (session.isRunning && !session.isPaused && session.timeRemaining > 0) {
       interval = setInterval(() => {
-        setSession(prev => ({
+        setSession((prev) => ({
           ...prev,
-          timeRemaining: prev.timeRemaining - 1
+          timeRemaining: prev.timeRemaining - 1,
         }))
       }, 1000)
     }
@@ -83,9 +83,9 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
 
   // 問題数更新
   useEffect(() => {
-    setSession(prev => ({
+    setSession((prev) => ({
       ...prev,
-      questionsAnswered
+      questionsAnswered,
     }))
   }, [questionsAnswered])
 
@@ -94,35 +94,35 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
     newDuration: SessionDuration | null,
   ) => {
     if (newDuration !== null && !session.isRunning) {
-      setSession(prev => ({
+      setSession((prev) => ({
         ...prev,
         duration: newDuration,
-        timeRemaining: newDuration * 60
+        timeRemaining: newDuration * 60,
       }))
     }
   }
 
   const handleStartSession = () => {
-    setSession(prev => ({
+    setSession((prev) => ({
       ...prev,
       isRunning: true,
       isPaused: false,
-      startTime: new Date()
+      startTime: new Date(),
     }))
   }
 
   const handlePauseSession = () => {
-    setSession(prev => ({
+    setSession((prev) => ({
       ...prev,
-      isPaused: true
+      isPaused: true,
     }))
     onSessionPause?.(session.duration * 60 - session.timeRemaining)
   }
 
   const handleResumeSession = () => {
-    setSession(prev => ({
+    setSession((prev) => ({
       ...prev,
-      isPaused: false
+      isPaused: false,
     }))
     onSessionResume?.()
   }
@@ -144,30 +144,30 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
       isRunning: false,
       isPaused: false,
       questionsAnswered: 0,
-      startTime: null
+      startTime: null,
     })
     setShowWarningDialog(false)
   }
 
   const handleSessionComplete = useCallback(() => {
     const totalDuration = session.duration * 60
-    setSession(prev => ({
+    setSession((prev) => ({
       ...prev,
       isRunning: false,
-      timeRemaining: 0
+      timeRemaining: 0,
     }))
     setShowCompletionDialog(true)
     onSessionComplete?.(totalDuration, session.questionsAnswered)
   }, [session.duration, session.questionsAnswered, onSessionComplete])
 
   const resetSession = () => {
-    setSession(prev => ({
+    setSession((prev) => ({
       ...prev,
       timeRemaining: prev.duration * 60,
       isRunning: false,
       isPaused: false,
       questionsAnswered: 0,
-      startTime: null
+      startTime: null,
     }))
     setShowCompletionDialog(false)
   }
@@ -183,7 +183,10 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
     return ((totalSeconds - session.timeRemaining) / totalSeconds) * 100
   }
 
-  const getSessionStatus = (): { color: 'success' | 'warning' | 'error' | 'info', label: string } => {
+  const getSessionStatus = (): {
+    color: 'success' | 'warning' | 'error' | 'info'
+    label: string
+  } => {
     if (!session.isRunning && session.timeRemaining === session.duration * 60) {
       return { color: 'info', label: '準備完了' }
     }
@@ -206,11 +209,11 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
         <TimerIcon color="action" />
         <Typography variant="h6">短時間学習セッション</Typography>
-        <Chip 
-          label={status.label} 
-          color={status.color} 
-          size="small" 
-          variant="outlined" 
+        <Chip
+          label={status.label}
+          color={status.color}
+          size="small"
+          variant="outlined"
         />
       </Box>
 
@@ -234,30 +237,31 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
 
       {/* タイマー表示 */}
       <Box sx={{ textAlign: 'center', mb: 3 }}>
-        <Typography 
-          variant="h2" 
-          sx={{ 
+        <Typography
+          variant="h2"
+          sx={{
             fontFamily: 'monospace',
             color: session.timeRemaining <= 60 ? 'error.main' : 'text.primary',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         >
           {formatTime(session.timeRemaining)}
         </Typography>
-        
-        <LinearProgress 
-          variant="determinate" 
-          value={getProgressPercentage()} 
-          sx={{ 
-            mt: 2, 
-            height: 8, 
+
+        <LinearProgress
+          variant="determinate"
+          value={getProgressPercentage()}
+          sx={{
+            mt: 2,
+            height: 8,
             borderRadius: 4,
             backgroundColor: 'grey.200',
             '& .MuiLinearProgress-bar': {
               borderRadius: 4,
-              backgroundColor: session.timeRemaining <= 60 ? 'error.main' : 'primary.main'
-            }
-          }} 
+              backgroundColor:
+                session.timeRemaining <= 60 ? 'error.main' : 'primary.main',
+            },
+          }}
         />
       </Box>
 
@@ -271,13 +275,16 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
             回答数
           </Typography>
         </Box>
-        
+
         <Box sx={{ textAlign: 'center' }}>
           <Typography variant="h4">
-            {session.questionsAnswered > 0 
-              ? Math.round((session.questionsAnswered / ((session.duration * 60 - session.timeRemaining) / 60)) * 10) / 10
-              : 0
-            }
+            {session.questionsAnswered > 0
+              ? Math.round(
+                  (session.questionsAnswered /
+                    ((session.duration * 60 - session.timeRemaining) / 60)) *
+                    10,
+                ) / 10
+              : 0}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             問/分
@@ -345,7 +352,10 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
       )}
 
       {/* 完了ダイアログ */}
-      <Dialog open={showCompletionDialog} onClose={() => setShowCompletionDialog(false)}>
+      <Dialog
+        open={showCompletionDialog}
+        onClose={() => setShowCompletionDialog(false)}
+      >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <CheckCircle color="success" />
           学習セッション完了！
@@ -354,9 +364,7 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
           <Typography gutterBottom>
             {session.duration}分間の学習セッションが完了しました。
           </Typography>
-          <Typography>
-            回答数: {session.questionsAnswered}問
-          </Typography>
+          <Typography>回答数: {session.questionsAnswered}問</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={resetSession} variant="contained">
@@ -366,7 +374,10 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
       </Dialog>
 
       {/* 中断警告ダイアログ */}
-      <Dialog open={showWarningDialog} onClose={() => setShowWarningDialog(false)}>
+      <Dialog
+        open={showWarningDialog}
+        onClose={() => setShowWarningDialog(false)}
+      >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Warning color="warning" />
           セッションを終了しますか？
@@ -380,7 +391,11 @@ const StudySessionTimer: React.FC<StudySessionTimerProps> = ({
           <Button onClick={() => setShowWarningDialog(false)}>
             キャンセル
           </Button>
-          <Button onClick={performStopSession} color="error" variant="contained">
+          <Button
+            onClick={performStopSession}
+            color="error"
+            variant="contained"
+          >
             終了
           </Button>
         </DialogActions>

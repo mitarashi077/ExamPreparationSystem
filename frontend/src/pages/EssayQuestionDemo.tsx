@@ -20,8 +20,10 @@ const EssayQuestionDemo = () => {
   const essayQuestions: Question[] = [
     {
       id: 'essay-1',
-      content: '【午後問題 問1】\n\nWebアプリケーションにおけるセキュリティ対策について、以下の観点から説明してください。\n\n1. XSS（Cross-Site Scripting）攻撃の概要と対策方法\n2. CSRF（Cross-Site Request Forgery）攻撃の概要と対策方法\n3. SQLインジェクション攻撃の概要と対策方法\n\n各攻撃手法について、具体的なコード例を含めて説明し、適切な対策を実装したコード例も併せて記述してください。',
-      explanation: 'Webアプリケーションの3大脅威について、実装レベルでの理解が求められます。',
+      content:
+        '【午後問題 問1】\n\nWebアプリケーションにおけるセキュリティ対策について、以下の観点から説明してください。\n\n1. XSS（Cross-Site Scripting）攻撃の概要と対策方法\n2. CSRF（Cross-Site Request Forgery）攻撃の概要と対策方法\n3. SQLインジェクション攻撃の概要と対策方法\n\n各攻撃手法について、具体的なコード例を含めて説明し、適切な対策を実装したコード例も併せて記述してください。',
+      explanation:
+        'Webアプリケーションの3大脅威について、実装レベルでの理解が求められます。',
       difficulty: 4,
       year: 2024,
       session: '春期',
@@ -103,12 +105,14 @@ $stmt->execute([$_POST['username']]);
 $user = $stmt->fetch();
 \`\`\`
 
-これらの対策を組み合わせることで、Webアプリケーションのセキュリティを大幅に向上させることができます。`
+これらの対策を組み合わせることで、Webアプリケーションのセキュリティを大幅に向上させることができます。`,
     },
     {
       id: 'essay-2',
-      content: '【午後問題 問2】\n\nデータベース設計において、正規化の重要性について説明してください。\n\n1. 第1正規形（1NF）から第3正規形（3NF）までの定義と意味\n2. 各正規形の具体例（テーブル設計例を含む）\n3. 正規化のメリットとデメリット\n4. 実際のシステム開発における正規化の適用指針\n\n具体的なテーブル設計例を用いて説明してください。',
-      explanation: 'データベース設計の基本である正規化について、実践的な理解が求められます。',
+      content:
+        '【午後問題 問2】\n\nデータベース設計において、正規化の重要性について説明してください。\n\n1. 第1正規形（1NF）から第3正規形（3NF）までの定義と意味\n2. 各正規形の具体例（テーブル設計例を含む）\n3. 正規化のメリットとデメリット\n4. 実際のシステム開発における正規化の適用指針\n\n具体的なテーブル設計例を用いて説明してください。',
+      explanation:
+        'データベース設計の基本である正規化について、実践的な理解が求められます。',
       difficulty: 3,
       year: 2024,
       session: '春期',
@@ -241,17 +245,22 @@ CREATE TABLE order_summary (
 - アクセスパターンを分析して最適化ポイントを特定
 - 段階的な正規化（必要に応じて非正規化）を実施
 
-正規化は理論と実践のバランスが重要であり、システムの要件に応じて適切なレベルを選択することが肝要です。`
-    }
+正規化は理論と実践のバランスが重要であり、システムの要件に応じて適切なレベルを選択することが肝要です。`,
+    },
   ]
 
-  const handleEssaySubmit = async (questionId: string, content: string, timeSpent: number) => {
+  const handleEssaySubmit = async (
+    questionId: string,
+    content: string,
+    timeSpent: number,
+  ) => {
     console.log('記述式回答送信:', { questionId, content, timeSpent })
     // 実際の実装では API 呼び出しを行う
     return {
       isCorrect: true,
       score: Math.floor(Math.random() * 30) + 70, // 70-100点のランダムスコア
-      feedback: '良い回答です。具体的なコード例が含まれており、理解度が高いことが伺えます。'
+      feedback:
+        '良い回答です。具体的なコード例が含まれており、理解度が高いことが伺えます。',
     }
   }
 
@@ -275,11 +284,11 @@ CREATE TABLE order_summary (
         >
           戻る
         </Button>
-        
+
         <Typography variant="h4" component="h1" gutterBottom>
           記述式問題デモ
         </Typography>
-        
+
         <Typography variant="body1" color="text.secondary" paragraph>
           午後試験対策用の記述式問題エディタのデモです。
           Markdown記法とコードハイライト機能をお試しください。
@@ -291,7 +300,7 @@ CREATE TABLE order_summary (
           問題 {currentQuestionIndex + 1} / {essayQuestions.length}
         </Typography>
         <Divider sx={{ mb: 2 }} />
-        
+
         <EssayQuestionCard
           question={currentQuestion}
           onSubmit={handleEssaySubmit}

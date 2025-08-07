@@ -38,8 +38,8 @@ const MemoEditModal: React.FC<MemoEditModalProps> = ({
   }
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={onClose}
       maxWidth="sm"
       fullWidth
@@ -50,10 +50,8 @@ const MemoEditModal: React.FC<MemoEditModalProps> = ({
         },
       }}
     >
-      <DialogTitle sx={{ pb: 1 }}>
-        メモを編集
-      </DialogTitle>
-      
+      <DialogTitle sx={{ pb: 1 }}>メモを編集</DialogTitle>
+
       <DialogContent sx={{ pb: 2 }}>
         {/* Question preview for context */}
         {questionContent && (
@@ -61,9 +59,9 @@ const MemoEditModal: React.FC<MemoEditModalProps> = ({
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>
               問題内容
             </Typography>
-            <Typography 
-              variant="body2" 
-              sx={{ 
+            <Typography
+              variant="body2"
+              sx={{
                 lineHeight: 1.5,
                 maxHeight: '100px',
                 overflow: 'hidden',
@@ -88,7 +86,7 @@ const MemoEditModal: React.FC<MemoEditModalProps> = ({
           onChange={(e) => onMemoChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="この問題についてのメモを入力してください...&#10;&#10;例：&#10;- 重要なポイント&#10;- 間違いやすいポイント&#10;- 関連する知識"
-          helperText={isMobile ? "Ctrl+Enterで保存" : undefined}
+          helperText={isMobile ? 'Ctrl+Enterで保存' : undefined}
           sx={{
             '& .MuiInputBase-root': {
               lineHeight: 1.6,
@@ -98,7 +96,7 @@ const MemoEditModal: React.FC<MemoEditModalProps> = ({
             },
           }}
         />
-        
+
         {/* Character count */}
         <Box sx={{ mt: 1, textAlign: 'right' }}>
           <Typography variant="caption" color="text.secondary">
@@ -106,16 +104,16 @@ const MemoEditModal: React.FC<MemoEditModalProps> = ({
           </Typography>
         </Box>
       </DialogContent>
-      
+
       <DialogActions sx={{ p: 2, pt: 0 }}>
-        <TouchButton 
+        <TouchButton
           onClick={onClose}
           touchSize={isMobile ? 'large' : 'medium'}
         >
           キャンセル
         </TouchButton>
-        <TouchButton 
-          onClick={onSave} 
+        <TouchButton
+          onClick={onSave}
           variant="contained"
           touchSize={isMobile ? 'large' : 'medium'}
           disabled={memo.length > 1000}

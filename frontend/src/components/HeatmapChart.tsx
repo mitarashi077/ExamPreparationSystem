@@ -25,16 +25,17 @@ const HeatmapCell = styled(Paper)<{ intensity: number; isMobile?: boolean }>(
     alignItems: 'center',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
-    backgroundColor: intensity === 0 
-      ? theme.palette.grey[100]
-      : `hsl(${120 * intensity}, 70%, ${85 - intensity * 20}%)`,
+    backgroundColor:
+      intensity === 0
+        ? theme.palette.grey[100]
+        : `hsl(${120 * intensity}, 70%, ${85 - intensity * 20}%)`,
     border: `2px solid ${theme.palette.divider}`,
     '&:hover': {
       transform: 'scale(1.02)',
       boxShadow: theme.shadows[4],
-      zIndex: 1
-    }
-  })
+      zIndex: 1,
+    },
+  }),
 )
 
 const HeatmapChart: React.FC<HeatmapChartProps> = ({ data, onCellClick }) => {
@@ -56,39 +57,47 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data, onCellClick }) => {
       <Typography variant="h6" component="h2" gutterBottom>
         分野別習熟度ヒートマップ
       </Typography>
-      
+
       <Box sx={{ mb: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ 
-            width: 16, 
-            height: 16, 
-            backgroundColor: theme.palette.grey[100],
-            border: `1px solid ${theme.palette.divider}` 
-          }} />
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              backgroundColor: theme.palette.grey[100],
+              border: `1px solid ${theme.palette.divider}`,
+            }}
+          />
           <Typography variant="caption">未回答</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ 
-            width: 16, 
-            height: 16, 
-            backgroundColor: 'hsl(0, 70%, 85%)'
-          }} />
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              backgroundColor: 'hsl(0, 70%, 85%)',
+            }}
+          />
           <Typography variant="caption">低習熟度</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ 
-            width: 16, 
-            height: 16, 
-            backgroundColor: 'hsl(60, 70%, 75%)'
-          }} />
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              backgroundColor: 'hsl(60, 70%, 75%)',
+            }}
+          />
           <Typography variant="caption">中習熟度</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ 
-            width: 16, 
-            height: 16, 
-            backgroundColor: 'hsl(120, 70%, 65%)'
-          }} />
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              backgroundColor: 'hsl(120, 70%, 65%)',
+            }}
+          />
           <Typography variant="caption">高習熟度</Typography>
         </Box>
       </Box>
@@ -101,29 +110,40 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data, onCellClick }) => {
               isMobile={false}
               onClick={() => onCellClick?.(category)}
             >
-              <Typography 
-                variant="body2" 
-                fontWeight="bold" 
+              <Typography
+                variant="body2"
+                fontWeight="bold"
                 textAlign="center"
-                sx={{ 
+                sx={{
                   mb: 1,
                   fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  lineHeight: 1.2
+                  lineHeight: 1.2,
                 }}
               >
                 {category.categoryName}
               </Typography>
-              
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 0.5,
+                }}
+              >
                 <Chip
                   label={getAccuracyText(category.accuracy, category.attempts)}
-                  color={category.attempts === 0 ? 'default' : getAccuracyColor(category.accuracy) as any}
+                  color={
+                    category.attempts === 0
+                      ? 'default'
+                      : (getAccuracyColor(category.accuracy) as any)
+                  }
                   size="small"
                   variant="filled"
                 />
-                
-                <Typography 
-                  variant="caption" 
+
+                <Typography
+                  variant="caption"
                   color="text.secondary"
                   sx={{ fontSize: { xs: '0.6rem', sm: '0.75rem' } }}
                 >
@@ -134,13 +154,15 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data, onCellClick }) => {
           </Grid>
         ))}
       </Grid>
-      
+
       {data.length === 0 && (
-        <Box sx={{ 
-          textAlign: 'center', 
-          py: 4,
-          color: 'text.secondary'
-        }}>
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 4,
+            color: 'text.secondary',
+          }}
+        >
           <Typography>
             回答データがありません。問題を解いて学習を開始してください。
           </Typography>

@@ -42,20 +42,16 @@ interface MobileLayoutProps {
 const MobileLayout = ({ children }: MobileLayoutProps) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { 
-    isMobileMenuOpen, 
-    isOnline, 
-    setMobileMenuOpen 
-  } = useAppStore()
-  
-  const { 
-    swipeHandlers, 
-    canSwipeLeft, 
+  const { isMobileMenuOpen, isOnline, setMobileMenuOpen } = useAppStore()
+
+  const {
+    swipeHandlers,
+    canSwipeLeft,
     canSwipeRight,
     currentIndex,
-    navigationItems 
+    navigationItems,
   } = useSwipeNavigation()
-  
+
   const [showSwipeHint, setShowSwipeHint] = useState(false)
 
   // Show swipe hint on first visit
@@ -74,14 +70,19 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
   const menuItems = [
     { text: 'ホーム', icon: <HomeIcon />, path: '/', badge: 0 },
     { text: '問題演習', icon: <QuizIcon />, path: '/practice', badge: 0 },
-    { text: 'ブックマーク', icon: <BookmarkIcon />, path: '/bookmarks', badge: 0 },
+    {
+      text: 'ブックマーク',
+      icon: <BookmarkIcon />,
+      path: '/bookmarks',
+      badge: 0,
+    },
     { text: '進捗確認', icon: <ProgressIcon />, path: '/progress', badge: 0 },
     { text: '設定', icon: <SettingsIcon />, path: '/settings', badge: 0 },
   ]
 
   const getNavigationValue = () => {
     const currentPath = location.pathname
-    const index = menuItems.findIndex(item => item.path === currentPath)
+    const index = menuItems.findIndex((item) => item.path === currentPath)
     return index !== -1 ? index : 0
   }
 
@@ -113,7 +114,7 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
           <CloseIcon />
         </IconButton>
       </Box>
-      
+
       {!isOnline && (
         <Box sx={{ p: 2 }}>
           <Chip
@@ -148,7 +149,8 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
           >
             <ListItemIcon
               sx={{
-                color: location.pathname === item.path ? 'inherit' : 'action.active',
+                color:
+                  location.pathname === item.path ? 'inherit' : 'action.active',
               }}
             >
               {item.badge > 0 ? (
@@ -159,7 +161,7 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
                 item.icon
               )}
             </ListItemIcon>
-            <ListItemText 
+            <ListItemText
               primary={item.text}
               primaryTypographyProps={{
                 fontWeight: location.pathname === item.path ? 600 : 400,
@@ -180,9 +182,9 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Top App Bar */}
-      <AppBar 
-        position="fixed" 
-        sx={{ 
+      <AppBar
+        position="fixed"
+        sx={{
           zIndex: (theme) => theme.zIndex.drawer + 1,
           bgcolor: 'primary.main',
         }}
@@ -197,11 +199,11 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
           >
             <MenuIcon />
           </IconButton>
-          
+
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             ESS試験対策
           </Typography>
-          
+
           {!isOnline && (
             <IconButton color="inherit" size="small">
               <OfflineIcon />
@@ -335,7 +337,8 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                bgcolor: index === currentIndex ? 'primary.main' : 'action.disabled',
+                bgcolor:
+                  index === currentIndex ? 'primary.main' : 'action.disabled',
                 transition: 'background-color 0.3s ease',
               }}
             />
@@ -346,14 +349,14 @@ const MobileLayout = ({ children }: MobileLayoutProps) => {
       </Box>
 
       {/* Bottom Navigation */}
-      <Paper 
-        sx={{ 
-          position: 'fixed', 
-          bottom: 0, 
-          left: 0, 
+      <Paper
+        sx={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
           right: 0,
           zIndex: (theme) => theme.zIndex.appBar,
-        }} 
+        }}
         elevation={8}
       >
         <BottomNavigation
