@@ -1,10 +1,10 @@
 import { Router } from 'express'
-import { 
-  getBookmarks, 
-  createBookmark, 
-  updateBookmark, 
-  deleteBookmark, 
-  checkBookmarkStatus 
+import {
+  getBookmarks,
+  createBookmark,
+  updateBookmark,
+  deleteBookmark,
+  checkBookmarkStatus,
 } from '../controllers/bookmarkController'
 
 const router = Router()

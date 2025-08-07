@@ -1,33 +1,36 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client')
 
 async function runMigrations() {
   // Neonの接続文字列（本番環境用）
-  const DATABASE_URL = process.env.DATABASE_URL;
-  
+  const DATABASE_URL = process.env.DATABASE_URL
+
   if (!DATABASE_URL) {
-    console.error('❌ DATABASE_URL environment variable is required');
-    process.exit(1);
+    console.error('❌ DATABASE_URL environment variable is required')
+    process.exit(1)
   }
-  
-  console.log('🚀 Starting database migration...');
-  console.log('📡 Connecting to:', DATABASE_URL.split('@')[1]?.split('/')[0] || 'database');
-  
+
+  console.log('🚀 Starting database migration...')
+  console.log(
+    '📡 Connecting to:',
+    DATABASE_URL.split('@')[1]?.split('/')[0] || 'database',
+  )
+
   const prisma = new PrismaClient({
     datasources: {
       db: {
-        url: DATABASE_URL
-      }
-    }
-  });
-  
+        url: DATABASE_URL,
+      },
+    },
+  })
+
   try {
     // データベース接続テスト
-    await prisma.$connect();
-    console.log('✅ Database connection successful');
-    
+    await prisma.$connect()
+    console.log('✅ Database connection successful')
+
     // テーブル作成（手動スキーマ実行）
-    console.log('📝 Creating database schema...');
-    
+    console.log('📝 Creating database schema...')
+
     // Categories テーブル
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "Category" (
@@ -39,9 +42,9 @@ async function runMigrations() {
         "updatedAt" TIMESTAMP(3) NOT NULL,
         CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
       );
-    `;
-    
-    // Questions テーブル  
+    `
+
+    // Questions テーブル
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "Question" (
         "id" TEXT NOT NULL,
@@ -55,8 +58,8 @@ async function runMigrations() {
         "updatedAt" TIMESTAMP(3) NOT NULL,
         CONSTRAINT "Question_pkey" PRIMARY KEY ("id")
       );
-    `;
-    
+    `
+
     // Choices テーブル
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "Choice" (
@@ -68,8 +71,8 @@ async function runMigrations() {
         "updatedAt" TIMESTAMP(3) NOT NULL,
         CONSTRAINT "Choice_pkey" PRIMARY KEY ("id")
       );
-    `;
-    
+    `
+
     // Answers テーブル
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "Answer" (
@@ -81,8 +84,8 @@ async function runMigrations() {
         "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT "Answer_pkey" PRIMARY KEY ("id")
       );
-    `;
-    
+    `
+
     // StudySession テーブル
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "StudySession" (
@@ -95,8 +98,8 @@ async function runMigrations() {
         "updatedAt" TIMESTAMP(3) NOT NULL,
         CONSTRAINT "StudySession_pkey" PRIMARY KEY ("id")
       );
-    `;
-    
+    `
+
     // ReviewItem テーブル
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "ReviewItem" (
@@ -115,8 +118,8 @@ async function runMigrations() {
         CONSTRAINT "ReviewItem_pkey" PRIMARY KEY ("id"),
         CONSTRAINT "ReviewItem_questionId_key" UNIQUE ("questionId")
       );
-    `;
-    
+    `
+
     // ReviewSession テーブル
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "ReviewSession" (
@@ -128,13 +131,13 @@ async function runMigrations() {
         "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT "ReviewSession_pkey" PRIMARY KEY ("id")
       );
-    `;
-    
-    console.log('✅ Database schema created successfully');
-    
+    `
+
+    console.log('✅ Database schema created successfully')
+
     // 初期データ投入
-    console.log('📊 Inserting initial data...');
-    
+    console.log('📊 Inserting initial data...')
+
     // サンプルカテゴリ
     await prisma.$executeRaw`
       INSERT INTO "Category" ("id", "name", "description", "createdAt", "updatedAt") 
@@ -143,23 +146,25 @@ async function runMigrations() {
         ('cat2', 'ハードウェア設計', 'ハードウェア設計に関する問題', NOW(), NOW()),
         ('cat3', 'ソフトウェア設計', 'ソフトウェア設計とプログラミング', NOW(), NOW())
       ON CONFLICT ("id") DO NOTHING;
-    `;
-    
-    console.log('✅ Initial data inserted successfully');
-    console.log('🎉 Database migration completed!');
-    
+    `
+
+    console.log('✅ Initial data inserted successfully')
+    console.log('🎉 Database migration completed!')
   } catch (error) {
-    console.error('❌ Migration failed:', error);
-    process.exit(1);
+    console.error('❌ Migration failed:', error)
+    process.exit(1)
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
 
 // 環境変数の設定確認
 if (process.argv.includes('--check')) {
-  console.log('DATABASE_URL:', process.env.DATABASE_URL ? '✅ Set' : '❌ Not set');
-  process.exit(0);
+  console.log(
+    'DATABASE_URL:',
+    process.env.DATABASE_URL ? '✅ Set' : '❌ Not set',
+  )
+  process.exit(0)
 }
 
-runMigrations().catch(console.error);
+runMigrations().catch(console.error)

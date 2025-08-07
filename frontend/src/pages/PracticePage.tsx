@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { 
-  Typography, 
-  Box, 
-  Card, 
+import {
+  Typography,
+  Box,
+  Card,
   CardContent,
   Chip,
   CircularProgress,
   Alert,
   Fab,
 } from '@mui/material'
-import { 
-  useSearchParams, 
-  useNavigate 
-} from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import {
   Refresh as RefreshIcon,
   Settings as SettingsIcon,
@@ -30,7 +27,7 @@ const PracticePage = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { deviceType } = useAppStore()
-  
+
   const {
     currentQuestion,
     sessionStats,
@@ -42,42 +39,48 @@ const PracticePage = () => {
     resetSession,
   } = useQuestionStore()
 
-
-  const { 
-    loading, 
-    error, 
-    fetchRandomQuestion, 
-    fetchQuestions, 
+  const {
+    loading,
+    error,
+    fetchRandomQuestion,
+    fetchQuestions,
     fetchQuestionById,
     submitAnswer,
-    fetchCategories 
+    fetchCategories,
   } = useQuestionApi()
 
-  const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([])
+  const [categories, setCategories] = useState<
+    Array<{ id: string; name: string }>
+  >([])
   const [practiceMode] = useState<'random' | 'list'>('random')
   const [sessionComplete, setSessionComplete] = useState(false)
-  
+
   // オフライン同期機能
   const { syncStatus, addToOfflineQueue } = useOfflineSync()
-  
+
   // Get URL parameters
   const mode = searchParams.get('mode') // 'quick' or 'practice'
-  const timeLimit = searchParams.get('time') ? parseInt(searchParams.get('time')!) : undefined
+  const timeLimit = searchParams.get('time')
+    ? parseInt(searchParams.get('time')!)
+    : undefined
   const categoryId = searchParams.get('category')
-  const difficulty = searchParams.get('difficulty') ? parseInt(searchParams.get('difficulty')!) : undefined
-  
+  const difficulty = searchParams.get('difficulty')
+    ? parseInt(searchParams.get('difficulty')!)
+    : undefined
+
   // 短時間学習モードの判定
-  const isTimedSession = mode === 'timed' || (timeLimit && [5, 10, 15].includes(timeLimit))
+  const isTimedSession =
+    mode === 'timed' || (timeLimit && [5, 10, 15].includes(timeLimit))
 
   // Initialize practice session
   useEffect(() => {
     let isMounted = true
-    
+
     const initializePractice = async () => {
       if (!isMounted) return
-      
+
       startSession()
-      
+
       // Load categories
       const categoriesData = await fetchCategories()
       if (categoriesData && isMounted) {
@@ -103,7 +106,9 @@ const PracticePage = () => {
           })
           if (response?.questions.length && isMounted) {
             setQuestions(response.questions)
-            const firstQuestion = await fetchQuestionById(response.questions[0].id)
+            const firstQuestion = await fetchQuestionById(
+              response.questions[0].id,
+            )
             if (firstQuestion && isMounted) {
               setCurrentQuestion(firstQuestion)
             }
@@ -113,12 +118,11 @@ const PracticePage = () => {
     }
 
     initializePractice()
-    
+
     return () => {
       isMounted = false
     }
   }, [mode, categoryId, difficulty])
-
 
   const handleAnswerSubmit = async (choiceId: string, timeSpent: number) => {
     if (!currentQuestion) return
@@ -127,7 +131,7 @@ const PracticePage = () => {
       questionId: currentQuestion.id,
       choiceId,
       timeSpent: timeSpent * 1000, // Convert to milliseconds
-      deviceType
+      deviceType,
     }
 
     try {
@@ -137,7 +141,7 @@ const PracticePage = () => {
           currentQuestion.id,
           choiceId,
           timeSpent * 1000,
-          deviceType
+          deviceType,
         )
 
         if (result) {
@@ -153,11 +157,11 @@ const PracticePage = () => {
       } else {
         // オフライン時: ローカルキューに追加
         addToOfflineQueue('answer', answerData)
-        
+
         // ローカルで正解判定を行う（簡易的）
-        const correctChoice = currentQuestion.choices?.find(c => c.isCorrect)
+        const correctChoice = currentQuestion.choices?.find((c) => c.isCorrect)
         const isCorrect = choiceId === correctChoice?.id
-        
+
         // Update local state
         endQuestion(isCorrect)
         setUserAnswer({
@@ -194,11 +198,14 @@ const PracticePage = () => {
   }
 
   const getCategoryName = (categoryId: string) => {
-    const category = categories.find(c => c.id === categoryId)
+    const category = categories.find((c) => c.id === categoryId)
     return category?.name || '全分野'
   }
 
-  const handleSessionComplete = (duration: number, questionsAnswered: number) => {
+  const handleSessionComplete = (
+    duration: number,
+    questionsAnswered: number,
+  ) => {
     setSessionComplete(true)
     // セッション完了の統計をサーバーに送信する場合はここで実装
     console.log(`セッション完了: ${duration}秒, ${questionsAnswered}問回答`)
@@ -233,7 +240,12 @@ const PracticePage = () => {
 
   if (loading && !currentQuestion) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="50vh"
+      >
         <CircularProgress />
       </Box>
     )
@@ -259,17 +271,22 @@ const PracticePage = () => {
   return (
     <Box>
       {/* Header */}
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={3}
+      >
         <Typography variant="h4" component="h1">
           {mode === 'quick' ? `${timeLimit}分クイック` : '問題演習'}
         </Typography>
-        
+
         <OfflineIndicator compact />
-        
+
         <Fab
           size="small"
           onClick={() => navigate('/settings')}
-          sx={{ 
+          sx={{
             position: 'fixed',
             bottom: deviceType === 'mobile' ? 100 : 24,
             right: 24,
@@ -307,17 +324,26 @@ const PracticePage = () => {
               />
             )}
           </Box>
-          
+
           {sessionStats.totalQuestions > 0 && (
             <Box display="flex" alignItems="center" gap={3} mt={2}>
               <Typography variant="body2" color="text.secondary">
                 問題数: {sessionStats.totalQuestions}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                正答率: {Math.round((sessionStats.correctAnswers / sessionStats.totalQuestions) * 100)}%
+                正答率:{' '}
+                {Math.round(
+                  (sessionStats.correctAnswers / sessionStats.totalQuestions) *
+                    100,
+                )}
+                %
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                平均時間: {Math.round(sessionStats.totalTime / sessionStats.totalQuestions / 1000)}秒
+                平均時間:{' '}
+                {Math.round(
+                  sessionStats.totalTime / sessionStats.totalQuestions / 1000,
+                )}
+                秒
               </Typography>
             </Box>
           )}
@@ -337,7 +363,12 @@ const PracticePage = () => {
       {/* Session Complete Message */}
       {sessionComplete && (
         <Alert severity="success" sx={{ mb: 3 }}>
-          学習セッションが完了しました！ 回答数: {sessionStats.totalQuestions}問、正答率: {Math.round((sessionStats.correctAnswers / sessionStats.totalQuestions) * 100)}%
+          学習セッションが完了しました！ 回答数: {sessionStats.totalQuestions}
+          問、正答率:{' '}
+          {Math.round(
+            (sessionStats.correctAnswers / sessionStats.totalQuestions) * 100,
+          )}
+          %
         </Alert>
       )}
 
@@ -345,7 +376,11 @@ const PracticePage = () => {
       <Box sx={{ mb: 4 }}>
         <QuestionSwiper
           onAnswerSubmit={handleAnswerSubmit}
-          onNextQuestion={(mode === 'quick' || practiceMode === 'random') ? handleNextQuestion : undefined}
+          onNextQuestion={
+            mode === 'quick' || practiceMode === 'random'
+              ? handleNextQuestion
+              : undefined
+          }
           showTimer={true}
           timeLimit={timeLimit}
           allowSwipeNavigation={practiceMode === 'list'}
@@ -362,10 +397,7 @@ const PracticePage = () => {
           >
             新しい問題
           </TouchButton>
-          <TouchButton
-            variant="contained"
-            onClick={() => navigate('/')}
-          >
+          <TouchButton variant="contained" onClick={() => navigate('/')}>
             終了
           </TouchButton>
         </Box>

@@ -1,9 +1,7 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
-  extends: [
-    'eslint:recommended',
-  ],
+  extends: ['eslint:recommended'],
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: 'module',
@@ -24,6 +22,29 @@ module.exports = {
     {
       files: ['*.ts', '*.tsx'],
       parser: '@typescript-eslint/parser',
-    }
+    },
+    {
+      files: [
+        '**/*.test.ts',
+        '**/*.spec.ts',
+        '__tests__/**/*',
+        'src/__tests__/**/*',
+      ],
+      env: {
+        jest: true,
+        node: true,
+      },
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        jest: 'readonly',
+      },
+    },
   ],
 }

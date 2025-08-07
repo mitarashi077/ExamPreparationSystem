@@ -5,15 +5,15 @@ interface AppState {
   // UI State
   isMobileMenuOpen: boolean
   currentPage: string
-  
+
   // Device Detection
   deviceType: 'mobile' | 'tablet' | 'desktop'
   isOnline: boolean
-  
+
   // Settings
   theme: 'light' | 'dark'
   studyTimeLimit: 5 | 10 | 15 | null
-  
+
   // Actions
   setMobileMenuOpen: (open: boolean) => void
   setCurrentPage: (page: string) => void
@@ -33,7 +33,7 @@ export const useAppStore = create<AppState>()(
       isOnline: true,
       theme: 'light',
       studyTimeLimit: null,
-      
+
       // Actions
       setMobileMenuOpen: (open) => set({ isMobileMenuOpen: open }),
       setCurrentPage: (page) => set({ currentPage: page }),
@@ -48,6 +48,6 @@ export const useAppStore = create<AppState>()(
         theme: state.theme,
         studyTimeLimit: state.studyTimeLimit,
       }),
-    }
-  )
+    },
+  ),
 )

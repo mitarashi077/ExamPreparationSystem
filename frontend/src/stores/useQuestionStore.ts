@@ -56,17 +56,17 @@ interface QuestionState {
   selectedChoiceId: string | null
   userAnswer: UserAnswer | null
   showResult: boolean
-  
+
   // Essay question data
   currentEssayAnswer: EssayAnswer | null
   essayContent: string
   isEssayPreview: boolean
   essayDrafts: Map<string, EssayAnswer> // questionId -> draft
-  
+
   // Question list
   questions: QuestionSummary[]
   currentQuestionIndex: number
-  
+
   // Study session
   sessionStartTime: number | null
   questionStartTime: number | null
@@ -75,7 +75,7 @@ interface QuestionState {
     correctAnswers: number
     totalTime: number
   }
-  
+
   // Filters
   filters: {
     categoryId?: string
@@ -83,7 +83,7 @@ interface QuestionState {
     onlyUnanswered?: boolean
     onlyIncorrect?: boolean
   }
-  
+
   // Actions
   setCurrentQuestion: (question: Question) => void
   setSelectedChoice: (choiceId: string) => void
@@ -98,7 +98,7 @@ interface QuestionState {
   setFilters: (filters: Partial<QuestionState['filters']>) => void
   resetQuestion: () => void
   resetSession: () => void
-  
+
   // Essay actions
   setEssayContent: (content: string) => void
   setEssayPreview: (isPreview: boolean) => void
@@ -117,13 +117,13 @@ export const useQuestionStore = create<QuestionState>()(
       selectedChoiceId: null,
       userAnswer: null,
       showResult: false,
-      
+
       // Essay initial state
       currentEssayAnswer: null,
       essayContent: '',
       isEssayPreview: false,
       essayDrafts: new Map(),
-      
+
       questions: [],
       currentQuestionIndex: 0,
       sessionStartTime: null,
@@ -134,11 +134,14 @@ export const useQuestionStore = create<QuestionState>()(
         totalTime: 0,
       },
       filters: {},
-      
+
       // Actions
       setCurrentQuestion: (question) => {
-        const shuffledAnswers = question.questionType === 'essay' ? [] : [...question.choices].sort(() => Math.random() - 0.5)
-        set({ 
+        const shuffledAnswers =
+          question.questionType === 'essay'
+            ? []
+            : [...question.choices].sort(() => Math.random() - 0.5)
+        set({
           currentQuestion: question,
           currentAnswers: shuffledAnswers, // Shuffle choices for multiple choice only
           selectedChoiceId: null,
@@ -149,7 +152,7 @@ export const useQuestionStore = create<QuestionState>()(
           isEssayPreview: false,
           currentEssayAnswer: null,
         })
-        
+
         // Load draft for essay questions
         if (question.questionType === 'essay') {
           const state = get()
@@ -159,69 +162,72 @@ export const useQuestionStore = create<QuestionState>()(
           }
         }
       },
-      
+
       setSelectedChoice: (choiceId) => {
         set({ selectedChoiceId: choiceId })
       },
-      
+
       setUserAnswer: (answer) => {
         set({ userAnswer: answer, showResult: true })
       },
-      
+
       setShowResult: (show) => {
         set({ showResult: show })
       },
-      
+
       setQuestions: (questions) => {
         set({ questions, currentQuestionIndex: 0 })
       },
-      
+
       setCurrentQuestionIndex: (index) => {
         set({ currentQuestionIndex: index })
       },
-      
+
       startSession: () => {
-        set({ 
+        set({
           sessionStartTime: Date.now(),
           sessionStats: {
             totalQuestions: 0,
             correctAnswers: 0,
             totalTime: 0,
-          }
+          },
         })
       },
-      
+
       startQuestion: () => {
         set({ questionStartTime: Date.now() })
       },
-      
+
       endQuestion: (isCorrect) => {
         const state = get()
-        const timeSpent = state.questionStartTime ? Date.now() - state.questionStartTime : 0
-        
+        const timeSpent = state.questionStartTime
+          ? Date.now() - state.questionStartTime
+          : 0
+
         set({
           sessionStats: {
             totalQuestions: state.sessionStats.totalQuestions + 1,
-            correctAnswers: state.sessionStats.correctAnswers + (isCorrect ? 1 : 0),
+            correctAnswers:
+              state.sessionStats.correctAnswers + (isCorrect ? 1 : 0),
             totalTime: state.sessionStats.totalTime + timeSpent,
           },
           questionStartTime: null,
         })
       },
-      
+
       endSession: () => {
-        set({ 
+        set({
           sessionStartTime: null,
           questionStartTime: null,
         })
       },
-      
+
       setFilters: (filters) => {
         set((state) => ({
-          filters: { ...state.filters, ...filters }
+          filters: { ...state.filters, ...filters },
         }))
       },
-      
+
       resetQuestion: () => {
         set({
           currentQuestion: null,
@@ -236,7 +242,7 @@ export const useQuestionStore = create<QuestionState>()(
           isEssayPreview: false,
         })
       },
-      
+
       resetSession: () => {
         set({
           questions: [],
@@ -251,34 +257,36 @@ export const useQuestionStore = create<QuestionState>()(
           // Reset essay session state but keep drafts
         })
       },
-      
+
       // Essay actions implementation
       setEssayContent: (content) => {
         set({ essayContent: content })
       },
-      
+
       setEssayPreview: (isPreview) => {
         set({ isEssayPreview: isPreview })
       },
-      
+
       saveEssayDraft: (questionId) => {
         const state = get()
         if (!state.essayContent.trim()) return
-        
+
         const draft: EssayAnswer = {
           id: `draft-${questionId}-${Date.now()}`,
           content: state.essayContent,
-          timeSpent: state.questionStartTime ? Date.now() - state.questionStartTime : 0,
+          timeSpent: state.questionStartTime
+            ? Date.now() - state.questionStartTime
+            : 0,
           isDraft: true,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         }
-        
+
         const newDrafts = new Map(state.essayDrafts)
         newDrafts.set(questionId, draft)
         set({ essayDrafts: newDrafts })
       },
-      
+
       loadEssayDraft: (questionId) => {
         const state = get()
         const draft = state.essayDrafts.get(questionId)
@@ -286,31 +294,33 @@ export const useQuestionStore = create<QuestionState>()(
           set({ essayContent: draft.content })
         }
       },
-      
+
       submitEssayAnswer: (questionId) => {
         const state = get()
         if (!state.essayContent.trim()) return
-        
+
         const answer: EssayAnswer = {
           id: `answer-${questionId}-${Date.now()}`,
           content: state.essayContent,
-          timeSpent: state.questionStartTime ? Date.now() - state.questionStartTime : 0,
+          timeSpent: state.questionStartTime
+            ? Date.now() - state.questionStartTime
+            : 0,
           isDraft: false,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         }
-        
-        set({ 
+
+        set({
           currentEssayAnswer: answer,
           showResult: true,
         })
-        
+
         // Remove draft after submission
         const newDrafts = new Map(state.essayDrafts)
         newDrafts.delete(questionId)
         set({ essayDrafts: newDrafts })
       },
-      
+
       setCurrentEssayAnswer: (answer) => {
         set({ currentEssayAnswer: answer })
       },
@@ -328,6 +338,6 @@ export const useQuestionStore = create<QuestionState>()(
           state.essayDrafts = new Map((state as any).essayDrafts)
         }
       },
-    }
-  )
+    },
+  ),
 )

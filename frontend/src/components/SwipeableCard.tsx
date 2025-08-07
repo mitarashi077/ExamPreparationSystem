@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import { Card, CardProps, Box, Fade } from '@mui/material'
 import { useSwipeable } from 'react-swipeable'
-import { 
+import {
   ArrowBackIos as ArrowBackIcon,
   ArrowForwardIos as ArrowForwardIcon,
-  MoreVert as MoreIcon
+  MoreVert as MoreIcon,
 } from '@mui/icons-material'
 
-interface SwipeableCardProps extends Omit<CardProps, 'onSwipedLeft' | 'onSwipedRight'> {
+interface SwipeableCardProps
+  extends Omit<CardProps, 'onSwipedLeft' | 'onSwipedRight'> {
   onSwipeLeft?: () => void
   onSwipeRight?: () => void
   showSwipeIndicators?: boolean
@@ -25,7 +26,9 @@ const SwipeableCard = ({
   ...cardProps
 }: SwipeableCardProps) => {
   const [isSwipeActive, setIsSwipeActive] = useState(false)
-  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null)
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(
+    null,
+  )
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
@@ -62,13 +65,13 @@ const SwipeableCard = ({
         position: 'relative',
         overflow: 'visible',
         transition: 'transform 0.2s ease-out, box-shadow 0.2s ease-out',
-        transform: isSwipeActive 
-          ? `translateX(${swipeDirection === 'right' ? '5px' : swipeDirection === 'left' ? '-5px' : '0px'})` 
+        transform: isSwipeActive
+          ? `translateX(${swipeDirection === 'right' ? '5px' : swipeDirection === 'left' ? '-5px' : '0px'})`
           : 'translateX(0px)',
         boxShadow: isSwipeActive ? 4 : 1,
-        cursor: (onSwipeLeft || onSwipeRight) ? 'grab' : 'default',
+        cursor: onSwipeLeft || onSwipeRight ? 'grab' : 'default',
         '&:active': {
-          cursor: (onSwipeLeft || onSwipeRight) ? 'grabbing' : 'default',
+          cursor: onSwipeLeft || onSwipeRight ? 'grabbing' : 'default',
         },
         ...sx,
       }}

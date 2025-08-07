@@ -10,9 +10,9 @@ export default defineConfig({
       includeAssets: [],
       manifest: false,
       workbox: {
-        globPatterns: ['**/*.{js,css,html}']
-      }
-    })
+        globPatterns: ['**/*.{js,css,html}'],
+      },
+    }),
   ],
   server: {
     port: 3003,
@@ -22,11 +22,11 @@ export default defineConfig({
         target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false,
-        ws: true
-      }
-    }
+        ws: true,
+      },
+    },
   },
   build: {
-    sourcemap: true
-  }
+    sourcemap: true,
+  },
 })

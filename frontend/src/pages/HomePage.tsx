@@ -1,11 +1,5 @@
 import React from 'react'
-import { 
-  Typography, 
-  Card, 
-  Box,
-  LinearProgress,
-  Chip,
-} from '@mui/material'
+import { Typography, Card, Box, LinearProgress, Chip } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import {
   Schedule as ScheduleIcon,
@@ -29,7 +23,8 @@ const HomePage = () => {
     {
       id: 'progress',
       title: '学習進捗',
-      description: 'ヒートマップで弱点分野を視覚的に確認。効率的な学習計画を立てよう',
+      description:
+        'ヒートマップで弱点分野を視覚的に確認。効率的な学習計画を立てよう',
       category: '分析',
       onClick: () => navigate('/progress'),
       badge: 0,
@@ -61,7 +56,8 @@ const HomePage = () => {
     {
       id: 'essay-demo',
       title: '記述式問題デモ',
-      description: '午後試験対策の記述式問題エディタ。Markdown・コードハイライト対応',
+      description:
+        '午後試験対策の記述式問題エディタ。Markdown・コードハイライト対応',
       category: '午後対策',
       onClick: () => navigate('/essay-demo'),
     },
@@ -69,9 +65,9 @@ const HomePage = () => {
 
   return (
     <Box>
-      <Typography 
-        variant="h4" 
-        component="h1" 
+      <Typography
+        variant="h4"
+        component="h1"
         gutterBottom
         sx={{
           writingMode: 'horizontal-tb !important',
@@ -81,12 +77,12 @@ const HomePage = () => {
       >
         ESS試験対策
       </Typography>
-      
+
       {/* 今日の学習状況 */}
       <Card sx={{ mb: 4, p: 2 }}>
         <Box display="flex" alignItems="center" mb={2}>
           <ScheduleIcon color="primary" sx={{ mr: 1 }} />
-          <Typography 
+          <Typography
             variant="h6"
             sx={{
               writingMode: 'horizontal-tb !important',
@@ -96,11 +92,11 @@ const HomePage = () => {
           >
             今日の学習状況
           </Typography>
-          <Chip 
-            label="連続3日" 
-            size="small" 
-            color="success" 
-            sx={{ 
+          <Chip
+            label="連続3日"
+            size="small"
+            color="success"
+            sx={{
               ml: 'auto',
               writingMode: 'horizontal-tb !important',
               textOrientation: 'mixed !important',
@@ -108,12 +104,12 @@ const HomePage = () => {
                 writingMode: 'horizontal-tb !important',
                 textOrientation: 'mixed !important',
               },
-            }} 
+            }}
           />
         </Box>
-        <Typography 
-          variant="body2" 
-          color="text.secondary" 
+        <Typography
+          variant="body2"
+          color="text.secondary"
           mb={1}
           sx={{
             writingMode: 'horizontal-tb !important',
@@ -123,10 +119,14 @@ const HomePage = () => {
         >
           今日の目標: 10問
         </Typography>
-        <LinearProgress variant="determinate" value={30} sx={{ mb: 1, height: 8, borderRadius: 4 }} />
+        <LinearProgress
+          variant="determinate"
+          value={30}
+          sx={{ mb: 1, height: 8, borderRadius: 4 }}
+        />
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography 
-            variant="body2" 
+          <Typography
+            variant="body2"
             color="text.secondary"
             sx={{
               writingMode: 'horizontal-tb !important',
@@ -138,8 +138,8 @@ const HomePage = () => {
           </Typography>
           <Box display="flex" alignItems="center" gap={1}>
             <SpeedIcon fontSize="small" color="action" />
-            <Typography 
-              variant="caption" 
+            <Typography
+              variant="caption"
               color="text.secondary"
               sx={{
                 writingMode: 'horizontal-tb !important',
@@ -154,12 +154,12 @@ const HomePage = () => {
       </Card>
 
       {/* メインメニュー */}
-      <Typography 
-        variant="h5" 
-        component="h2" 
-        gutterBottom 
-        sx={{ 
-          mt: 4, 
+      <Typography
+        variant="h5"
+        component="h2"
+        gutterBottom
+        sx={{
+          mt: 4,
           mb: 2,
           writingMode: 'horizontal-tb !important',
           textOrientation: 'mixed !important',
@@ -168,7 +168,7 @@ const HomePage = () => {
       >
         メインメニュー
       </Typography>
-      <TouchCardList 
+      <TouchCardList
         items={mainMenuItems}
         columns={{ xs: 1, md: 2 }}
         spacing={3}
@@ -176,12 +176,12 @@ const HomePage = () => {
       />
 
       {/* 通勤学習モード */}
-      <Typography 
-        variant="h5" 
-        component="h2" 
-        gutterBottom 
-        sx={{ 
-          mt: 4, 
+      <Typography
+        variant="h5"
+        component="h2"
+        gutterBottom
+        sx={{
+          mt: 4,
           mb: 2,
           writingMode: 'horizontal-tb !important',
           textOrientation: 'mixed !important',
@@ -190,7 +190,7 @@ const HomePage = () => {
       >
         通勤学習モード
       </Typography>
-      <TouchCardList 
+      <TouchCardList
         items={studyModeItems}
         columns={{ xs: 1, sm: 2, md: 3 }}
         spacing={2}
@@ -198,12 +198,12 @@ const HomePage = () => {
       />
 
       {/* サンプル図表（ズーム機能デモ） */}
-      <Typography 
-        variant="h5" 
-        component="h2" 
-        gutterBottom 
-        sx={{ 
-          mt: 4, 
+      <Typography
+        variant="h5"
+        component="h2"
+        gutterBottom
+        sx={{
+          mt: 4,
           mb: 2,
           writingMode: 'horizontal-tb !important',
           textOrientation: 'mixed !important',
@@ -213,9 +213,9 @@ const HomePage = () => {
         サンプル図表（ピンチズーム対応）
       </Typography>
       <Card sx={{ p: 2 }}>
-        <Typography 
-          variant="body2" 
-          color="text.secondary" 
+        <Typography
+          variant="body2"
+          color="text.secondary"
           mb={2}
           sx={{
             writingMode: 'horizontal-tb !important',

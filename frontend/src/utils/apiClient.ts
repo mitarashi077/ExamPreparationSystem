@@ -2,15 +2,16 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios'
 import type { BookmarkItem } from '../types/bookmark'
 
 // API base configuration
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:3001/api'
+const API_BASE_URL =
+  (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:3001/api'
 
 // Create axios instance with default configuration
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+  },
 })
 
 // Request interceptor for adding authentication or common headers
@@ -21,7 +22,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error)
-  }
+  },
 )
 
 // Response interceptor for handling common error scenarios
@@ -35,14 +36,14 @@ apiClient.interceptors.response.use(
       console.error('Request timeout')
       throw new Error('リクエストがタイムアウトしました')
     }
-    
+
     if (!error.response) {
       console.error('Network error:', error.message)
       throw new Error('ネットワークエラーが発生しました')
     }
-    
+
     const { status, data } = error.response
-    
+
     switch (status) {
       case 400:
         throw new Error(data?.error || '不正なリクエストです')
@@ -55,7 +56,7 @@ apiClient.interceptors.response.use(
       default:
         throw new Error(data?.error || `エラーが発生しました (${status})`)
     }
-  }
+  },
 )
 
 // API response types
@@ -99,26 +100,41 @@ export const bookmarkAPI = {
     page?: number
     limit?: number
   }): Promise<BookmarkItem[]> {
-    const response = await apiClient.get<ApiResponse<BookmarkListResponse>>('/bookmarks', {
-      params
-    })
+    const response = await apiClient.get<ApiResponse<BookmarkListResponse>>(
+      '/bookmarks',
+      {
+        params,
+      },
+    )
     return response.data.data.bookmarks
   },
 
   // Create a new bookmark
-  async createBookmark(questionId: string, memo?: string): Promise<BookmarkItem> {
-    const response = await apiClient.post<ApiResponse<BookmarkItem>>('/bookmarks', {
-      questionId,
-      memo: memo || undefined
-    })
+  async createBookmark(
+    questionId: string,
+    memo?: string,
+  ): Promise<BookmarkItem> {
+    const response = await apiClient.post<ApiResponse<BookmarkItem>>(
+      '/bookmarks',
+      {
+        questionId,
+        memo: memo || undefined,
+      },
+    )
     return response.data.data
   },
 
   // Update bookmark memo
-  async updateBookmark(bookmarkId: string, memo: string): Promise<BookmarkItem> {
-    const response = await apiClient.put<ApiResponse<BookmarkItem>>(`/bookmarks/${bookmarkId}`, {
-      memo
-    })
+  async updateBookmark(
+    bookmarkId: string,
+    memo: string,
+  ): Promise<BookmarkItem> {
+    const response = await apiClient.put<ApiResponse<BookmarkItem>>(
+      `/bookmarks/${bookmarkId}`,
+      {
+        memo,
+      },
+    )
     return response.data.data
   },
 
@@ -135,44 +151,46 @@ export const bookmarkAPI = {
   }> {
     try {
       const response = await apiClient.get<ApiResponse<BookmarkStatusResponse>>(
-        `/bookmarks/question/${questionId}`
+        `/bookmarks/question/${questionId}`,
       )
       const { isBookmarked, bookmarkId, memo } = response.data.data
       return {
         isBookmarked,
         bookmarkId: bookmarkId || undefined,
-        memo: memo || undefined
+        memo: memo || undefined,
       }
     } catch (error) {
       // If question not found or no bookmark, return false
       return { isBookmarked: false }
     }
-  }
+  },
 }
 
 // Retry utility for failed requests
 export const withRetry = async <T>(
   operation: () => Promise<T>,
   maxRetries: number = 3,
-  delay: number = 1000
+  delay: number = 1000,
 ): Promise<T> => {
   let lastError: Error
-  
+
   for (let i = 0; i <= maxRetries; i++) {
     try {
       return await operation()
     } catch (error) {
       lastError = error as Error
-      
+
       if (i === maxRetries) {
         throw lastError
       }
-      
+
       // Wait before retrying
-      await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)))
+      await new Promise((resolve) =>
+        setTimeout(resolve, delay * Math.pow(2, i)),
+      )
     }
   }
-  
+
   throw lastError!
 }
 

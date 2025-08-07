@@ -26,29 +26,30 @@ interface BookmarkButtonProps {
   onToggle?: (isBookmarked: boolean) => void
 }
 
-const StyledIconButton = styled(IconButton)<{ 
+const StyledIconButton = styled(IconButton)<{
   $size: string
   $variant: string
 }>(({ theme, $size, $variant }) => {
   const sizeConfig = {
     small: { minSize: 40, iconSize: '1.2rem' },
     medium: { minSize: 44, iconSize: '1.4rem' },
-    large: { minSize: 48, iconSize: '1.6rem' }
+    large: { minSize: 48, iconSize: '1.6rem' },
   }
-  
-  const config = sizeConfig[$size as keyof typeof sizeConfig] || sizeConfig.medium
-  
+
+  const config =
+    sizeConfig[$size as keyof typeof sizeConfig] || sizeConfig.medium
+
   return {
     minWidth: config.minSize,
     minHeight: config.minSize,
     borderRadius: $variant === 'minimal' ? '50%' : theme.spacing(1.5),
     transition: 'all 0.2s ease-in-out',
-    
+
     '& .MuiSvgIcon-root': {
       fontSize: config.iconSize,
       transition: 'all 0.2s ease-in-out',
     },
-    
+
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
       transform: 'scale(1.05)',
@@ -56,11 +57,11 @@ const StyledIconButton = styled(IconButton)<{
         transform: 'scale(1.1)',
       },
     },
-    
+
     '&:active': {
       transform: 'scale(0.95)',
     },
-    
+
     // Mobile optimizations
     [theme.breakpoints.down('sm')]: {
       minWidth: config.minSize + 4,
@@ -72,11 +73,13 @@ const StyledIconButton = styled(IconButton)<{
   }
 })
 
-const AnimatedBookmarkIcon = styled(BookmarkIcon)<{ $isBookmarked: boolean }>(({ $isBookmarked }) => ({
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  transform: $isBookmarked ? 'scale(1)' : 'scale(0.8)',
-  filter: $isBookmarked ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' : 'none',
-}))
+const AnimatedBookmarkIcon = styled(BookmarkIcon)<{ $isBookmarked: boolean }>(
+  ({ $isBookmarked }) => ({
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    transform: $isBookmarked ? 'scale(1)' : 'scale(0.8)',
+    filter: $isBookmarked ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' : 'none',
+  }),
+)
 
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({
   questionId,
@@ -90,27 +93,23 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
   onToggle,
 }) => {
   const { deviceType } = useAppStore()
-  const { 
-    isBookmarked, 
-    toggleBookmark, 
-    clearError 
-  } = useBookmarkStore()
-  
+  const { isBookmarked, toggleBookmark, clearError } = useBookmarkStore()
+
   const bookmarked = isBookmarked(questionId)
-  
+
   const handleToggle = async () => {
     if (disabled) return
-    
+
     clearError()
-    
+
     // Haptic feedback for mobile devices
     if (deviceType === 'mobile' && 'vibrate' in navigator) {
       navigator.vibrate(15) // Slightly longer vibration for bookmark action
     }
-    
+
     try {
       await toggleBookmark(questionId, questionData)
-      
+
       // Call external callback if provided
       if (onToggle) {
         onToggle(!bookmarked)
@@ -120,10 +119,10 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
       console.error('Bookmark toggle failed:', error)
     }
   }
-  
+
   const getIconColor = () => {
     if (disabled) return 'action.disabled'
-    
+
     switch (color) {
       case 'primary':
         return bookmarked ? 'primary.main' : 'action.active'
@@ -133,9 +132,9 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         return bookmarked ? 'text.primary' : 'action.active'
     }
   }
-  
+
   const ariaLabel = bookmarked ? 'ブックマークを削除' : 'ブックマークに追加'
-  
+
   return (
     <Box className={className}>
       <StyledIconButton
@@ -153,11 +152,11 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         }}
       >
         {showAnimation ? (
-          <Zoom 
-            in={true} 
+          <Zoom
+            in={true}
             timeout={200}
-            style={{ 
-              transitionDelay: bookmarked ? '0ms' : '100ms' 
+            style={{
+              transitionDelay: bookmarked ? '0ms' : '100ms',
             }}
           >
             <Box>
@@ -168,8 +167,10 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
               )}
             </Box>
           </Zoom>
+        ) : bookmarked ? (
+          <BookmarkIcon />
         ) : (
-          bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />
+          <BookmarkBorderIcon />
         )}
       </StyledIconButton>
     </Box>

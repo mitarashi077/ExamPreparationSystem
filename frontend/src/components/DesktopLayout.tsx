@@ -41,7 +41,12 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
   const menuItems = [
     { text: 'ホーム', icon: <HomeIcon />, path: '/', badge: 0 },
     { text: '問題演習', icon: <QuizIcon />, path: '/practice', badge: 0 },
-    { text: 'ブックマーク', icon: <BookmarkIcon />, path: '/bookmarks', badge: 0 },
+    {
+      text: 'ブックマーク',
+      icon: <BookmarkIcon />,
+      path: '/bookmarks',
+      badge: 0,
+    },
     { text: '間違い問題復習', icon: <ReviewIcon />, path: '/review', badge: 0 },
     { text: '進捗確認', icon: <ProgressIcon />, path: '/progress', badge: 0 },
   ]
@@ -66,10 +71,14 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
         }}
       >
         <Toolbar>
-          <Typography variant="h5" component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
+          <Typography
+            variant="h5"
+            component="div"
+            sx={{ flexGrow: 1, fontWeight: 600 }}
+          >
             エンベデッドシステムスペシャリスト試験対策
           </Typography>
-          
+
           {!isOnline && (
             <Chip
               icon={<OfflineIcon />}
@@ -99,7 +108,14 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
         }}
       >
         <Toolbar>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              width: '100%',
+            }}
+          >
             <Avatar sx={{ bgcolor: 'primary.main' }}>
               <SchoolIcon />
             </Avatar>
@@ -113,9 +129,9 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
             </Box>
           </Box>
         </Toolbar>
-        
+
         <Divider />
-        
+
         {!isOnline && (
           <Box sx={{ p: 2 }}>
             <Chip
@@ -148,13 +164,19 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
                   },
                 },
                 '&:hover': {
-                  bgcolor: location.pathname === item.path ? 'primary.dark' : 'action.hover',
+                  bgcolor:
+                    location.pathname === item.path
+                      ? 'primary.dark'
+                      : 'action.hover',
                 },
               }}
             >
               <ListItemIcon
                 sx={{
-                  color: location.pathname === item.path ? 'inherit' : 'action.active',
+                  color:
+                    location.pathname === item.path
+                      ? 'inherit'
+                      : 'action.active',
                   minWidth: 40,
                 }}
               >
@@ -166,7 +188,7 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
                   item.icon
                 )}
               </ListItemIcon>
-              <ListItemText 
+              <ListItemText
                 primary={item.text}
                 primaryTypographyProps={{
                   fontWeight: location.pathname === item.path ? 600 : 400,
@@ -198,13 +220,19 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
                   },
                 },
                 '&:hover': {
-                  bgcolor: location.pathname === item.path ? 'primary.dark' : 'action.hover',
+                  bgcolor:
+                    location.pathname === item.path
+                      ? 'primary.dark'
+                      : 'action.hover',
                 },
               }}
             >
               <ListItemIcon
                 sx={{
-                  color: location.pathname === item.path ? 'inherit' : 'action.active',
+                  color:
+                    location.pathname === item.path
+                      ? 'inherit'
+                      : 'action.active',
                   minWidth: 40,
                 }}
               >
@@ -216,7 +244,7 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
                   item.icon
                 )}
               </ListItemIcon>
-              <ListItemText 
+              <ListItemText
                 primary={item.text}
                 primaryTypographyProps={{
                   fontWeight: location.pathname === item.path ? 600 : 400,
@@ -229,10 +257,20 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
 
         {/* Footer */}
         <Box sx={{ mt: 'auto', p: 2, borderTop: 1, borderColor: 'divider' }}>
-          <Typography variant="caption" color="text.secondary" align="center" display="block">
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            align="center"
+            display="block"
+          >
             Version 1.0.0
           </Typography>
-          <Typography variant="caption" color="text.secondary" align="center" display="block">
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            align="center"
+            display="block"
+          >
             © 2024 ESS試験対策システム
           </Typography>
         </Box>

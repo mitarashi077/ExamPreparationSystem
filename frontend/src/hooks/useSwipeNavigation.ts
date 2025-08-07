@@ -15,7 +15,7 @@ export const useSwipeNavigation = () => {
   const { deviceType } = useAppStore()
 
   const getCurrentIndex = () => {
-    return navigationItems.findIndex(item => item.path === location.pathname)
+    return navigationItems.findIndex((item) => item.path === location.pathname)
   }
 
   const navigateToIndex = (index: number) => {

@@ -93,8 +93,10 @@ async function main() {
     // 既存問題
     prisma.question.create({
       data: {
-        content: 'エンベデッドシステムにおいて、リアルタイム性が重要な理由として、最も適切なものはどれか。',
-        explanation: 'リアルタイム性は、決められた時間内に処理を完了することを保証する特性で、安全性や品質に直結します。',
+        content:
+          'エンベデッドシステムにおいて、リアルタイム性が重要な理由として、最も適切なものはどれか。',
+        explanation:
+          'リアルタイム性は、決められた時間内に処理を完了することを保証する特性で、安全性や品質に直結します。',
         difficulty: 2,
         year: 2023,
         session: '秋期',
@@ -103,7 +105,10 @@ async function main() {
           create: [
             { content: '処理能力が向上するため', isCorrect: false },
             { content: '消費電力が削減されるため', isCorrect: false },
-            { content: '決められた時間内に処理を完了する必要があるため', isCorrect: true },
+            {
+              content: '決められた時間内に処理を完了する必要があるため',
+              isCorrect: true,
+            },
             { content: 'メモリ使用量が削減されるため', isCorrect: false },
           ],
         },
@@ -111,8 +116,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: 'RTOS（Real-Time Operating System）の主な特徴として、適切でないものはどれか。',
-        explanation: 'RTOSは確定的な応答時間を提供するため、タスクスケジューリングが予測可能である必要があります。',
+        content:
+          'RTOS（Real-Time Operating System）の主な特徴として、適切でないものはどれか。',
+        explanation:
+          'RTOSは確定的な応答時間を提供するため、タスクスケジューリングが予測可能である必要があります。',
         difficulty: 3,
         year: 2023,
         session: '春期',
@@ -120,7 +127,10 @@ async function main() {
         choices: {
           create: [
             { content: '確定的な応答時間を提供する', isCorrect: false },
-            { content: 'プリエンプティブなタスクスケジューリング', isCorrect: false },
+            {
+              content: 'プリエンプティブなタスクスケジューリング',
+              isCorrect: false,
+            },
             { content: '高いスループットを重視する', isCorrect: true },
             { content: '割り込み処理の高速化', isCorrect: false },
           ],
@@ -129,16 +139,24 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: 'マイクロコントローラにおけるハーバードアーキテクチャの特徴はどれか。',
-        explanation: 'ハーバードアーキテクチャは、プログラムメモリとデータメモリを物理的に分離したアーキテクチャです。',
+        content:
+          'マイクロコントローラにおけるハーバードアーキテクチャの特徴はどれか。',
+        explanation:
+          'ハーバードアーキテクチャは、プログラムメモリとデータメモリを物理的に分離したアーキテクチャです。',
         difficulty: 2,
         year: 2022,
         session: '秋期',
         categoryId: categories[3].id, // ハードウェア
         choices: {
           create: [
-            { content: 'プログラムとデータが同じメモリ空間を共有する', isCorrect: false },
-            { content: 'プログラムメモリとデータメモリが物理的に分離されている', isCorrect: true },
+            {
+              content: 'プログラムとデータが同じメモリ空間を共有する',
+              isCorrect: false,
+            },
+            {
+              content: 'プログラムメモリとデータメモリが物理的に分離されている',
+              isCorrect: true,
+            },
             { content: 'キャッシュメモリを必ず搭載している', isCorrect: false },
             { content: '仮想メモリ機能を提供する', isCorrect: false },
           ],
@@ -149,8 +167,10 @@ async function main() {
     // Phase 5: 組込みハードウェア設計問題
     prisma.question.create({
       data: {
-        content: 'ARM Cortex-MマイクロコントローラにおけるNVIC（Nested Vectored Interrupt Controller）の機能として、最も適切なものはどれか。',
-        explanation: 'NVICは割り込み要求の優先度管理、ネスト処理、ベクタテーブル管理を行う重要なコンポーネントです。',
+        content:
+          'ARM Cortex-MマイクロコントローラにおけるNVIC（Nested Vectored Interrupt Controller）の機能として、最も適切なものはどれか。',
+        explanation:
+          'NVICは割り込み要求の優先度管理、ネスト処理、ベクタテーブル管理を行う重要なコンポーネントです。',
         difficulty: 3,
         year: 2024,
         session: '春期',
@@ -167,26 +187,42 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: 'A/D変換器のサンプリング定理（ナイキスト定理）について、正しい記述はどれか。',
-        explanation: 'サンプリング定理により、信号を正確に復元するには、最高周波数成分の2倍以上のサンプリング周波数が必要です。',
+        content:
+          'A/D変換器のサンプリング定理（ナイキスト定理）について、正しい記述はどれか。',
+        explanation:
+          'サンプリング定理により、信号を正確に復元するには、最高周波数成分の2倍以上のサンプリング周波数が必要です。',
         difficulty: 2,
         year: 2024,
         session: '秋期',
         categoryId: categories[10].id, // 組込みハードウェア設計
         choices: {
           create: [
-            { content: 'サンプリング周波数は信号の最高周波数と同じでよい', isCorrect: false },
-            { content: 'サンプリング周波数は信号の最高周波数の2倍以上必要', isCorrect: true },
-            { content: 'サンプリング周波数は信号の最高周波数の半分でよい', isCorrect: false },
-            { content: 'サンプリング周波数は量子化ビット数に依存する', isCorrect: false },
+            {
+              content: 'サンプリング周波数は信号の最高周波数と同じでよい',
+              isCorrect: false,
+            },
+            {
+              content: 'サンプリング周波数は信号の最高周波数の2倍以上必要',
+              isCorrect: true,
+            },
+            {
+              content: 'サンプリング周波数は信号の最高周波数の半分でよい',
+              isCorrect: false,
+            },
+            {
+              content: 'サンプリング周波数は量子化ビット数に依存する',
+              isCorrect: false,
+            },
           ],
         },
       },
     }),
     prisma.question.create({
       data: {
-        content: 'DMA（Direct Memory Access）コントローラの主な利点として、最も適切なものはどれか。',
-        explanation: 'DMAはCPUを介さずにメモリと周辺機器間でデータ転送を行うため、CPUの負荷を軽減できます。',
+        content:
+          'DMA（Direct Memory Access）コントローラの主な利点として、最も適切なものはどれか。',
+        explanation:
+          'DMAはCPUを介さずにメモリと周辺機器間でデータ転送を行うため、CPUの負荷を軽減できます。',
         difficulty: 2,
         year: 2023,
         session: '春期',
@@ -203,8 +239,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: 'PWM（Pulse Width Modulation）制御において、デューティ比50%の信号の特徴はどれか。',
-        explanation: 'デューティ比50%は、1周期中でHigh状態とLow状態が同じ時間であることを意味します。',
+        content:
+          'PWM（Pulse Width Modulation）制御において、デューティ比50%の信号の特徴はどれか。',
+        explanation:
+          'デューティ比50%は、1周期中でHigh状態とLow状態が同じ時間であることを意味します。',
         difficulty: 2,
         year: 2023,
         session: '秋期',
@@ -221,8 +259,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: 'I2C通信における「アクノリッジ（ACK）」信号の役割として、正しいものはどれか。',
-        explanation: 'ACK信号は受信側が正常にデータを受信したことを送信側に知らせるための確認信号です。',
+        content:
+          'I2C通信における「アクノリッジ（ACK）」信号の役割として、正しいものはどれか。',
+        explanation:
+          'ACK信号は受信側が正常にデータを受信したことを送信側に知らせるための確認信号です。',
         difficulty: 2,
         year: 2024,
         session: '春期',
@@ -241,17 +281,28 @@ async function main() {
     // Phase 5: リアルタイムシステム問題
     prisma.question.create({
       data: {
-        content: 'リアルタイムシステムにおけるRate Monotonic Scheduling（RMS）アルゴリズムの特徴はどれか。',
-        explanation: 'RMSは周期の短いタスクに高い優先度を割り当てる固定優先度スケジューリングアルゴリズムです。',
+        content:
+          'リアルタイムシステムにおけるRate Monotonic Scheduling（RMS）アルゴリズムの特徴はどれか。',
+        explanation:
+          'RMSは周期の短いタスクに高い優先度を割り当てる固定優先度スケジューリングアルゴリズムです。',
         difficulty: 3,
         year: 2024,
         session: '春期',
         categoryId: categories[11].id, // リアルタイムシステム
         choices: {
           create: [
-            { content: '実行時間の短いタスクに高い優先度を与える', isCorrect: false },
-            { content: '周期の短いタスクに高い優先度を与える', isCorrect: true },
-            { content: 'デッドラインの近いタスクに高い優先度を与える', isCorrect: false },
+            {
+              content: '実行時間の短いタスクに高い優先度を与える',
+              isCorrect: false,
+            },
+            {
+              content: '周期の短いタスクに高い優先度を与える',
+              isCorrect: true,
+            },
+            {
+              content: 'デッドラインの近いタスクに高い優先度を与える',
+              isCorrect: false,
+            },
             { content: '優先度を動的に変更する', isCorrect: false },
           ],
         },
@@ -259,8 +310,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: 'セマフォ（Semaphore）を使用した排他制御において、「二進セマフォ」の特徴はどれか。',
-        explanation: '二進セマフォは0と1の値のみを取り、ミューテックスとして排他制御に使用されます。',
+        content:
+          'セマフォ（Semaphore）を使用した排他制御において、「二進セマフォ」の特徴はどれか。',
+        explanation:
+          '二進セマフォは0と1の値のみを取り、ミューテックスとして排他制御に使用されます。',
         difficulty: 2,
         year: 2023,
         session: '秋期',
@@ -277,8 +330,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: 'RTOSにおけるタスク間通信で、メッセージキューの利点として最も適切なものはどれか。',
-        explanation: 'メッセージキューは非同期通信を可能にし、送信側と受信側のタイミングを分離できます。',
+        content:
+          'RTOSにおけるタスク間通信で、メッセージキューの利点として最も適切なものはどれか。',
+        explanation:
+          'メッセージキューは非同期通信を可能にし、送信側と受信側のタイミングを分離できます。',
         difficulty: 2,
         year: 2024,
         session: '秋期',
@@ -295,8 +350,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: '優先度逆転問題を解決する手法として、最も効果的なものはどれか。',
-        explanation: '優先度継承は低優先度タスクが高優先度タスクのリソースを保持している間、一時的に優先度を継承する手法です。',
+        content:
+          '優先度逆転問題を解決する手法として、最も効果的なものはどれか。',
+        explanation:
+          '優先度継承は低優先度タスクが高優先度タスクのリソースを保持している間、一時的に優先度を継承する手法です。',
         difficulty: 3,
         year: 2023,
         session: '春期',
@@ -315,8 +372,10 @@ async function main() {
     // Phase 5: リアルタイムシステム分野 - 追加問題（Task 5.1.2）
     prisma.question.create({
       data: {
-        content: 'EDF（Earliest Deadline First）スケジューリングアルゴリズムの特徴として、正しいものはどれか。',
-        explanation: 'EDFは動的優先度スケジューリングで、デッドラインが最も近いタスクに最高優先度を与える最適なアルゴリズムです。',
+        content:
+          'EDF（Earliest Deadline First）スケジューリングアルゴリズムの特徴として、正しいものはどれか。',
+        explanation:
+          'EDFは動的優先度スケジューリングで、デッドラインが最も近いタスクに最高優先度を与える最適なアルゴリズムです。',
         difficulty: 3,
         year: 2024,
         session: '春期',
@@ -324,7 +383,10 @@ async function main() {
         choices: {
           create: [
             { content: '固定優先度を使用する', isCorrect: false },
-            { content: 'デッドラインが最も近いタスクに最高優先度を与える', isCorrect: true },
+            {
+              content: 'デッドラインが最も近いタスクに最高優先度を与える',
+              isCorrect: true,
+            },
             { content: '実行時間の短いタスクを優先する', isCorrect: false },
             { content: '周期の長いタスクを優先する', isCorrect: false },
           ],
@@ -333,8 +395,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: 'RTOSにおけるミューテックス（Mutex）の特徴として、適切でないものはどれか。',
-        explanation: 'ミューテックスは所有権の概念があり、ロックしたタスクのみがアンロックできる排他制御機構です。',
+        content:
+          'RTOSにおけるミューテックス（Mutex）の特徴として、適切でないものはどれか。',
+        explanation:
+          'ミューテックスは所有権の概念があり、ロックしたタスクのみがアンロックできる排他制御機構です。',
         difficulty: 2,
         year: 2024,
         session: '秋期',
@@ -344,15 +408,20 @@ async function main() {
             { content: '所有権の概念がある', isCorrect: false },
             { content: '優先度継承をサポートする', isCorrect: false },
             { content: '複数のタスクが同時にロックできる', isCorrect: true },
-            { content: 'デッドロック検出機能を持つ場合がある', isCorrect: false },
+            {
+              content: 'デッドロック検出機能を持つ場合がある',
+              isCorrect: false,
+            },
           ],
         },
       },
     }),
     prisma.question.create({
       data: {
-        content: 'リアルタイムシステムにおける割り込みレイテンシを最小化する手法として、最も効果的なものはどれか。',
-        explanation: '割り込み禁止区間を最小化することで、高優先度割り込みの応答性を向上させることができます。',
+        content:
+          'リアルタイムシステムにおける割り込みレイテンシを最小化する手法として、最も効果的なものはどれか。',
+        explanation:
+          '割り込み禁止区間を最小化することで、高優先度割り込みの応答性を向上させることができます。',
         difficulty: 3,
         year: 2023,
         session: '春期',
@@ -369,8 +438,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: 'μITRON仕様におけるタスク管理機能で、「待ち状態」から「実行可能状態」への遷移条件として正しいものはどれか。',
-        explanation: 'μITRONでは、待ち状態のタスクが待ち解除条件を満たすと実行可能状態に遷移します。',
+        content:
+          'μITRON仕様におけるタスク管理機能で、「待ち状態」から「実行可能状態」への遷移条件として正しいものはどれか。',
+        explanation:
+          'μITRONでは、待ち状態のタスクが待ち解除条件を満たすと実行可能状態に遷移します。',
         difficulty: 2,
         year: 2023,
         session: '秋期',
@@ -389,8 +460,10 @@ async function main() {
     // Phase 5: 組込みソフトウェア開発問題
     prisma.question.create({
       data: {
-        content: '組込みCプログラミングにおいて、volatile キーワードを使用する主な理由はどれか。',
-        explanation: 'volatileキーワードは、変数がハードウェアや割り込みハンドラによって予期せず変更される可能性があることをコンパイラに通知します。',
+        content:
+          '組込みCプログラミングにおいて、volatile キーワードを使用する主な理由はどれか。',
+        explanation:
+          'volatileキーワードは、変数がハードウェアや割り込みハンドラによって予期せず変更される可能性があることをコンパイラに通知します。',
         difficulty: 2,
         year: 2024,
         session: '春期',
@@ -407,8 +480,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: '組込みシステムにおけるスタックオーバーフロー対策として、最も効果的なものはどれか。',
-        explanation: 'スタック使用量の静的解析により、設計段階でスタックサイズの妥当性を検証できます。',
+        content:
+          '組込みシステムにおけるスタックオーバーフロー対策として、最も効果的なものはどれか。',
+        explanation:
+          'スタック使用量の静的解析により、設計段階でスタックサイズの妥当性を検証できます。',
         difficulty: 3,
         year: 2023,
         session: '秋期',
@@ -425,8 +500,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: 'JTAG（Joint Test Action Group）デバッガの主な機能として、適切でないものはどれか。',
-        explanation: 'JTAGは主にデバッグ機能を提供しますが、リアルタイム性能の向上は直接的な機能ではありません。',
+        content:
+          'JTAG（Joint Test Action Group）デバッガの主な機能として、適切でないものはどれか。',
+        explanation:
+          'JTAGは主にデバッグ機能を提供しますが、リアルタイム性能の向上は直接的な機能ではありません。',
         difficulty: 2,
         year: 2024,
         session: '秋期',
@@ -443,8 +520,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: '組込みソフトウェアの単体テストにおいて、スタブ（stub）の役割として正しいものはどれか。',
-        explanation: 'スタブは被テストモジュールが呼び出す下位モジュールの代替実装で、テスト環境を構築するために使用されます。',
+        content:
+          '組込みソフトウェアの単体テストにおいて、スタブ（stub）の役割として正しいものはどれか。',
+        explanation:
+          'スタブは被テストモジュールが呼び出す下位モジュールの代替実装で、テスト環境を構築するために使用されます。',
         difficulty: 2,
         year: 2023,
         session: '春期',
@@ -461,8 +540,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: '組込みシステムにおけるコードレビューで重点的にチェックすべき項目として、最も重要なものはどれか。',
-        explanation: '組込みシステムでは限られたリソース内で動作するため、メモリリークやバッファオーバーフローなどのリソース管理が特に重要です。',
+        content:
+          '組込みシステムにおけるコードレビューで重点的にチェックすべき項目として、最も重要なものはどれか。',
+        explanation:
+          '組込みシステムでは限られたリソース内で動作するため、メモリリークやバッファオーバーフローなどのリソース管理が特に重要です。',
         difficulty: 2,
         year: 2024,
         session: '春期',
@@ -481,8 +562,10 @@ async function main() {
     // Phase 5: 組込みソフトウェア開発 - 追加問題（Task 5.1.3完了用）
     prisma.question.create({
       data: {
-        content: 'C言語において、組込みシステムでのメモリ管理で適切でない手法はどれか。',
-        explanation: '組込みシステムでは、動的メモリ割り当て（malloc/free）はメモリ断片化やメモリリークのリスクがあるため、通常は避けられます。',
+        content:
+          'C言語において、組込みシステムでのメモリ管理で適切でない手法はどれか。',
+        explanation:
+          '組込みシステムでは、動的メモリ割り当て（malloc/free）はメモリ断片化やメモリリークのリスクがあるため、通常は避けられます。',
         difficulty: 2,
         year: 2024,
         session: '秋期',
@@ -499,8 +582,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: '組込みC++における例外処理について、一般的な制約として正しいものはどれか。',
-        explanation: '組込みシステムでは、例外処理のオーバーヘッドや予測できない実行時間のため、例外処理を無効にすることが多い。',
+        content:
+          '組込みC++における例外処理について、一般的な制約として正しいものはどれか。',
+        explanation:
+          '組込みシステムでは、例外処理のオーバーヘッドや予測できない実行時間のため、例外処理を無効にすることが多い。',
         difficulty: 3,
         year: 2023,
         session: '春期',
@@ -509,7 +594,10 @@ async function main() {
           create: [
             { content: '例外処理は必須機能である', isCorrect: false },
             { content: '例外処理を無効にすることが多い', isCorrect: true },
-            { content: '例外処理にメモリオーバーヘッドはない', isCorrect: false },
+            {
+              content: '例外処理にメモリオーバーヘッドはない',
+              isCorrect: false,
+            },
             { content: 'リアルタイム性に影響しない', isCorrect: false },
           ],
         },
@@ -517,8 +605,10 @@ async function main() {
     }),
     prisma.question.create({
       data: {
-        content: '組込みソフトウェアのデバッグにおいて、ICE（In-Circuit Emulator）の特徴として適切でないものはどれか。',
-        explanation: 'ICEは実際のハードウェア上でデバッグを行うため、ソフトウェアシミュレーションではなく実機環境でのデバッグが特徴です。',
+        content:
+          '組込みソフトウェアのデバッグにおいて、ICE（In-Circuit Emulator）の特徴として適切でないものはどれか。',
+        explanation:
+          'ICEは実際のハードウェア上でデバッグを行うため、ソフトウェアシミュレーションではなく実機環境でのデバッグが特徴です。',
         difficulty: 3,
         year: 2024,
         session: '春期',
@@ -563,8 +653,10 @@ async function main() {
       },
     }),
   ])
-  console.log(`✅ ${sampleBookmarks.length}個のサンプルブックマークを作成しました`)
-  
+  console.log(
+    `✅ ${sampleBookmarks.length}個のサンプルブックマークを作成しました`,
+  )
+
   console.log('📝 Phase 5 Task 5.1.1: 組込みハードウェア設計分野に5問追加完了')
   console.log('📝 Phase 5 Task 5.1.2: リアルタイムシステム分野に8問追加完了')
   console.log('📝 Phase 5 Task 5.1.3: 組込みソフトウェア開発分野に8問追加完了')

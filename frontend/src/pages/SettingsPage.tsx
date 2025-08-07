@@ -1,6 +1,6 @@
 import React from 'react'
-import { 
-  Typography, 
+import {
+  Typography,
   Box,
   Card,
   CardContent,
@@ -12,7 +12,7 @@ import {
   InputLabel,
   Chip,
 } from '@mui/material'
-import { 
+import {
   WifiOff as OfflineIcon,
   Smartphone as MobileIcon,
   Computer as DesktopIcon,
@@ -21,21 +21,25 @@ import {
 import { useAppStore } from '../stores/useAppStore'
 
 const SettingsPage = () => {
-  const { 
-    theme, 
-    studyTimeLimit, 
-    deviceType, 
+  const {
+    theme,
+    studyTimeLimit,
+    deviceType,
     isOnline,
-    setTheme, 
-    setStudyTimeLimit 
+    setTheme,
+    setStudyTimeLimit,
   } = useAppStore()
 
   const getDeviceIcon = () => {
     switch (deviceType) {
-      case 'mobile': return <MobileIcon />
-      case 'tablet': return <TabletIcon />
-      case 'desktop': return <DesktopIcon />
-      default: return <DesktopIcon />
+      case 'mobile':
+        return <MobileIcon />
+      case 'tablet':
+        return <TabletIcon />
+      case 'desktop':
+        return <DesktopIcon />
+      default:
+        return <DesktopIcon />
     }
   }
 
@@ -44,7 +48,7 @@ const SettingsPage = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         設定
       </Typography>
-      
+
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {/* デバイス情報 */}
         <Card>
@@ -61,8 +65,8 @@ const SettingsPage = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               {isOnline ? null : <OfflineIcon color="warning" />}
               <Typography variant="body1">
-                接続状態: 
-                <Chip 
+                接続状態:
+                <Chip
                   label={isOnline ? 'オンライン' : 'オフライン'}
                   color={isOnline ? 'success' : 'warning'}
                   size="small"
@@ -83,7 +87,9 @@ const SettingsPage = () => {
               control={
                 <Switch
                   checked={theme === 'dark'}
-                  onChange={(e) => setTheme(e.target.checked ? 'dark' : 'light')}
+                  onChange={(e) =>
+                    setTheme(e.target.checked ? 'dark' : 'light')
+                  }
                 />
               }
               label="ダークモード"
@@ -102,7 +108,9 @@ const SettingsPage = () => {
               <Select
                 value={studyTimeLimit || ''}
                 label="通勤学習モード時間制限"
-                onChange={(e) => setStudyTimeLimit(e.target.value as 5 | 10 | 15 | null)}
+                onChange={(e) =>
+                  setStudyTimeLimit(e.target.value as 5 | 10 | 15 | null)
+                }
               >
                 <MenuItem value="">制限なし</MenuItem>
                 <MenuItem value={5}>5分</MenuItem>

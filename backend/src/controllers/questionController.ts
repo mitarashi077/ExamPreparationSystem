@@ -3,26 +3,31 @@ import { PrismaClient } from '@prisma/client'
 import { QuestionListResponse, QuestionDetailResponse } from '../types/Question'
 
 // Clean DATABASE_URL if it has psql prefix
-let cleanUrl = process.env.DATABASE_URL;
+let cleanUrl = process.env.DATABASE_URL
 if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
-  cleanUrl = cleanUrl.slice(5, -1);
+  cleanUrl = cleanUrl.slice(5, -1)
 }
 
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: cleanUrl
-    }
-  }
+      url: cleanUrl,
+    },
+  },
 })
 
 // 問題一覧取得（軽量レスポンス・ページネーション対応）
-export const getQuestions = async (req: Request, res: Response): Promise<void> => {
+export const getQuestions = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const page = parseInt(req.query.page as string) || 1
     const limit = parseInt(req.query.limit as string) || 10
     const categoryId = req.query.categoryId as string
-    const difficulty = req.query.difficulty ? parseInt(req.query.difficulty as string) : undefined
+    const difficulty = req.query.difficulty
+      ? parseInt(req.query.difficulty as string)
+      : undefined
     const onlyUnanswered = req.query.onlyUnanswered === 'true'
     const onlyIncorrect = req.query.onlyIncorrect === 'true'
     const search = req.query.search as string
@@ -31,18 +36,18 @@ export const getQuestions = async (req: Request, res: Response): Promise<void> =
 
     // フィルター条件の構築
     const where: any = {}
-    
+
     if (categoryId) {
       where.categoryId = categoryId
     }
-    
+
     if (difficulty) {
       where.difficulty = difficulty
     }
-    
+
     if (search) {
       where.content = {
-        contains: search
+        contains: search,
       }
     }
 
@@ -50,15 +55,15 @@ export const getQuestions = async (req: Request, res: Response): Promise<void> =
     if (onlyUnanswered || onlyIncorrect) {
       if (onlyUnanswered) {
         where.answers = {
-          none: {}
+          none: {},
         }
       }
-      
+
       if (onlyIncorrect) {
         where.answers = {
           some: {
-            isCorrect: false
-          }
+            isCorrect: false,
+          },
         }
       }
     }
@@ -78,35 +83,38 @@ export const getQuestions = async (req: Request, res: Response): Promise<void> =
         categoryId: true,
         category: {
           select: {
-            name: true
-          }
+            name: true,
+          },
         },
         answers: {
           take: 1,
           orderBy: {
-            createdAt: 'desc'
+            createdAt: 'desc',
           },
           select: {
-            isCorrect: true
-          }
-        }
+            isCorrect: true,
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     })
 
     const totalPages = Math.ceil(total / limit)
-    
+
     const response: QuestionListResponse = {
-      questions: questions.map(q => ({
+      questions: questions.map((q: { id: string; content: string; difficulty: number; categoryId: string; category: { name: string } }) => ({
         id: q.id,
-        content: q.content.length > 100 ? q.content.substring(0, 100) + '...' : q.content,
+        content:
+          q.content.length > 100
+            ? q.content.substring(0, 100) + '...'
+            : q.content,
         difficulty: q.difficulty,
         categoryId: q.categoryId,
         categoryName: q.category.name,
         hasAnswered: q.answers.length > 0,
-        isCorrect: q.answers.length > 0 ? q.answers[0].isCorrect : undefined
+        isCorrect: q.answers.length > 0 ? q.answers[0].isCorrect : undefined,
       })),
       pagination: {
         page,
@@ -114,14 +122,14 @@ export const getQuestions = async (req: Request, res: Response): Promise<void> =
         total,
         totalPages,
         hasNextPage: page < totalPages,
-        hasPrevPage: page > 1
+        hasPrevPage: page > 1,
       },
       filters: {
         categoryId,
         difficulty,
         onlyUnanswered,
-        onlyIncorrect
-      }
+        onlyIncorrect,
+      },
     }
 
     res.json(response)
@@ -132,7 +140,10 @@ export const getQuestions = async (req: Request, res: Response): Promise<void> =
 }
 
 // 問題詳細取得
-export const getQuestionById = async (req: Request, res: Response): Promise<void> => {
+export const getQuestionById = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const { id } = req.params
 
@@ -141,21 +152,21 @@ export const getQuestionById = async (req: Request, res: Response): Promise<void
       include: {
         choices: {
           orderBy: {
-            createdAt: 'asc'
-          }
+            createdAt: 'asc',
+          },
         },
         answers: {
           take: 1,
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: 'desc',
+          },
         },
         category: {
           select: {
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     })
 
     if (!question) {
@@ -172,18 +183,21 @@ export const getQuestionById = async (req: Request, res: Response): Promise<void
         year: question.year || undefined,
         session: question.session || undefined,
         categoryId: question.categoryId,
-        choices: question.choices.map(choice => ({
+        choices: question.choices.map((choice: { id: string; content: string; isCorrect: boolean }) => ({
           id: choice.id,
           content: choice.content,
-          isCorrect: choice.isCorrect
-        }))
+          isCorrect: choice.isCorrect,
+        })),
       },
-      userAnswer: question.answers.length > 0 ? {
-        id: question.answers[0].id,
-        isCorrect: question.answers[0].isCorrect,
-        timeSpent: question.answers[0].timeSpent || undefined,
-        createdAt: question.answers[0].createdAt.toISOString()
-      } : undefined
+      userAnswer:
+        question.answers.length > 0
+          ? {
+              id: question.answers[0].id,
+              isCorrect: question.answers[0].isCorrect,
+              timeSpent: question.answers[0].timeSpent || undefined,
+              createdAt: question.answers[0].createdAt.toISOString(),
+            }
+          : undefined,
     }
 
     res.json(response)
@@ -194,31 +208,36 @@ export const getQuestionById = async (req: Request, res: Response): Promise<void
 }
 
 // ランダム問題取得
-export const getRandomQuestion = async (req: Request, res: Response): Promise<void> => {
+export const getRandomQuestion = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const categoryId = req.query.categoryId as string
-    const difficulty = req.query.difficulty ? parseInt(req.query.difficulty as string) : undefined
+    const difficulty = req.query.difficulty
+      ? parseInt(req.query.difficulty as string)
+      : undefined
     const excludeAnswered = req.query.excludeAnswered === 'true'
 
     const where: any = {}
-    
+
     if (categoryId) {
       where.categoryId = categoryId
     }
-    
+
     if (difficulty) {
       where.difficulty = difficulty
     }
-    
+
     if (excludeAnswered) {
       where.answers = {
-        none: {}
+        none: {},
       }
     }
 
     // 条件に合う問題の総数を取得
     const count = await prisma.question.count({ where })
-    
+
     if (count === 0) {
       res.status(404).json({ error: 'No questions found matching criteria' })
       return
@@ -234,16 +253,16 @@ export const getRandomQuestion = async (req: Request, res: Response): Promise<vo
       include: {
         choices: {
           orderBy: {
-            createdAt: 'asc'
-          }
+            createdAt: 'asc',
+          },
         },
         answers: {
           take: 1,
           orderBy: {
-            createdAt: 'desc'
-          }
-        }
-      }
+            createdAt: 'desc',
+          },
+        },
+      },
     })
 
     if (question.length === 0) {
@@ -252,7 +271,7 @@ export const getRandomQuestion = async (req: Request, res: Response): Promise<vo
     }
 
     const selectedQuestion = question[0]
-    
+
     const response: QuestionDetailResponse = {
       question: {
         id: selectedQuestion.id,
@@ -262,18 +281,21 @@ export const getRandomQuestion = async (req: Request, res: Response): Promise<vo
         year: selectedQuestion.year || undefined,
         session: selectedQuestion.session || undefined,
         categoryId: selectedQuestion.categoryId,
-        choices: selectedQuestion.choices.map(choice => ({
+        choices: selectedQuestion.choices.map((choice: { id: string; content: string; isCorrect: boolean }) => ({
           id: choice.id,
           content: choice.content,
-          isCorrect: choice.isCorrect
-        }))
+          isCorrect: choice.isCorrect,
+        })),
       },
-      userAnswer: selectedQuestion.answers.length > 0 ? {
-        id: selectedQuestion.answers[0].id,
-        isCorrect: selectedQuestion.answers[0].isCorrect,
-        timeSpent: selectedQuestion.answers[0].timeSpent || undefined,
-        createdAt: selectedQuestion.answers[0].createdAt.toISOString()
-      } : undefined
+      userAnswer:
+        selectedQuestion.answers.length > 0
+          ? {
+              id: selectedQuestion.answers[0].id,
+              isCorrect: selectedQuestion.answers[0].isCorrect,
+              timeSpent: selectedQuestion.answers[0].timeSpent || undefined,
+              createdAt: selectedQuestion.answers[0].createdAt.toISOString(),
+            }
+          : undefined,
     }
 
     res.json(response)

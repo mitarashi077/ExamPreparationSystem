@@ -31,11 +31,11 @@ describe('useBookmarkStore', () => {
         categoryName: 'Test Category',
         difficulty: 3,
         year: 2023,
-        session: 'Spring'
+        session: 'Spring',
       }
 
       useBookmarkStore.getState().addBookmark('q-1', questionData)
-      
+
       const state = useBookmarkStore.getState()
       expect(state.bookmarks).toHaveLength(1)
       expect(state.bookmarks[0].questionId).toBe('q-1')
@@ -50,12 +50,12 @@ describe('useBookmarkStore', () => {
         content: 'Test question content',
         categoryId: 'cat-1',
         categoryName: 'Test Category',
-        difficulty: 3
+        difficulty: 3,
       }
 
       useBookmarkStore.getState().addBookmark('q-1', questionData)
       useBookmarkStore.getState().addBookmark('q-1', questionData)
-      
+
       const state = useBookmarkStore.getState()
       expect(state.bookmarks).toHaveLength(1)
     })
@@ -65,12 +65,12 @@ describe('useBookmarkStore', () => {
         content: 'Test question content',
         categoryId: 'cat-1',
         categoryName: 'Test Category',
-        difficulty: 3
+        difficulty: 3,
       }
 
       useBookmarkStore.getState().addBookmark('q-1', questionData)
       useBookmarkStore.getState().addBookmark('q-2', questionData)
-      
+
       const state = useBookmarkStore.getState()
       expect(state.bookmarks[0].id).not.toBe(state.bookmarks[1].id)
     })
@@ -82,7 +82,7 @@ describe('useBookmarkStore', () => {
         content: 'Test question content',
         categoryId: 'cat-1',
         categoryName: 'Test Category',
-        difficulty: 3
+        difficulty: 3,
       }
       useBookmarkStore.getState().addBookmark('q-1', questionData)
       useBookmarkStore.getState().addBookmark('q-2', questionData)
@@ -90,7 +90,7 @@ describe('useBookmarkStore', () => {
 
     it('should remove bookmark by questionId', () => {
       useBookmarkStore.getState().removeBookmark('q-1')
-      
+
       const state = useBookmarkStore.getState()
       expect(state.bookmarks).toHaveLength(1)
       expect(state.bookmarks[0].questionId).toBe('q-2')
@@ -98,7 +98,7 @@ describe('useBookmarkStore', () => {
 
     it('should handle removal of non-existent bookmark', () => {
       useBookmarkStore.getState().removeBookmark('q-999')
-      
+
       const state = useBookmarkStore.getState()
       expect(state.bookmarks).toHaveLength(2)
     })
@@ -110,7 +110,7 @@ describe('useBookmarkStore', () => {
         content: 'Test question content',
         categoryId: 'cat-1',
         categoryName: 'Test Category',
-        difficulty: 3
+        difficulty: 3,
       }
       useBookmarkStore.getState().addBookmark('q-1', questionData)
     })
@@ -118,19 +118,20 @@ describe('useBookmarkStore', () => {
     it('should update bookmark memo', () => {
       const memo = 'This is an important question'
       useBookmarkStore.getState().updateBookmarkMemo('q-1', memo)
-      
+
       const state = useBookmarkStore.getState()
       expect(state.bookmarks[0].memo).toBe(memo)
     })
 
     it('should update updatedAt timestamp when memo is updated', async () => {
-      const initialTimestamp = useBookmarkStore.getState().bookmarks[0].updatedAt
-      
+      const initialTimestamp =
+        useBookmarkStore.getState().bookmarks[0].updatedAt
+
       // Wait a bit to ensure timestamp difference
-      await new Promise(resolve => setTimeout(resolve, 10))
-      
+      await new Promise((resolve) => setTimeout(resolve, 10))
+
       useBookmarkStore.getState().updateBookmarkMemo('q-1', 'New memo')
-      
+
       const state = useBookmarkStore.getState()
       expect(state.bookmarks[0].updatedAt).not.toBe(initialTimestamp)
     })
@@ -142,11 +143,11 @@ describe('useBookmarkStore', () => {
         content: 'Test question content',
         categoryId: 'cat-1',
         categoryName: 'Test Category',
-        difficulty: 3
+        difficulty: 3,
       }
 
       useBookmarkStore.getState().toggleBookmark('q-1', questionData)
-      
+
       const state = useBookmarkStore.getState()
       expect(state.bookmarks).toHaveLength(1)
       expect(state.bookmarks[0].questionId).toBe('q-1')
@@ -157,12 +158,12 @@ describe('useBookmarkStore', () => {
         content: 'Test question content',
         categoryId: 'cat-1',
         categoryName: 'Test Category',
-        difficulty: 3
+        difficulty: 3,
       }
 
       useBookmarkStore.getState().addBookmark('q-1', questionData)
       useBookmarkStore.getState().toggleBookmark('q-1')
-      
+
       const state = useBookmarkStore.getState()
       expect(state.bookmarks).toHaveLength(0)
     })
@@ -174,7 +175,7 @@ describe('useBookmarkStore', () => {
         content: 'Test question content',
         categoryId: 'cat-1',
         categoryName: 'Test Category',
-        difficulty: 3
+        difficulty: 3,
       }
       useBookmarkStore.getState().addBookmark('q-1', questionData)
     })
@@ -198,7 +199,7 @@ describe('useBookmarkStore', () => {
         content: 'Test question content',
         categoryId: 'cat-1',
         categoryName: 'Test Category',
-        difficulty: 3
+        difficulty: 3,
       }
       useBookmarkStore.getState().addBookmark('q-1', questionData)
       bookmark = useBookmarkStore.getState().bookmarks[0]
@@ -222,15 +223,15 @@ describe('useBookmarkStore', () => {
         content: 'Hardware question',
         categoryId: 'cat-1',
         categoryName: 'Hardware',
-        difficulty: 3
+        difficulty: 3,
       }
       const questionData2 = {
         content: 'Software question',
         categoryId: 'cat-2',
         categoryName: 'Software',
-        difficulty: 5
+        difficulty: 5,
       }
-      
+
       useBookmarkStore.getState().addBookmark('q-1', questionData1)
       useBookmarkStore.getState().addBookmark('q-2', questionData2)
       useBookmarkStore.getState().updateBookmarkMemo('q-1', 'Important note')
@@ -239,28 +240,28 @@ describe('useBookmarkStore', () => {
     describe('setFilters', () => {
       it('should set category filter', () => {
         useBookmarkStore.getState().setFilters({ categoryId: 'cat-1' })
-        
+
         const state = useBookmarkStore.getState()
         expect(state.filters.categoryId).toBe('cat-1')
       })
 
       it('should set difficulty filter', () => {
         useBookmarkStore.getState().setFilters({ difficulty: 5 })
-        
+
         const state = useBookmarkStore.getState()
         expect(state.filters.difficulty).toBe(5)
       })
 
       it('should set hasNotes filter', () => {
         useBookmarkStore.getState().setFilters({ hasNotes: true })
-        
+
         const state = useBookmarkStore.getState()
         expect(state.filters.hasNotes).toBe(true)
       })
 
       it('should set search filter', () => {
         useBookmarkStore.getState().setFilters({ search: 'hardware' })
-        
+
         const state = useBookmarkStore.getState()
         expect(state.filters.search).toBe('hardware')
       })
@@ -268,14 +269,14 @@ describe('useBookmarkStore', () => {
 
     describe('clearFilters', () => {
       it('should clear all filters', () => {
-        useBookmarkStore.getState().setFilters({ 
-          categoryId: 'cat-1', 
-          difficulty: 5, 
-          hasNotes: true, 
-          search: 'test' 
+        useBookmarkStore.getState().setFilters({
+          categoryId: 'cat-1',
+          difficulty: 5,
+          hasNotes: true,
+          search: 'test',
         })
         useBookmarkStore.getState().clearFilters()
-        
+
         const state = useBookmarkStore.getState()
         expect(state.filters).toEqual({})
       })
@@ -284,7 +285,7 @@ describe('useBookmarkStore', () => {
     describe('getFilteredBookmarks', () => {
       it('should filter by category', () => {
         useBookmarkStore.getState().setFilters({ categoryId: 'cat-1' })
-        
+
         const filtered = useBookmarkStore.getState().getFilteredBookmarks()
         expect(filtered).toHaveLength(1)
         expect(filtered[0].categoryId).toBe('cat-1')
@@ -292,7 +293,7 @@ describe('useBookmarkStore', () => {
 
       it('should filter by difficulty', () => {
         useBookmarkStore.getState().setFilters({ difficulty: 5 })
-        
+
         const filtered = useBookmarkStore.getState().getFilteredBookmarks()
         expect(filtered).toHaveLength(1)
         expect(filtered[0].difficulty).toBe(5)
@@ -300,7 +301,7 @@ describe('useBookmarkStore', () => {
 
       it('should filter by hasNotes', () => {
         useBookmarkStore.getState().setFilters({ hasNotes: true })
-        
+
         const filtered = useBookmarkStore.getState().getFilteredBookmarks()
         expect(filtered).toHaveLength(1)
         expect(filtered[0].memo).toBe('Important note')
@@ -308,7 +309,7 @@ describe('useBookmarkStore', () => {
 
       it('should filter by search term', () => {
         useBookmarkStore.getState().setFilters({ search: 'hardware' })
-        
+
         const filtered = useBookmarkStore.getState().getFilteredBookmarks()
         expect(filtered).toHaveLength(1)
         expect(filtered[0].questionContent.toLowerCase()).toContain('hardware')
@@ -324,7 +325,7 @@ describe('useBookmarkStore', () => {
   describe('Loading and Error States', () => {
     it('should set loading state', () => {
       useBookmarkStore.getState().setLoading(true)
-      
+
       const state = useBookmarkStore.getState()
       expect(state.isLoading).toBe(true)
     })
@@ -332,7 +333,7 @@ describe('useBookmarkStore', () => {
     it('should set error state', () => {
       const errorMessage = 'Failed to load bookmarks'
       useBookmarkStore.getState().setError(errorMessage)
-      
+
       const state = useBookmarkStore.getState()
       expect(state.error).toBe(errorMessage)
     })
@@ -340,7 +341,7 @@ describe('useBookmarkStore', () => {
     it('should clear error state', () => {
       useBookmarkStore.getState().setError('Some error')
       useBookmarkStore.getState().clearError()
-      
+
       const state = useBookmarkStore.getState()
       expect(state.error).toBe(null)
     })

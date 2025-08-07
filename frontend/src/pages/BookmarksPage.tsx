@@ -36,10 +36,10 @@ const ITEMS_PER_PAGE = 10
 
 const BookmarksPage: React.FC = () => {
   const { isMobile } = useDeviceDetection()
-  
-  const { 
-    bookmarks, 
-    filters, 
+
+  const {
+    bookmarks,
+    filters,
     error,
     isLoading,
     removeBookmark,
@@ -49,16 +49,16 @@ const BookmarksPage: React.FC = () => {
     getFilteredBookmarks,
     clearError,
     loadBookmarks,
-    loadMockData
+    loadMockData,
   } = useBookmarkStore()
 
   // Local state
   const [showFilters, setShowFilters] = useState(false)
   const [searchText, setSearchText] = useState(filters.search || '')
-  const [editingMemo, setEditingMemo] = useState<{ 
-    questionId: string; 
-    memo: string; 
-    questionContent?: string;
+  const [editingMemo, setEditingMemo] = useState<{
+    questionId: string
+    memo: string
+    questionContent?: string
   } | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
@@ -66,10 +66,13 @@ const BookmarksPage: React.FC = () => {
   const filteredBookmarks = getFilteredBookmarks()
   const totalPages = Math.ceil(filteredBookmarks.length / ITEMS_PER_PAGE)
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const paginatedBookmarks = filteredBookmarks.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  const paginatedBookmarks = filteredBookmarks.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  )
 
   // Get unique categories for filter
-  const categories = Array.from(new Set(bookmarks.map(b => b.categoryName)))
+  const categories = Array.from(new Set(bookmarks.map((b) => b.categoryName)))
 
   // Initialize search text from store
   useEffect(() => {
@@ -95,7 +98,7 @@ const BookmarksPage: React.FC = () => {
   useEffect(() => {
     loadBookmarks()
   }, [])
-  
+
   // Reload bookmarks when filters change (debounced)
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -103,7 +106,7 @@ const BookmarksPage: React.FC = () => {
         loadBookmarks(filters)
       }
     }, 500)
-    
+
     return () => clearTimeout(timeoutId)
   }, [filters, loadBookmarks])
 
@@ -133,11 +136,11 @@ const BookmarksPage: React.FC = () => {
   }
 
   const handleMemoEdit = (questionId: string, currentMemo: string) => {
-    const bookmark = bookmarks.find(b => b.questionId === questionId)
-    setEditingMemo({ 
-      questionId, 
+    const bookmark = bookmarks.find((b) => b.questionId === questionId)
+    setEditingMemo({
+      questionId,
       memo: currentMemo,
-      questionContent: bookmark?.questionContent
+      questionContent: bookmark?.questionContent,
     })
   }
 
@@ -164,19 +167,21 @@ const BookmarksPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ 
-      p: isMobile ? 1 : 2, 
-      pb: isMobile ? 10 : 2,
-      minHeight: '100vh',
-      bgcolor: 'background.default',
-    }}>
+    <Box
+      sx={{
+        p: isMobile ? 1 : 2,
+        pb: isMobile ? 10 : 2,
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+      }}
+    >
       {/* Header */}
       <Box sx={{ mb: 3 }}>
-        <Typography 
-          variant={isMobile ? "h5" : "h4"} 
-          component="h1" 
+        <Typography
+          variant={isMobile ? 'h5' : 'h4'}
+          component="h1"
           gutterBottom
-          sx={{ 
+          sx={{
             display: 'flex',
             alignItems: 'center',
             gap: 1,
@@ -189,7 +194,7 @@ const BookmarksPage: React.FC = () => {
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           重要な問題をブックマークして、メモと一緒に管理できます
         </Typography>
-        
+
         {/* Statistics */}
         <Box display="flex" gap={2} flexWrap="wrap">
           <Chip
@@ -198,9 +203,9 @@ const BookmarksPage: React.FC = () => {
             variant="outlined"
             color="primary"
           />
-          {bookmarks.filter(b => b.memo && b.memo.trim()).length > 0 && (
+          {bookmarks.filter((b) => b.memo && b.memo.trim()).length > 0 && (
             <Chip
-              label={`${bookmarks.filter(b => b.memo && b.memo.trim()).length}件にメモあり`}
+              label={`${bookmarks.filter((b) => b.memo && b.memo.trim()).length}件にメモあり`}
               variant="outlined"
               color="info"
             />
@@ -211,11 +216,7 @@ const BookmarksPage: React.FC = () => {
       {/* Error Display */}
       {error && (
         <Fade in={!!error}>
-          <Alert 
-            severity="error" 
-            onClose={clearError}
-            sx={{ mb: 2 }}
-          >
+          <Alert severity="error" onClose={clearError} sx={{ mb: 2 }}>
             {error}
           </Alert>
         </Fade>
@@ -247,15 +248,15 @@ const BookmarksPage: React.FC = () => {
                 </InputAdornment>
               ),
             }}
-            sx={{ 
-              flex: 1, 
+            sx={{
+              flex: 1,
               minWidth: '200px',
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
               },
             }}
           />
-          
+
           <TouchButton
             variant="outlined"
             onClick={() => setShowFilters(!showFilters)}
@@ -265,7 +266,7 @@ const BookmarksPage: React.FC = () => {
           >
             フィルタ
             {Object.keys(filters).length > 0 && (
-              <Chip 
+              <Chip
                 label={Object.keys(filters).length}
                 size="small"
                 color="primary"
@@ -284,7 +285,11 @@ const BookmarksPage: React.FC = () => {
                   <InputLabel>カテゴリ</InputLabel>
                   <Select
                     value={filters.categoryId || ''}
-                    onChange={(e) => handleFilterChange({ categoryId: e.target.value || undefined })}
+                    onChange={(e) =>
+                      handleFilterChange({
+                        categoryId: e.target.value || undefined,
+                      })
+                    }
                     label="カテゴリ"
                   >
                     <MenuItem value="">すべて</MenuItem>
@@ -296,13 +301,19 @@ const BookmarksPage: React.FC = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              
+
               <Grid item xs={12} sm={6} md={3}>
                 <FormControl fullWidth size="small">
                   <InputLabel>難易度</InputLabel>
                   <Select
                     value={filters.difficulty ?? ''}
-                    onChange={(e) => handleFilterChange({ difficulty: e.target.value ? Number(e.target.value) : undefined })}
+                    onChange={(e) =>
+                      handleFilterChange({
+                        difficulty: e.target.value
+                          ? Number(e.target.value)
+                          : undefined,
+                      })
+                    }
                     label="難易度"
                   >
                     <MenuItem value="">すべて</MenuItem>
@@ -314,19 +325,23 @@ const BookmarksPage: React.FC = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              
+
               <Grid item xs={12} sm={6} md={3}>
                 <FormControlLabel
                   control={
                     <Switch
                       checked={filters.hasNotes ?? false}
-                      onChange={(e) => handleFilterChange({ hasNotes: e.target.checked ? true : undefined })}
+                      onChange={(e) =>
+                        handleFilterChange({
+                          hasNotes: e.target.checked ? true : undefined,
+                        })
+                      }
                     />
                   }
                   label="メモあり"
                 />
               </Grid>
-              
+
               <Grid item xs={12} sm={6} md={3}>
                 <TouchButton
                   variant="outlined"
@@ -347,25 +362,36 @@ const BookmarksPage: React.FC = () => {
       <Box sx={{ mb: 2 }}>
         <Typography variant="body2" color="text.secondary">
           {filteredBookmarks.length} 件のブックマーク
-          {bookmarks.length !== filteredBookmarks.length && ` (全 ${bookmarks.length} 件中)`}
+          {bookmarks.length !== filteredBookmarks.length &&
+            ` (全 ${bookmarks.length} 件中)`}
         </Typography>
       </Box>
 
       {/* Bookmark List */}
       {filteredBookmarks.length === 0 ? (
         <Paper sx={{ p: 4, textAlign: 'center', borderRadius: 2 }}>
-          <BookmarkBorderIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
+          <BookmarkBorderIcon
+            sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }}
+          />
           <Typography variant="h6" color="text.secondary" gutterBottom>
-            {bookmarks.length === 0 ? 'ブックマークはありません' : '条件に一致するブックマークがありません'}
+            {bookmarks.length === 0
+              ? 'ブックマークはありません'
+              : '条件に一致するブックマークがありません'}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            {bookmarks.length === 0 
+            {bookmarks.length === 0
               ? '問題演習でブックマークボタンを押して、重要な問題を保存しましょう'
-              : '検索条件やフィルタを変更してみてください'
-            }
+              : '検索条件やフィルタを変更してみてください'}
           </Typography>
           {bookmarks.length === 0 && (
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 2,
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
               <TouchButton
                 variant="outlined"
                 onClick={loadMockData}
@@ -424,9 +450,9 @@ const BookmarksPage: React.FC = () => {
       {/* Delete Confirmation */}
       {deleteConfirm && (
         <Fade in={!!deleteConfirm}>
-          <Alert 
-            severity="warning" 
-            sx={{ 
+          <Alert
+            severity="warning"
+            sx={{
               position: 'fixed',
               bottom: isMobile ? 80 : 20,
               left: 20,

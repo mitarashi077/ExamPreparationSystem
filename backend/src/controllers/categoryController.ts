@@ -2,23 +2,26 @@ import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 
 // カテゴリ一覧取得
-export const getCategories = async (_req: Request, res: Response): Promise<void> => {
+export const getCategories = async (
+  _req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     // Clean DATABASE_URL if it has psql prefix (same as db-test endpoint)
-    let cleanUrl = process.env.DATABASE_URL;
+    let cleanUrl = process.env.DATABASE_URL
     if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
-      cleanUrl = cleanUrl.slice(5, -1);
+      cleanUrl = cleanUrl.slice(5, -1)
     }
 
     const prisma = new PrismaClient({
       datasources: {
         db: {
-          url: cleanUrl
-        }
-      }
-    });
+          url: cleanUrl,
+        },
+      },
+    })
 
-    await prisma.$connect();
+    await prisma.$connect()
     const categories = await prisma.category.findMany({
       select: {
         id: true,
@@ -26,46 +29,46 @@ export const getCategories = async (_req: Request, res: Response): Promise<void>
         description: true,
         _count: {
           select: {
-            questions: true
-          }
-        }
+            questions: true,
+          },
+        },
       },
       orderBy: {
-        name: 'asc'
-      }
+        name: 'asc',
+      },
     })
 
     const categoriesWithStats = await Promise.all(
-      categories.map(async (category) => {
+      categories.map(async (category: { id: string; name: string; description: string | null; _count: { questions: number } }) => {
         // 各カテゴリの統計情報を取得
         const totalQuestions = category._count.questions
-        
+
         // 回答済み問題数
         const answeredQuestions = await prisma.question.count({
           where: {
             categoryId: category.id,
             answers: {
-              some: {}
-            }
-          }
+              some: {},
+            },
+          },
         })
 
         // 正答率
         const correctAnswers = await prisma.answer.count({
           where: {
             question: {
-              categoryId: category.id
+              categoryId: category.id,
             },
-            isCorrect: true
-          }
+            isCorrect: true,
+          },
         })
 
         const totalAnswers = await prisma.answer.count({
           where: {
             question: {
-              categoryId: category.id
-            }
-          }
+              categoryId: category.id,
+            },
+          },
         })
 
         return {
@@ -74,49 +77,54 @@ export const getCategories = async (_req: Request, res: Response): Promise<void>
           description: category.description,
           totalQuestions,
           answeredQuestions,
-          accuracy: totalAnswers > 0 ? (correctAnswers / totalAnswers) * 100 : 0,
-          progress: totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0
+          accuracy:
+            totalAnswers > 0 ? (correctAnswers / totalAnswers) * 100 : 0,
+          progress:
+            totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0,
         }
-      })
+      }),
     )
 
-    await prisma.$disconnect();
+    await prisma.$disconnect()
     res.json(categoriesWithStats)
   } catch (error) {
     console.error('Error fetching categories:', error)
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.constructor.name : 'Unknown'
+      name: error instanceof Error ? error.constructor.name : 'Unknown',
     })
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Internal server error',
       debug: {
         message: error instanceof Error ? error.message : 'Unknown error',
-        name: error instanceof Error ? error.constructor.name : 'Unknown'
-      }
+        name: error instanceof Error ? error.constructor.name : 'Unknown',
+      },
     })
   }
 }
 
 // カテゴリ別詳細統計
-export const getCategoryStats = async (req: Request, res: Response): Promise<void> => {
+export const getCategoryStats = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     // Clean DATABASE_URL if it has psql prefix (same as db-test endpoint)
-    let cleanUrl = process.env.DATABASE_URL;
+    let cleanUrl = process.env.DATABASE_URL
     if (cleanUrl?.startsWith("psql '") && cleanUrl.endsWith("'")) {
-      cleanUrl = cleanUrl.slice(5, -1);
+      cleanUrl = cleanUrl.slice(5, -1)
     }
 
     const prisma = new PrismaClient({
       datasources: {
         db: {
-          url: cleanUrl
-        }
-      }
-    });
+          url: cleanUrl,
+        },
+      },
+    })
 
-    await prisma.$connect();
+    await prisma.$connect()
     const { id } = req.params
     const days = parseInt(req.query.days as string) || 30
 
@@ -128,19 +136,19 @@ export const getCategoryStats = async (req: Request, res: Response): Promise<voi
       select: {
         id: true,
         name: true,
-        description: true
-      }
+        description: true,
+      },
     })
 
     if (!category) {
-      await prisma.$disconnect();
+      await prisma.$disconnect()
       res.status(404).json({ error: 'Category not found' })
       return
     }
 
     // 基本統計
     const totalQuestions = await prisma.question.count({
-      where: { categoryId: id }
+      where: { categoryId: id },
     })
 
     const answeredQuestions = await prisma.question.count({
@@ -149,21 +157,21 @@ export const getCategoryStats = async (req: Request, res: Response): Promise<voi
         answers: {
           some: {
             createdAt: {
-              gte: startDate
-            }
-          }
-        }
-      }
+              gte: startDate,
+            },
+          },
+        },
+      },
     })
 
     const answers = await prisma.answer.findMany({
       where: {
         question: {
-          categoryId: id
+          categoryId: id,
         },
         createdAt: {
-          gte: startDate
-        }
+          gte: startDate,
+        },
       },
       select: {
         isCorrect: true,
@@ -171,39 +179,48 @@ export const getCategoryStats = async (req: Request, res: Response): Promise<voi
         createdAt: true,
         question: {
           select: {
-            difficulty: true
-          }
-        }
-      }
+            difficulty: true,
+          },
+        },
+      },
     })
 
     const totalAnswers = answers.length
-    const correctAnswers = answers.filter(a => a.isCorrect).length
-    const averageTime = answers.reduce((sum, a) => sum + (a.timeSpent || 0), 0) / totalAnswers || 0
+    const correctAnswers = answers.filter((a: { isCorrect: boolean }) => a.isCorrect).length
+    const averageTime =
+      answers.reduce((sum: number, a: { timeSpent?: number }) => sum + (a.timeSpent || 0), 0) / totalAnswers ||
+      0
 
     // 難易度別統計
-    const difficultyStats = [1, 2, 3, 4, 5].map(difficulty => {
-      const difficultyAnswers = answers.filter(a => a.question.difficulty === difficulty)
-      const difficultyCorrect = difficultyAnswers.filter(a => a.isCorrect).length
-      
+    const difficultyStats = [1, 2, 3, 4, 5].map((difficulty) => {
+      const difficultyAnswers = answers.filter(
+        (a: { question: { difficulty: number } }) => a.question.difficulty === difficulty,
+      )
+      const difficultyCorrect = difficultyAnswers.filter(
+        (a: { isCorrect: boolean }) => a.isCorrect,
+      ).length
+
       return {
         difficulty,
         totalAnswers: difficultyAnswers.length,
         correctAnswers: difficultyCorrect,
-        accuracy: difficultyAnswers.length > 0 ? (difficultyCorrect / difficultyAnswers.length) * 100 : 0
+        accuracy:
+          difficultyAnswers.length > 0
+            ? (difficultyCorrect / difficultyAnswers.length) * 100
+            : 0,
       }
     })
 
     // 最近の学習トレンド（日別）
     const dailyMap = new Map<string, { correct: number; total: number }>()
-    
-    answers.forEach(answer => {
+
+    answers.forEach((answer: { createdAt: Date; isCorrect: boolean }) => {
       const date = answer.createdAt.toISOString().split('T')[0]
       const current = dailyMap.get(date) || { correct: 0, total: 0 }
-      
+
       current.total += 1
       if (answer.isCorrect) current.correct += 1
-      
+
       dailyMap.set(date, current)
     })
 
@@ -211,11 +228,11 @@ export const getCategoryStats = async (req: Request, res: Response): Promise<voi
       .map(([date, stats]) => ({
         date,
         accuracy: stats.total > 0 ? (stats.correct / stats.total) * 100 : 0,
-        totalAnswers: stats.total
+        totalAnswers: stats.total,
       }))
       .sort((a, b) => a.date.localeCompare(b.date))
 
-    await prisma.$disconnect();
+    await prisma.$disconnect()
     res.json({
       category,
       summary: {
@@ -225,11 +242,12 @@ export const getCategoryStats = async (req: Request, res: Response): Promise<voi
         correctAnswers,
         accuracy: totalAnswers > 0 ? (correctAnswers / totalAnswers) * 100 : 0,
         averageTime: Math.round(averageTime),
-        progress: totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0
+        progress:
+          totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0,
       },
-      difficultyStats: difficultyStats.filter(d => d.totalAnswers > 0),
+      difficultyStats: difficultyStats.filter((d) => d.totalAnswers > 0),
       dailyTrend,
-      period: `${days}日間`
+      period: `${days}日間`,
     })
   } catch (error) {
     // Error fetching category stats logged for debugging

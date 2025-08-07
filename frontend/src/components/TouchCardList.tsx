@@ -47,11 +47,13 @@ const TouchCardList = ({
             }}
           >
             <Box sx={{ flexGrow: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Typography 
-                  variant="h6" 
-                  component="h3" 
-                  sx={{ 
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}
+              >
+                <Typography
+                  variant="h6"
+                  component="h3"
+                  sx={{
                     flexGrow: 1,
                     writingMode: 'horizontal-tb !important',
                     textOrientation: 'mixed !important',
@@ -61,10 +63,10 @@ const TouchCardList = ({
                   {item.title}
                 </Typography>
                 {item.category && (
-                  <Chip 
-                    label={item.category} 
-                    size="small" 
-                    color="primary" 
+                  <Chip
+                    label={item.category}
+                    size="small"
+                    color="primary"
                     variant="outlined"
                     sx={{
                       writingMode: 'horizontal-tb !important',
@@ -77,11 +79,11 @@ const TouchCardList = ({
                   />
                 )}
                 {item.badge && item.badge > 0 && (
-                  <Chip 
-                    label={item.badge} 
-                    size="small" 
-                    color="error" 
-                    sx={{ 
+                  <Chip
+                    label={item.badge}
+                    size="small"
+                    color="error"
+                    sx={{
                       minWidth: 24,
                       writingMode: 'horizontal-tb !important',
                       textOrientation: 'mixed !important',
@@ -93,12 +95,12 @@ const TouchCardList = ({
                   />
                 )}
               </Box>
-              
-              <Typography 
-                variant="body2" 
-                color="text.secondary" 
-                sx={{ 
-                  mb: 3, 
+
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  mb: 3,
                   lineHeight: 1.6,
                   writingMode: 'horizontal-tb !important',
                   textOrientation: 'mixed !important',

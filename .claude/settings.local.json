@@ -99,7 +99,30 @@
       "Bash(else echo \"❌ Performance monitor script missing\")",
       "Bash(if [ -f \"scripts/automation/quality-check.sh\" ])",
       "Bash(then echo \"✅ Quality check script exists\")",
-      "Bash(else echo \"❌ Quality check script missing\")"
+      "Bash(else echo \"❌ Quality check script missing\")",
+      "Bash(cat:*)",
+      "Bash(DATABASE_URL=\"file:./test.db\" npm run build)",
+      "Bash(DATABASE_URL=\"file:./test.db\" ./scripts/automation/quality-check.sh)",
+      "Bash(./scripts/automation/performance-monitor.sh:*)",
+      "Bash(sed:*)",
+      "Bash(# Fix multiple unused variables in frontend\nsed -i ''s/const performance =/const _performance =/g'' frontend/e2e/tests/cross-system-integration.spec.ts\nsed -i ''s/const questionText =/const _questionText =/g'' frontend/e2e/tests/cross-system-integration.spec.ts\nsed -i ''s/const testQuestions =/const _testQuestions =/g'' frontend/e2e/tests/exam-workflow.spec.ts\nsed -i ''s/const correctAnswers =/const _correctAnswers =/g'' frontend/e2e/tests/exam-workflow.spec.ts\nsed -i ''s/const mobileTestData =/const _mobileTestData =/g'' frontend/e2e/tests/mobile-responsive.spec.ts\nsed -i ''s/const onlineQuestionText =/const _onlineQuestionText =/g'' frontend/e2e/tests/mobile-responsive.spec.ts)",
+      "Bash(# Continue fixing more unused variables\nsed -i ''s/const firstQuestionText =/const _firstQuestionText =/g'' frontend/e2e/tests/offline-functionality.spec.ts\nsed -i ''s/const testUserProgress =/const _testUserProgress =/g'' frontend/e2e/tests/progress-tracking.spec.ts\nsed -i ''s/const initialProgress =/const _initialProgress =/g'' frontend/e2e/tests/progress-tracking.spec.ts\nsed -i ''s/const scenario =/const _scenario =/g'' frontend/e2e/tests/progress-tracking.spec.ts\nsed -i ''s/const response =/const _response =/g'' frontend/e2e/utils/test-helpers.ts)",
+      "Bash(# Fix remaining frontend test files\nsed -i ''s/import { Choice }/import { Choice as _Choice }/g'' frontend/src/stores/useQuestionStore.test.ts\nsed -i ''s/const scheduleIcon =/const _scheduleIcon =/g'' frontend/src/pages/HomePage.test.tsx\nsed -i ''s/const speedIcon =/const _speedIcon =/g'' frontend/src/pages/HomePage.test.tsx\nsed -i ''s/onClick)/onClick)/g'' frontend/src/pages/HomePage.test.tsx)",
+      "Bash(# Fix backend unused variables\nsed -i ''s/const correctChoice =/const _correctChoice =/g'' backend/src/__tests__/controllers/answerController.test.ts\nsed -i ''s/const question =/const _question =/g'' backend/src/__tests__/controllers/categoryController.test.ts\nsed -i ''s/const category =/const _category =/g'' backend/src/__tests__/controllers/categoryController.test.ts\nsed -i ''s/const categoryZ =/const _categoryZ =/g'' backend/src/__tests__/controllers/categoryController.test.ts\nsed -i ''s/const categoryA =/const _categoryA =/g'' backend/src/__tests__/controllers/categoryController.test.ts)",
+      "Bash(# Fix more backend unused variables\nsed -i ''s/const questions =/const _questions =/g'' backend/src/__tests__/controllers/questionController.test.ts\nsed -i ''s/const answer =/const _answer =/g'' backend/src/__tests__/controllers/questionController.test.ts\nsed -i ''s/const otherCategory =/const _otherCategory =/g'' backend/src/__tests__/controllers/questionController.test.ts\nsed -i ''s/const reviewItemId =/const _reviewItemId =/g'' backend/src/__tests__/integration/api.test.ts\nsed -i ''s/const daysSinceReview =/const _daysSinceReview =/g'' backend/src/__tests__/utils/spacedRepetition.test.ts)",
+      "Bash(# Fix the questionText undefined errors by properly handling them\nsed -i ''s/const questionText =/const _questionText =/g'' frontend/e2e/tests/cross-system-integration.spec.ts\nsed -i ''s/questionText/questionText/g'' frontend/e2e/tests/cross-system-integration.spec.ts\nsed -i ''s/onlineQuestionText/_onlineQuestionText/g'' frontend/e2e/tests/offline-functionality.spec.ts)",
+      "Bash(# Fix remaining unused variables that weren''t changed yet\nsed -i ''s/testQuestions,/_testQuestions,/g'' frontend/e2e/tests/exam-workflow.spec.ts\nsed -i ''s/const testQuestions =/const _testQuestions =/g'' frontend/e2e/tests/exam-workflow.spec.ts\nsed -i ''s/mobileTestData,/_mobileTestData,/g'' frontend/e2e/tests/mobile-responsive.spec.ts\nsed -i ''s/const mobileTestData =/const _mobileTestData =/g'' frontend/e2e/tests/mobile-responsive.spec.ts\nsed -i ''s/testUserProgress,/_testUserProgress,/g'' frontend/e2e/tests/progress-tracking.spec.ts\nsed -i ''s/const testUserProgress =/const _testUserProgress =/g'' frontend/e2e/tests/progress-tracking.spec.ts)",
+      "Bash(# Fix the remaining few issues\nsed -i ''s/testBookmarks,/_testBookmarks,/g'' frontend/e2e/tests/bookmark-management.spec.ts\nsed -i ''s/import { testBookmarks/import { _testBookmarks/g'' frontend/e2e/tests/bookmark-management.spec.ts)",
+      "Bash(# Fix the remaining frontend issues\nsed -i ''s/const accessibility =/const _accessibility =/g'' frontend/e2e/tests/accessibility.spec.ts\nsed -i ''s/const dataValidation =/const _dataValidation =/g'' frontend/e2e/tests/bookmark-management.spec.ts\nsed -i ''s/const performance =/const _performance =/g'' frontend/e2e/tests/cross-system-integration.spec.ts\nsed -i ''s/let correctAnswers =/let _correctAnswers =/g'' frontend/e2e/tests/exam-workflow.spec.ts)",
+      "Bash(# Fix the accessibility variable that didn''t get renamed properly\ngrep -n \"\"accessibility =\"\" frontend/e2e/tests/accessibility.spec.ts)",
+      "Bash(# Fix all these issues more thoroughly\nsed -i ''s/let accessibility:/let _accessibility:/g'' frontend/e2e/tests/accessibility.spec.ts\nsed -i ''s/accessibility = new/_accessibility = new/g'' frontend/e2e/tests/accessibility.spec.ts)",
+      "Bash(# Fix performance variable in cross-system-integration\nsed -i ''s/let performance:/let _performance:/g'' frontend/e2e/tests/cross-system-integration.spec.ts\nsed -i ''s/performance = new/_performance = new/g'' frontend/e2e/tests/cross-system-integration.spec.ts\n\n# Fix the correctAnswers reference issue in exam-workflow\nsed -i ''s/correctAnswers++/_correctAnswers++/g'' frontend/e2e/tests/exam-workflow.spec.ts)",
+      "Bash(# Fix mobileTestData import/usage\nsed -i ''s/mobileTestData,/_mobileTestData,/g'' frontend/e2e/tests/mobile-responsive.spec.ts\n\n# Fix correctAnswers in progress-tracking\nsed -i ''s/const correctAnswers =/const _correctAnswers =/g'' frontend/e2e/tests/progress-tracking.spec.ts\n\n# Fix page parameter issues  \nsed -i ''s/async ({ page })/async ({ page: _page })/g'' frontend/e2e/tests/performance.spec.ts | head -1)",
+      "Bash(# Restore page parameter properly for performance tests, just fix the specific unused case\nsed -i ''s/({ page: _page })/({ page })/g'' frontend/e2e/tests/performance.spec.ts\n\n# Find the specific line with unused page parameter (line 210 per error)\nsed -n ''210p'' frontend/e2e/tests/performance.spec.ts)",
+      "Bash(# Find the specific unused page parameter in progress-tracking\ngrep -n \"\"async ({ page })\"\" frontend/e2e/tests/progress-tracking.spec.ts | grep -v \"\"beforeEach\"\")",
+      "Bash(# Remove/comment unused imports and variables that are clearly not needed\nsed -i ''/import.*testBookmarks/d'' frontend/e2e/tests/bookmark-management.spec.ts\nsed -i ''/import.*mobileTestData/d'' frontend/e2e/tests/mobile-responsive.spec.ts  \nsed -i ''/import.*testQuestions/d'' frontend/e2e/tests/exam-workflow.spec.ts\nsed -i ''/import.*testUserProgress/d'' frontend/e2e/tests/progress-tracking.spec.ts\nsed -i ''/import.*Choice/d'' frontend/src/stores/useQuestionStore.test.ts)",
+      "Bash(# Remove unused variable declarations\nsed -i ''/let _accessibility:/d'' frontend/e2e/tests/accessibility.spec.ts\nsed -i ''/let _dataValidation:/d'' frontend/e2e/tests/bookmark-management.spec.ts  \nsed -i ''/let _performance:/d'' frontend/e2e/tests/cross-system-integration.spec.ts\nsed -i ''/_accessibility = new/d'' frontend/e2e/tests/accessibility.spec.ts\nsed -i ''/_dataValidation = new/d'' frontend/e2e/tests/bookmark-management.spec.ts\nsed -i ''/_performance = new/d'' frontend/e2e/tests/cross-system-integration.spec.ts)",
+      "Bash(# Remove other unused variable assignments - variables that are just assigned values but never used\nsed -i ''/const _questionText =/d'' frontend/e2e/tests/cross-system-integration.spec.ts\nsed -i ''/let _correctAnswers =/d'' frontend/e2e/tests/exam-workflow.spec.ts  \nsed -i ''/if (isCorrect) _correctAnswers++/d'' frontend/e2e/tests/exam-workflow.spec.ts\nsed -i ''/const _onlineQuestionText =/d'' frontend/e2e/tests/mobile-responsive.spec.ts\nsed -i ''/const _firstQuestionText =/d'' frontend/e2e/tests/offline-functionality.spec.ts\nsed -i ''/const _onlineQuestionText =/d'' frontend/e2e/tests/offline-functionality.spec.ts)"
     ],
     "deny": []
   },
@@ -152,10 +175,7 @@
           ]
         },
         "review": {
-          "read_only": [
-            "document-reviewer",
-            "technical-designer"
-          ]
+          "read_only": ["document-reviewer", "technical-designer"]
         },
         "single_responsibility": {
           "rule": "🎯 ONE AGENT = ONE RESPONSIBILITY (単一責任の原則)",
@@ -236,22 +256,15 @@
         "Integration compatibility"
       ],
       "auto_assign": {
-        "reviewers": [
-          "quality-fixer",
-          "technical-designer"
-        ],
-        "assignees": [
-          "auto-assign-author"
-        ],
+        "reviewers": ["quality-fixer", "technical-designer"],
+        "assignees": ["auto-assign-author"],
         "labels": {
           "frontend_changes": "frontend",
           "backend_changes": "backend",
           "docs_changes": "documentation",
           "database_changes": "database"
         },
-        "projects": [
-          "ExamPreparationSystem"
-        ],
+        "projects": ["ExamPreparationSystem"],
         "milestone": "auto-detect"
       }
     }
