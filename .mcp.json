@@ -26,7 +26,7 @@
     },
     "cipher": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-cipher"],
+      "args": ["-y", "@byterover/cipher"],
       "env": {}
     }
   }
