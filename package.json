@@ -1,0 +1,44 @@
+{
+  "name": "exam-preparation-system",
+  "version": "1.0.0",
+  "description": "Comprehensive exam preparation system with AI-powered features",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm test",
+    "test:frontend:coverage": "cd frontend && npm run test:ci",
+    "test:backend": "cd backend && npm test",
+    "test:backend:coverage": "cd backend && npm run test:ci",
+    "test:coverage": "npm run test:frontend:coverage && npm run test:backend:coverage",
+    "test:e2e": "cd frontend && npm run test:e2e",
+    "test:e2e:ui": "cd frontend && npm run test:e2e:ui",
+    "test:e2e:headed": "cd frontend && npm run test:e2e:headed",
+    "test:e2e:debug": "cd frontend && npm run test:e2e:debug",
+    "test:e2e:report": "cd frontend && npm run test:e2e:report",
+    "test:all": "npm run test:coverage && npm run test:e2e",
+    "test:ci": "npm run test:coverage && npm run test:e2e",
+    "lint": "npx @biomejs/biome check .",
+    "format": "npx @biomejs/biome format . --write",
+    "type-check": "tsc --noEmit --project config/build/tsconfig.json",
+    "quality": "./scripts/automation/quality-check.sh",
+    "quality:test": "./scripts/automation/quality-check.sh",
+    "setup": "./scripts/automation/setup-environment.sh",
+    "performance": "./scripts/automation/performance-monitor.sh",
+    "check:all": "npm run lint && npm run type-check && npm run test:all"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.0.0",
+    "typescript": "^5.0.0",
+    "concurrently": "^8.0.0"
+  }
+}

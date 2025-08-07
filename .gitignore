@@ -66,9 +66,14 @@ Thumbs.db
 /*.js
 /*.js.map
 /*.html
-/*.json
 /*.png
 /assets/
+# Exclude specific build files but keep package files
+/manifest.json
+/index.html
+# Keep package files
+!package.json
+!package-lock.json
 
 # Temporary files
 temp/
