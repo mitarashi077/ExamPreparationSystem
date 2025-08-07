@@ -1,13 +1,16 @@
 {
-  "timestamp": "20250806_031211",
-  "overall_status": "FAIL",
-  "total_errors": 6,
-  "total_warnings": 1,
-  "phases": [
-    "Phase 1 (Biome): FAIL",
-    "Phase 2 (TypeScript): FAIL",
-    "Phase 3 (Tests): FAIL",
-    "Phase 4 (Integration): FAIL"
-  ],
-  "approved": false
+    "timestamp": "20250808_015614",
+    "overall_status": "FAIL",
+    "total_errors": 7,
+    "total_warnings": 1,
+    "test_coverage": {
+        "frontend": 0,
+        "backend": 0,
+        "overall": 0,
+        "target_met": false
+    },
+    "phases": [
+        "Phase 1 (Biome): FAIL","Phase 2 (TypeScript): FAIL","Phase 3 (Tests): FAIL","Phase 4 (Integration): FAIL"
+    ],
+    "approved": false
 }

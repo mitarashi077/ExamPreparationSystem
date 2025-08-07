@@ -122,7 +122,15 @@
       "Bash(# Find the specific unused page parameter in progress-tracking\ngrep -n \"\"async ({ page })\"\" frontend/e2e/tests/progress-tracking.spec.ts | grep -v \"\"beforeEach\"\")",
       "Bash(# Remove/comment unused imports and variables that are clearly not needed\nsed -i ''/import.*testBookmarks/d'' frontend/e2e/tests/bookmark-management.spec.ts\nsed -i ''/import.*mobileTestData/d'' frontend/e2e/tests/mobile-responsive.spec.ts  \nsed -i ''/import.*testQuestions/d'' frontend/e2e/tests/exam-workflow.spec.ts\nsed -i ''/import.*testUserProgress/d'' frontend/e2e/tests/progress-tracking.spec.ts\nsed -i ''/import.*Choice/d'' frontend/src/stores/useQuestionStore.test.ts)",
       "Bash(# Remove unused variable declarations\nsed -i ''/let _accessibility:/d'' frontend/e2e/tests/accessibility.spec.ts\nsed -i ''/let _dataValidation:/d'' frontend/e2e/tests/bookmark-management.spec.ts  \nsed -i ''/let _performance:/d'' frontend/e2e/tests/cross-system-integration.spec.ts\nsed -i ''/_accessibility = new/d'' frontend/e2e/tests/accessibility.spec.ts\nsed -i ''/_dataValidation = new/d'' frontend/e2e/tests/bookmark-management.spec.ts\nsed -i ''/_performance = new/d'' frontend/e2e/tests/cross-system-integration.spec.ts)",
-      "Bash(# Remove other unused variable assignments - variables that are just assigned values but never used\nsed -i ''/const _questionText =/d'' frontend/e2e/tests/cross-system-integration.spec.ts\nsed -i ''/let _correctAnswers =/d'' frontend/e2e/tests/exam-workflow.spec.ts  \nsed -i ''/if (isCorrect) _correctAnswers++/d'' frontend/e2e/tests/exam-workflow.spec.ts\nsed -i ''/const _onlineQuestionText =/d'' frontend/e2e/tests/mobile-responsive.spec.ts\nsed -i ''/const _firstQuestionText =/d'' frontend/e2e/tests/offline-functionality.spec.ts\nsed -i ''/const _onlineQuestionText =/d'' frontend/e2e/tests/offline-functionality.spec.ts)"
+      "Bash(# Remove other unused variable assignments - variables that are just assigned values but never used\nsed -i ''/const _questionText =/d'' frontend/e2e/tests/cross-system-integration.spec.ts\nsed -i ''/let _correctAnswers =/d'' frontend/e2e/tests/exam-workflow.spec.ts  \nsed -i ''/if (isCorrect) _correctAnswers++/d'' frontend/e2e/tests/exam-workflow.spec.ts\nsed -i ''/const _onlineQuestionText =/d'' frontend/e2e/tests/mobile-responsive.spec.ts\nsed -i ''/const _firstQuestionText =/d'' frontend/e2e/tests/offline-functionality.spec.ts\nsed -i ''/const _onlineQuestionText =/d'' frontend/e2e/tests/offline-functionality.spec.ts)",
+      "Bash(bash:*)",
+      "Bash(./scripts/automation/quick-check.sh:*)",
+      "Bash(./scripts/automation/performance-monitor-lite.sh:*)",
+      "Bash(./scripts/automation/quality-check-lite.sh:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue comment:*)",
+      "Bash(gh issue close:*)"
     ],
     "deny": []
   },
@@ -175,7 +183,10 @@
           ]
         },
         "review": {
-          "read_only": ["document-reviewer", "technical-designer"]
+          "read_only": [
+            "document-reviewer",
+            "technical-designer"
+          ]
         },
         "single_responsibility": {
           "rule": "🎯 ONE AGENT = ONE RESPONSIBILITY (単一責任の原則)",
@@ -256,15 +267,22 @@
         "Integration compatibility"
       ],
       "auto_assign": {
-        "reviewers": ["quality-fixer", "technical-designer"],
-        "assignees": ["auto-assign-author"],
+        "reviewers": [
+          "quality-fixer",
+          "technical-designer"
+        ],
+        "assignees": [
+          "auto-assign-author"
+        ],
         "labels": {
           "frontend_changes": "frontend",
           "backend_changes": "backend",
           "docs_changes": "documentation",
           "database_changes": "database"
         },
-        "projects": ["ExamPreparationSystem"],
+        "projects": [
+          "ExamPreparationSystem"
+        ],
         "milestone": "auto-detect"
       }
     }
